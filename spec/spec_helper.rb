@@ -5,5 +5,5 @@ ActiveRecord::Base.establish_connection(
   adapter:  'mysql2',
   host:     'localhost',
   username: 'root',
-  database: 'teambox_development'
+  database: 'percona_migrator_test'
 )
