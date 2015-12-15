@@ -9,14 +9,24 @@ require 'percona_migrator/railtie'
 module PerconaMigrator
   module_function
 
+  NONE = "\e[0m"
+  CYAN = "\e[38;5;86m"
+  GREEN = "\e[32m"
+  RED = "\e[31m"
+
   # Runs the Percona Migrator
   #
   # @param version [Integer] migration version to parse
   # @param direction [Symbol] :up or :down
   # @return [String] Percona's migration command to paste
-  def migrate(version, direction)
+  def migrate(version, direction, logger = $stdout)
     raise 'Passed non-lhm migration for parsing' unless lhm_migration?(version)
-    "#{Migrator.migrate(version, direction)} && #{mark_as_up_task(version)}"
+
+    migration_command = Migrator.migrate(version, direction)
+    mark_as_up = mark_as_up_task(version)
+
+    run(migration_command, logger)
+    run(mark_as_up, logger)
   end
 
   # Checks if specified migration uses LHM
@@ -34,5 +44,11 @@ module PerconaMigrator
   # @return [String]
   def mark_as_up_task(version)
     "bundle exec rake db:migrate:mark_as_up VERSION=#{version}"
+  end
+
+  def run(command, logger)
+    logger.puts "\n#{CYAN}-- #{command}#{NONE}\n\n"
+    status = Kernel.system(command)
+    logger.puts(status ? "\n#{GREEN}Done!#{NONE}" : "\n#{RED}Failed!#{NONE}")
   end
 end

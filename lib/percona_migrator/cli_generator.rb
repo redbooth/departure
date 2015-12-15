@@ -19,8 +19,8 @@ module PerconaMigrator
     # @param connection_data [Hash]
     def generate(statements, table_name, connection_data)
       init_base_command
-      add_alter_statement(statements)
       add_connection_details(table_name, connection_data)
+      add_alter_statement(statements)
       prepare_output
     end
 
@@ -36,8 +36,13 @@ module PerconaMigrator
     def add_connection_details(table_name, connection_data)
       @command.push("-h #{ENV['PERCONA_DB_HOST'] || connection_data[:host]}")
       @command.push("-u #{ENV['PERCONA_DB_USER'] || connection_data[:username]}")
-      @command.push("-p #{ENV['PERCONA_DB_PASSWORD'] || connection_data[:password]}")
+      add_password(connection_data)
       @command.push("D=#{ENV['PERCONA_DB_NAME'] || connection_data[:database]},t=#{table_name}")
+    end
+
+    def add_password(connection_data)
+      password = ENV['PERCONA_DB_PASSWORD'] || connection_data[:password]
+      @command.push("-p #{password}") if password.present?
     end
 
     # Escapes all the backticks to not create new shells after pasting into terminal
