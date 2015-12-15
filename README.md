@@ -1,7 +1,7 @@
 # PerconaMigrator
 
 Percona Migrator is a tool for running online and non-blocking
-`ActiveRecord::Migrations` using `pt-online-schema-change` command-line tool of
+DDL `ActiveRecord::Migrations` using `pt-online-schema-change` command-line tool of
 [Percona
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
 which supports foreign key constraints.
@@ -12,9 +12,8 @@ It will apply exactly the same changes as if you run it with `db:migrate:up`
 avoiding deadlocks, without needing to change how write regular rails
 migrations.
 
-Also we disabled basic rake db:migrate:up for the ddl migrations on envs with
-PERCONA_TOOLKIT var set, which will be next and utility::primary. Therefore,
-all these will ran with percona.
+It also disables `rake db:migrate:up` for the ddl migrations on envs with
+PERCONA_TOOLKIT var set so we ensure all these migrations use Percona in production.
 
 ## Installation
 
@@ -28,7 +27,9 @@ that fits your distribution.
 
 Then, add this line to your application's Gemfile:
 
-```ruby gem 'percona_migrator' ```
+```ruby
+gem 'percona_migrator'
+```
 
 And then execute:
 
