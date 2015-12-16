@@ -11,3 +11,20 @@ ActiveRecord::Base.establish_connection(
   password: config['password'],
   database: 'percona_migrator_test'
 )
+
+MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)
+
+RSpec.configure do |config|
+  config.before(:all) do
+    @initial_migration_paths = ActiveRecord::Migrator.migrations_paths
+    ActiveRecord::Migrator.migrations_paths = [MIGRATION_FIXTURES]
+  end
+
+  config.before(:each) do
+    allow(ActiveRecord::Migrator).to receive(:current_version).and_return(0)
+  end
+
+  config.after(:all) do
+    ActiveRecord::Migrator.migrations_paths = @initial_migration_paths
+  end
+end

@@ -25,8 +25,9 @@ module PerconaMigrator
     migration_command = Migrator.migrate(version, direction)
     mark_as_up = mark_as_up_task(version)
 
-    run(migration_command, logger)
-    run(mark_as_up, logger)
+    ok = run(migration_command, logger)
+    run(mark_as_up, logger) if ok
+    nil
   end
 
   # Checks if specified migration uses LHM
@@ -46,9 +47,13 @@ module PerconaMigrator
     "bundle exec rake db:migrate:mark_as_up VERSION=#{version}"
   end
 
+  # Runs and logs the given command
+  #
+  # @return [Boolean]
   def run(command, logger)
     logger.puts "\n#{CYAN}-- #{command}#{NONE}\n\n"
     status = Kernel.system(command)
     logger.puts(status ? "\n#{GREEN}Done!#{NONE}" : "\n#{RED}Failed!#{NONE}")
+    status
   end
 end
