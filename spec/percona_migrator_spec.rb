@@ -29,9 +29,9 @@ describe PerconaMigrator do
         allow(Kernel).to receive(:system).with('pt-online-schema-change --execute --recursion-method=none --alter-foreign-keys-method=auto -h localhost -u root D=percona_migrator_test,t=comments --alter "add column \`some_id_field\` INT(11) DEFAULT NULL"').and_return(true)
       end
 
-      it 'executes the mark_as_up rake task' do
+      it 'marks the migration as up' do
         PerconaMigrator.migrate(version, direction, logger)
-        expect(Kernel).to have_received(:system).with("bundle exec rake db:migrate:mark_as_up VERSION=#{version}")
+        expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
   end

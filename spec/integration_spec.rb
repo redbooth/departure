@@ -1,13 +1,11 @@
+require 'byebug'
 require 'spec_helper'
 
 describe PerconaMigrator do
-  before { allow(Kernel).to receive(:system) }
+  class Comment < ActiveRecord::Base; end
 
   let(:direction) { :up }
   let(:logger) { double(:logger, puts: true) }
-  let(:mark_as_up) { "bundle exec rake db:migrate:mark_as_up VERSION=#{version}" }
-
-  subject { described_class.migrate(version, direction, logger) }
 
   it 'has a version number' do
     expect(PerconaMigrator::VERSION).not_to be nil
@@ -16,119 +14,111 @@ describe PerconaMigrator do
   context 'creating/removing columns' do
     let(:version) { 1 }
 
-    it 'runs pt-online-schema-change' do
-      described_class.migrate(version, direction, logger)
-      expect(Kernel).to(
-        have_received(:system)
-        .with(include('pt-online-schema-change'))
-      )
-    end
+    describe 'command' do
+      before { allow(Kernel).to receive(:system) }
 
-    it 'executes the migration' do
-      described_class.migrate(version, direction, logger)
-      expect(Kernel).to(
-        have_received(:system)
-        .with(include('--execute'))
-      )
-    end
+      it 'runs pt-online-schema-change' do
+        described_class.migrate(version, direction, logger)
+        expect(Kernel).to(
+          have_received(:system)
+          .with(include('pt-online-schema-change'))
+        )
+      end
 
-    it 'does not define --recursion-method' do
-      described_class.migrate(version, direction, logger)
-      expect(Kernel).to(
-        have_received(:system)
-        .with(include('--recursion-method=none'))
-      )
-    end
+      it 'executes the migration' do
+        described_class.migrate(version, direction, logger)
+        expect(Kernel).to(
+          have_received(:system)
+          .with(include('--execute'))
+        )
+      end
 
-    it 'sets the --alter-foreign-keys-method option to auto' do
-      described_class.migrate(version, direction, logger)
-      expect(Kernel).to(
-        have_received(:system)
-        .with(include('--alter-foreign-keys-method=auto'))
-      )
+      it 'does not define --recursion-method' do
+        described_class.migrate(version, direction, logger)
+        expect(Kernel).to(
+          have_received(:system)
+          .with(include('--recursion-method=none'))
+        )
+      end
+
+      it 'sets the --alter-foreign-keys-method option to auto' do
+        described_class.migrate(version, direction, logger)
+        expect(Kernel).to(
+          have_received(:system)
+          .with(include('--alter-foreign-keys-method=auto'))
+        )
+      end
     end
 
     context 'creating column' do
       let(:direction) { :up }
 
-      it 'executes the percona command' do
+      it 'adds the column in the DB table' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include("--alter \"add column \\`some_id_field\\` INT(11) DEFAULT NULL\""))
-        )
+        Comment.reset_column_information
+        expect(Comment.column_names).to include('some_id_field')
       end
 
       it 'marks the migration as up' do
-        allow(Kernel).to receive(:system).with("pt-online-schema-change --execute --recursion-method=none --alter-foreign-keys-method=auto -h localhost -u root D=percona_migrator_test,t=comments --alter \"add column \\`some_id_field\\` INT(11) DEFAULT NULL\"").and_return(true)
-
         described_class.migrate(version, direction, logger)
-
-        expect(Kernel).to(
-          have_received(:system)
-          .with(mark_as_up)
-        )
+        expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
 
     context 'droping column' do
       let(:direction) { :down }
 
-      it 'executes the percona command' do
+      before { described_class.migrate(version, :up, logger) }
+
+      it 'drops the column from the DB table' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include("--alter \"drop \\`some_id_field\\`\""))
-        )
+        Comment.reset_column_information
+        expect(Comment.column_names).not_to include('some_id_field')
       end
 
-      it 'marks the migration as up' do
-        allow(Kernel).to receive(:system).with("pt-online-schema-change --execute --recursion-method=none --alter-foreign-keys-method=auto -h localhost -u root D=percona_migrator_test,t=comments --alter \"drop \\`some_id_field\\`\"").and_return(true)
-
+      it 'marks the migration as down' do
         described_class.migrate(version, direction, logger)
-
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include(mark_as_up))
-        )
+        expect(ActiveRecord::Migrator.current_version).to eq(0)
       end
     end
+  end
 
-    context 'specifing connection vars and parsing tablename' do
-      let(:host)      { 'test_host' }
-      let(:user)      { 'test_user' }
-      let(:password)  { 'test_password' }
-      let(:db_name)   { 'test_db' }
+  context 'specifing connection vars and parsing tablename' do
+    let(:host)      { 'test_host' }
+    let(:user)      { 'test_user' }
+    let(:password)  { 'test_password' }
+    let(:db_name)   { 'test_db' }
 
+    let(:version) { 1 }
+
+    before { allow(Kernel).to receive(:system) }
+
+    before do
+      allow(ENV).to receive(:[]).with('PERCONA_DB_HOST').and_return(host)
+      allow(ENV).to receive(:[]).with('PERCONA_DB_USER').and_return(user)
+      allow(ENV).to receive(:[]).with('PERCONA_DB_PASSWORD').and_return(password)
+      allow(ENV).to receive(:[]).with('PERCONA_DB_NAME').and_return(db_name)
+    end
+
+    it 'executes the percona command with the right connection details' do
+      described_class.migrate(version, direction, logger)
+      expect(Kernel).to(
+        have_received(:system)
+        .with(include("-h #{host} -u #{user} -p #{password} D=#{db_name},t=comments" ))
+      )
+    end
+
+    context 'when there is no password' do
       before do
-        allow(ENV).to receive(:[]).with('PERCONA_DB_HOST').and_return(host)
-        allow(ENV).to receive(:[]).with('PERCONA_DB_USER').and_return(user)
-        allow(ENV).to receive(:[]).with('PERCONA_DB_PASSWORD').and_return(password)
-        allow(ENV).to receive(:[]).with('PERCONA_DB_NAME').and_return(db_name)
+        allow(ENV).to receive(:[]).with('PERCONA_DB_PASSWORD').and_return(nil)
       end
 
-      context 'when there is password' do
-        it 'executes the percona command with the right connection details' do
-          described_class.migrate(version, direction, logger)
-          expect(Kernel).to(
-            have_received(:system)
-            .with(include("-h #{host} -u #{user} -p #{password} D=#{db_name},t=comments" ))
-          )
-        end
-      end
-
-      context 'when there is no password' do
-        before do
-          allow(ENV).to receive(:[]).with('PERCONA_DB_PASSWORD').and_return(nil)
-        end
-
-        it 'executes the percona command with the right connection details' do
-          described_class.migrate(version, direction, logger)
-          expect(Kernel).to(
-            have_received(:system)
-            .with(include("-h #{host} -u #{user} D=#{db_name},t=comments"))
-          )
-        end
+      it 'executes the percona command with the right connection details' do
+        described_class.migrate(version, direction, logger)
+        expect(Kernel).to(
+          have_received(:system)
+          .with(include("-h #{host} -u #{user} D=#{db_name},t=comments"))
+        )
       end
     end
   end
@@ -139,46 +129,35 @@ describe PerconaMigrator do
     context 'adding indexes' do
       let(:direction) { :up }
 
+      before { described_class.migrate(1, :up, logger) }
+
       it 'executes the percona command' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include("--alter \"add index \\`index_comments_on_some_id_field\\` (\\`some_id_field\\`)\""))
-        )
+        expect(ActiveRecord::Base.connection.indexes(:comments).map { |index| index.name }).to match_array(['index_comments_on_some_id_field'])
       end
 
       it 'marks the migration as up' do
-        allow(Kernel).to receive(:system).with("pt-online-schema-change --execute --recursion-method=none --alter-foreign-keys-method=auto -h localhost -u root D=percona_migrator_test,t=comments --alter \"add index \\`index_comments_on_some_id_field\\` (\\`some_id_field\\`)\"").and_return(true)
-
         described_class.migrate(version, direction, logger)
-
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include(mark_as_up))
-        )
+        expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
 
     context 'removing indexes' do
       let(:direction) { :down }
 
-      it 'executes the percona command' do
-        described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include("--alter \"drop index \\`index_comments_on_some_id_field\\`\""))
-        )
+      before do
+        described_class.migrate(1, :up, logger)
+        described_class.migrate(version, :up, logger)
       end
 
-      it 'marks the migration as up' do
-        allow(Kernel).to receive(:system).with("pt-online-schema-change --execute --recursion-method=none --alter-foreign-keys-method=auto -h localhost -u root D=percona_migrator_test,t=comments --alter \"drop index \\`index_comments_on_some_id_field\\`\"").and_return(true)
-
+      it 'executes the percona command' do
         described_class.migrate(version, direction, logger)
+        expect(ActiveRecord::Base.connection.indexes(:comments).map { |index| index.name }).not_to match_array(['index_comments_on_some_id_field'])
+      end
 
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include(mark_as_up))
-        )
+      it 'marks the migration as down' do
+        described_class.migrate(version, direction, logger)
+        expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
     end
   end
@@ -189,102 +168,44 @@ describe PerconaMigrator do
     context 'adding indexes' do
       let(:direction) { :up }
 
+      before { described_class.migrate(1, :up, logger) }
+
       it 'executes the percona command' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include("--alter \"add unique index \\`index_comments_on_some_id_field\\` (\\`some_id_field\\`)\""))
-        )
+        expect(ActiveRecord::Base.connection.indexes(:comments).select { |index| index.unique }.map { |index| index.name }).to match_array(['index_comments_on_some_id_field'])
       end
 
       it 'marks the migration as up' do
-        allow(Kernel).to receive(:system).with("pt-online-schema-change --execute --recursion-method=none --alter-foreign-keys-method=auto -h localhost -u root D=percona_migrator_test,t=comments --alter \"add unique index \\`index_comments_on_some_id_field\\` (\\`some_id_field\\`)\"").and_return(true)
-
         described_class.migrate(version, direction, logger)
-
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include(mark_as_up))
-        )
+        expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
 
     context 'removing indexes' do
       let(:direction) { :down }
 
-      it 'executes the percona command' do
-        described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include("--alter \"drop index \\`index_comments_on_some_id_field\\`\""))
-        )
+      before do
+        described_class.migrate(1, :up, logger)
+        described_class.migrate(version, :up, logger)
       end
-
-      it 'marks the migration as up' do
-        allow(Kernel).to receive(:system).with("pt-online-schema-change --execute --recursion-method=none --alter-foreign-keys-method=auto -h localhost -u root D=percona_migrator_test,t=comments --alter \"drop index \\`index_comments_on_some_id_field\\`\"").and_return(true)
-
-        described_class.migrate(version, direction, logger)
-
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include(mark_as_up))
-        )
-      end
-    end
-  end
-
-  context 'working with ddl' do
-    let(:version) { 4 }
-
-    context 'up' do
-      let(:direction) { :up }
 
       it 'executes the percona command' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include("--alter \"my up ddl statement, my up ddl statement\""))
-        )
+        expect(ActiveRecord::Base.connection.indexes(:comments).map { |index| index.name }).not_to match_array(['index_comments_on_some_id_field'])
       end
 
-      it 'marks the migration as up' do
-        allow(Kernel).to receive(:system).with("pt-online-schema-change --execute --recursion-method=none --alter-foreign-keys-method=auto -h localhost -u root D=percona_migrator_test,t=comments --alter \"my up ddl statement, my up ddl statement\"").and_return(true)
-
+      it 'marks the migration as down' do
         described_class.migrate(version, direction, logger)
-
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include(mark_as_up))
-        )
-      end
-    end
-
-    context 'down' do
-      let(:direction) { :down }
-
-      it 'executes the percona command' do
-        described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include("--alter \"my down ddl statement, my down ddl statement\""))
-        )
-      end
-
-      it 'marks the migration as up' do
-        allow(Kernel).to receive(:system).with("pt-online-schema-change --execute --recursion-method=none --alter-foreign-keys-method=auto -h localhost -u root D=percona_migrator_test,t=comments --alter \"my down ddl statement, my down ddl statement\"").and_return(true)
-
-        described_class.migrate(version, direction, logger)
-
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include(mark_as_up))
-        )
+        expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
     end
   end
 
   context 'working with an empty migration' do
     let(:version) { 5 }
+
+    subject { described_class.migrate(version, direction, logger) }
+
     it 'errors' do
       expect { subject }.to raise_error(/no statements were parsed/i)
     end
@@ -292,6 +213,9 @@ describe PerconaMigrator do
 
   context 'working with broken migration' do
     let(:version) { 6 }
+
+    subject { described_class.migrate(version, direction, logger) }
+
     it 'errors' do
       expect { subject }.to raise_error(/don't know how to parse/i)
     end
@@ -299,6 +223,9 @@ describe PerconaMigrator do
 
   context 'working with non-lhm migration' do
     let(:version) { 7 }
+
+    subject { described_class.migrate(version, direction, logger) }
+
     it 'errors' do
       expect { subject }.to raise_error(/passed non-lhm migration/i)
     end
@@ -317,5 +244,4 @@ describe PerconaMigrator do
       it { is_expected.to be_falsey }
     end
   end
-
 end

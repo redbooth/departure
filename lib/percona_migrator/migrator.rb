@@ -62,7 +62,7 @@ module PerconaMigrator
     def patch_lhm
       ::Lhm.module_eval do
         alias orig_change_table change_table
-        def change_table(table_name, options = {}, &block)
+        def change_table(table_name, _options = {}, &block)
           origin = ::Lhm::Table.parse(table_name, connection)
           invoker = ::Lhm::Invoker.new(origin, connection)
           block.call(invoker.migrator)

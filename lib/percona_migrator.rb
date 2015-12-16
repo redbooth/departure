@@ -5,6 +5,7 @@ require 'percona_migrator/migrator'
 require 'percona_migrator/lhm_parser'
 require 'percona_migrator/cli_generator'
 require 'percona_migrator/railtie'
+require 'percona_migrator/schema_migration'
 
 module PerconaMigrator
   module_function
@@ -23,10 +24,9 @@ module PerconaMigrator
     raise 'Passed non-lhm migration for parsing' unless lhm_migration?(version)
 
     migration_command = Migrator.migrate(version, direction)
-    mark_as_up = mark_as_up_task(version)
 
     ok = run(migration_command, logger)
-    run(mark_as_up, logger) if ok
+    mark(direction, version) if ok
     nil
   end
 
@@ -43,8 +43,12 @@ module PerconaMigrator
   # an String to be copy pasted
   #
   # @return [String]
-  def mark_as_up_task(version)
-    "bundle exec rake db:migrate:mark_as_up VERSION=#{version}"
+  def mark(direction, version)
+    if direction == :up
+      PerconaMigrator::SchemaMigration.create!(:version => version.to_s)
+    elsif direction == :down
+      PerconaMigrator::SchemaMigration.where(:version => version.to_s).delete_all
+    end
   end
 
   # Runs and logs the given command
