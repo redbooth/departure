@@ -6,26 +6,27 @@ DDL `ActiveRecord::Migrations` using `pt-online-schema-change` command-line tool
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
 which supports foreign key constraints.
 
-It adds a `db:percona_migrate:up` rake task that translates your migration to a
-`pt-online-schema-change` command which you can then paste into the terminal.
-It will apply exactly the same changes as if you run it with `db:migrate:up`
-avoiding deadlocks, without needing to change how write regular rails
-migrations.
+It adds a `db:percona_migrate:up` runs your migration using the
+`pt-online-schema-change` command.  It will apply exactly the same changes as
+if you run it with `db:migrate:up` avoiding deadlocks and without the need to
+change how you write regular rails migrations.
 
 It also disables `rake db:migrate:up` for the ddl migrations on envs with
-PERCONA_TOOLKIT var set so we ensure all these migrations use Percona in production.
+PERCONA_TOOLKIT var set to ensure all these migrations use Percona in production.
 
 ## Installation
 
 Percona Migrator relies on `pt-online-schema-change` from  [Percona
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
 
-For mac, you can install it with homebrew `brew install percona-toolkit`. For
+For mac, you can install it with homebrew typing `brew install percona-toolkit`. For
 linux machines check out the [Percona Toolkit download
 page](https://www.percona.com/downloads/percona-toolkit/) to find the package
 that fits your distribution.
 
-Then, add this line to your application's Gemfile:
+You can also get it from [Percona's apt repository](https://www.percona.com/doc/percona-xtradb-cluster/5.5/installation/apt_repo.html)
+
+Once installed, add this line to your application's Gemfile:
 
 ```ruby
 gem 'percona_migrator'
@@ -49,21 +50,10 @@ From that same environment where you added the variable, execute the following:
 
 1. `bundle exec rake db:migrate:status` to find out your migration's version
 number
-2. Run `rake db:migrate:up VERSION=<version>`. It will complain and make you
-run the following command
-3. `rake db:percona_migrate:up VERSION=<version>`.
-This will return something like:
+2. `rake db:percona_migrate:up VERSION=<version>`.  This will run the migration
+and mark it as up. Otherwise, if the migration fails, it will still be listed as down
 
-```bash pt-online-schema-change --execute --recursion-method=none --alter "add
-unique index \`index_references_on_source_id_and_source_type\` (\`source_id\`,
-\`source_type\`)" -h localhost -u root -p vagrant
-    D=teambox_test_default,t=references && bundle exec rake
-    db:migrate:mark_as_up VERSION=<version> ```
-
-4. Copy and paste the returned command in your terminal
-
-If for whatever reason you only ran the `pt-online-schema-change` and the
-migration wasn't marked as up, you can do so with `bundle exec rake
+You can also mark the migration as run manually, by executing `bundle exec rake
 db:migrate:mark_as_up VERSION=<version>`. Likewise, there's a `bundle exec rake
 db:migrate:mark_as_down VERSION=<version>` that may be of help.
 
