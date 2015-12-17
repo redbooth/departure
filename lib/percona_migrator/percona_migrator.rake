@@ -11,6 +11,7 @@ task warn_in_production: :environment do
 end
 
 %w(up down redo).each do |task|
+  next unless Rake::Task.task_defined?("db:migrate:#{task}")
   Rake::Task["db:migrate:#{task}"].enhance [:warn_in_production]
 end
 
@@ -19,17 +20,13 @@ namespace :db do
     desc 'Mark migration as down one. That will do not run the migration, just mark it'
     task mark_as_down: :environment do
       version = ensure_version
-      table = Arel::Table.new(ActiveRecord::Migrator.schema_migrations_table_name)
-      stmt = table.where(table["version"].eq(version.to_s)).compile_delete
-      ActiveRecord::Base.connection.delete stmt
+      PerconaMigrator.mark(:down, version)
     end
 
     desc 'Mark migration as up one. That will do not run the migration, just mark it'
     task mark_as_up: :environment do
       version = ensure_version
-      table = Arel::Table.new(ActiveRecord::Migrator.schema_migrations_table_name)
-      stmt = table.compile_insert table["version"] => version.to_s
-      ActiveRecord::Base.connection.insert stmt
+      PerconaMigrator.mark(:up, version)
     end
   end
 
@@ -38,14 +35,14 @@ namespace :db do
     task up: :environment do
       ensure_multiplexer!
       version = ensure_version
-      puts PerconaMigrator.migrate(version, :up)
+      PerconaMigrator.migrate(version, :up)
     end
 
     desc 'Parse the migration\'s down method and generate corresponding command for percona tool'
     task down: :environment do
       ensure_multiplexer!
       version = ensure_version
-      puts PerconaMigrator.migrate(version, :down)
+      PerconaMigrator.migrate(version, :down)
     end
   end
 
