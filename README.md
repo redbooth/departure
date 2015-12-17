@@ -1,4 +1,4 @@
-# PerconaMigrator
+# PerconaMigrator [![Build Status](https://travis-ci.org/redbooth/percona_migrator.svg?branch=master)](https://travis-ci.org/redbooth/percona_migrator)
 
 Percona Migrator is a tool for running online and non-blocking
 DDL `ActiveRecord::Migrations` using `pt-online-schema-change` command-line tool of
