@@ -9,7 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Ilya Zayats, Pau Pérez']
   spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com']
 
-  spec.summary       = %q{pt-online-schema-change command generator for ActiveRecord migrations}
+  spec.summary       = %q{pt-online-schema-change runner for ActiveRecord migrations}
+  spec.description   = %q{Execute your ActiveRecord migrations with Percona's pt-online-schema-change}
   spec.homepage      = 'http://github.com/teambox/percona_migrator'
   spec.license       = 'MIT'
 
