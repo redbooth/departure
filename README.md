@@ -72,8 +72,12 @@ git commits and tags, and push the `.gem` file to
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/[USERNAME]/percona_migrator.
+https://github.com/redbooth/percona_migrator.
 
+Please note that this project is released with a Contributor Code of Conduct. By
+participating in this project you agree to abide by its terms.
+
+Check the code of conduct [here](CODE_OF_CONDUCT.md)
 
 ## License
 
