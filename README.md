@@ -79,6 +79,10 @@ participating in this project you agree to abide by its terms.
 
 Check the code of conduct [here](CODE_OF_CONDUCT.md)
 
+## Changelog
+
+You can consult the changelog [here](CHANGELOG.md)
+
 ## License
 
 The gem is available as open source under the terms of the [MIT
