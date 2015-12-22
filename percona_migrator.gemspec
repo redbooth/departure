@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{pt-online-schema-change runner for ActiveRecord migrations}
   spec.description   = %q{Execute your ActiveRecord migrations with Percona's pt-online-schema-change}
-  spec.homepage      = 'http://github.com/teambox/percona_migrator'
+  spec.homepage      = 'http://github.com/redbooth/percona_migrator'
   spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
