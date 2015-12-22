@@ -6,12 +6,12 @@ require 'percona_migrator/version'
 Gem::Specification.new do |spec|
   spec.name          = 'percona_migrator'
   spec.version       = PerconaMigrator::VERSION
-  spec.authors       = ['Ilya Zayats, Pau Pérez']
-  spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com']
+  spec.authors       = ['Ilya Zayats', 'Pau Pérez', 'Fran Casas']
+  spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com', 'fran.casas@redbooth.com']
 
   spec.summary       = %q{pt-online-schema-change runner for ActiveRecord migrations}
   spec.description   = %q{Execute your ActiveRecord migrations with Percona's pt-online-schema-change}
-  spec.homepage      = 'http://github.com/teambox/percona_migrator'
+  spec.homepage      = 'http://github.com/redbooth/percona_migrator'
   spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
