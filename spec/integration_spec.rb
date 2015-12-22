@@ -15,37 +15,37 @@ describe PerconaMigrator do
     let(:version) { 1 }
 
     describe 'command' do
-      before { allow(Kernel).to receive(:system) }
+      before { allow(PerconaMigrator::Runner).to receive(:execute) }
 
       it 'runs pt-online-schema-change' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include('pt-online-schema-change'))
+        expect(PerconaMigrator::Runner).to(
+          have_received(:execute)
+          .with(include('pt-online-schema-change'), logger)
         )
       end
 
       it 'executes the migration' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include('--execute'))
+        expect(PerconaMigrator::Runner).to(
+          have_received(:execute)
+          .with(include('--execute'), logger)
         )
       end
 
       it 'does not define --recursion-method' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include('--recursion-method=none'))
+        expect(PerconaMigrator::Runner).to(
+          have_received(:execute)
+          .with(include('--recursion-method=none'), logger)
         )
       end
 
       it 'sets the --alter-foreign-keys-method option to auto' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include('--alter-foreign-keys-method=auto'))
+        expect(PerconaMigrator::Runner).to(
+          have_received(:execute)
+          .with(include('--alter-foreign-keys-method=auto'), logger)
         )
       end
     end
@@ -91,7 +91,7 @@ describe PerconaMigrator do
 
     let(:version) { 1 }
 
-    before { allow(Kernel).to receive(:system) }
+    before { allow(PerconaMigrator::Runner).to receive(:execute) }
 
     before do
       allow(ENV).to receive(:[]).with('PERCONA_DB_HOST').and_return(host)
@@ -102,9 +102,9 @@ describe PerconaMigrator do
 
     it 'executes the percona command with the right connection details' do
       described_class.migrate(version, direction, logger)
-      expect(Kernel).to(
-        have_received(:system)
-        .with(include("-h #{host} -u #{user} -p #{password} D=#{db_name},t=comments" ))
+      expect(PerconaMigrator::Runner).to(
+        have_received(:execute)
+        .with(include("-h #{host} -u #{user} -p #{password} D=#{db_name},t=comments"), logger)
       )
     end
 
@@ -115,9 +115,9 @@ describe PerconaMigrator do
 
       it 'executes the percona command with the right connection details' do
         described_class.migrate(version, direction, logger)
-        expect(Kernel).to(
-          have_received(:system)
-          .with(include("-h #{host} -u #{user} D=#{db_name},t=comments"))
+        expect(PerconaMigrator::Runner).to(
+          have_received(:execute)
+          .with(include("-h #{host} -u #{user} D=#{db_name},t=comments"), logger)
         )
       end
     end
