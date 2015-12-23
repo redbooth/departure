@@ -1,6 +1,7 @@
 require 'active_record'
 require 'active_support/all'
 require 'percona_migrator/version'
+require 'percona_migrator/runner'
 require 'percona_migrator/migrator'
 require 'percona_migrator/lhm_parser'
 require 'percona_migrator/cli_generator'
@@ -9,11 +10,6 @@ require 'percona_migrator/schema_migration'
 
 module PerconaMigrator
   module_function
-
-  NONE = "\e[0m"
-  CYAN = "\e[38;5;86m"
-  GREEN = "\e[32m"
-  RED = "\e[31m"
 
   # Runs the Percona Migrator
   #
@@ -25,7 +21,7 @@ module PerconaMigrator
 
     migration_command = Migrator.migrate(version, direction)
 
-    ok = run(migration_command, logger)
+    ok = Runner.execute(migration_command, logger)
     mark(direction, version) if ok
     nil
   end
@@ -45,19 +41,9 @@ module PerconaMigrator
   # @return [String]
   def mark(direction, version)
     if direction == :up
-      PerconaMigrator::SchemaMigration.create!(:version => version.to_s)
+      PerconaMigrator::SchemaMigration.create!(version: version.to_s)
     elsif direction == :down
-      PerconaMigrator::SchemaMigration.where(:version => version.to_s).delete_all
+      PerconaMigrator::SchemaMigration.where(version: version.to_s).delete_all
     end
-  end
-
-  # Runs and logs the given command
-  #
-  # @return [Boolean]
-  def run(command, logger)
-    logger.puts "\n#{CYAN}-- #{command}#{NONE}\n\n"
-    status = Kernel.system(command)
-    logger.puts(status ? "\n#{GREEN}Done!#{NONE}" : "\n#{RED}Failed!#{NONE}")
-    status
   end
 end
