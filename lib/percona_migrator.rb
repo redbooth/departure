@@ -41,9 +41,9 @@ module PerconaMigrator
   # @return [String]
   def mark(direction, version)
     if direction == :up
-      PerconaMigrator::SchemaMigration.create!(version: version.to_s)
+      SchemaMigration.create!(version: version.to_s)
     elsif direction == :down
-      PerconaMigrator::SchemaMigration.where(version: version.to_s).delete_all
+      SchemaMigration.where(version: version.to_s).delete_all
     end
   end
 end
