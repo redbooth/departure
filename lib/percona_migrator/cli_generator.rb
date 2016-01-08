@@ -22,7 +22,7 @@ module PerconaMigrator
     # Generates the percona command. Fills all the connection credentials from
     # the current AR connection, but that can amended via ENV-vars:
     # PERCONA_DB_HOST, PERCONA_DB_USER, PERCONA_DB_PASSWORD, PERCONA_DB_NAME
-    # Table name could not be amended, it populates automatically from the
+    # Table name can't not be amended, it populates automatically from the
     # migration data
     def generate
       init_base_command
@@ -40,7 +40,6 @@ module PerconaMigrator
     end
 
     def add_alter_statement
-      parsed_statements = %Q[#{statements.join(', ')}] if statements.is_a?(Array)
       parsed_statements = statements.gsub(/ALTER TABLE `(\w+)` /, '')
       @command.push("--alter \"#{parsed_statements}\"")
     end
@@ -70,6 +69,7 @@ module PerconaMigrator
       ENV['PERCONA_DB_PASSWORD'] || connection_data[:password]
     end
 
+    # TODO: Doesn't the abstract adapter already handle this somehow?
     def database
       ENV['PERCONA_DB_NAME'] || connection_data[:database]
     end

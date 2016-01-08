@@ -30,6 +30,6 @@ RSpec.configure do |config|
   # Cleans up the database after each example ala Database Cleaner
   config.around(:each) do |example|
     example.run
-    TestDatabase.new(db_config).create
+    TestDatabase.new(db_config).create if example.metadata[:integration]
   end
 end
