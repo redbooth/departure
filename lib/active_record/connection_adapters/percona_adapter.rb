@@ -1,4 +1,3 @@
-require 'byebug'
 require 'active_record/connection_adapters/abstract_mysql_adapter'
 require 'active_record/connection_adapters/statement_pool'
 require 'active_record/connection_adapters/mysql2_adapter'
@@ -54,7 +53,15 @@ module ActiveRecord
       # TODO: Inject cli_generator and runner
       def add_column(table_name, column_name, type, options = {})
         super
-        command = PerconaMigrator::CliGenerator.generate(@sql, table_name, config)
+        cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
+        command = cli_generator.generate
+        PerconaMigrator::Runner.execute(command, logger)
+      end
+
+      def remove_column(table_name, *column_names)
+        super
+        cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
+        command = cli_generator.generate
         PerconaMigrator::Runner.execute(command, logger)
       end
 
@@ -76,8 +83,16 @@ module ActiveRecord
         mysql_adapter.exec_delete(sql, name, binds)
       end
 
+      def exec_insert(sql, name, binds)
+        mysql_adapter.exec_insert(sql, name, binds)
+      end
+
       def exec_query(sql, name, binds)
-        mysql_adapter.exec_query(sql, :skip_logging, binds)
+        mysql_adapter.exec_query(sql, name, binds)
+      end
+
+      def last_inserted_id(result)
+        mysql_adapter.last_inserted_id(result)
       end
 
       private
