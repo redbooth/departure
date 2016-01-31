@@ -51,16 +51,28 @@ describe PerconaMigrator do
     end
 
     context 'creating column' do
+      require 'fixtures/migrate/1_create_column_on_comments'
+
       let(:direction) { :up }
 
       it 'adds the column in the DB table' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         Comment.reset_column_information
         expect(Comment.column_names).to include('some_id_field')
       end
 
       it 'marks the migration as up' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end

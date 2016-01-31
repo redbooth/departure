@@ -18,15 +18,6 @@ module PerconaMigrator
       def table_exists?
         connection.table_exists?(table_name)
       end
-
-      def create_table
-        return if table_exists?
-
-        connection.create_table(table_name, id: false) do |t|
-          t.column :version, :string, { null: false }
-        end
-        connection.add_index table_name, :version, unique: true, name: index_name
-      end
     end
   end
 end

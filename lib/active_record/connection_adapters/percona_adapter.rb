@@ -5,10 +5,12 @@ require 'percona_migrator'
 
 module ActiveRecord
   class Base
-    # Establishes a connection to the database that's used by all Active Record objects.
+    # Establishes a connection to the database that's used by all Active
+    # Record objects.
     def self.percona_connection(config)
       connection = mysql2_connection(config)
       client = connection.raw_connection
+      logger = $stdout
 
       connection_options = { mysql_adapter: connection }
 

@@ -15,10 +15,14 @@ ActiveRecord::Base.establish_connection(
 
 MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)
 
+test_database = TestDatabase.new(db_config)
+
 RSpec.configure do |config|
   config.order = 'random'
 
   config.before(:all) do
+    test_database.create_schema_migrations_table
+
     @initial_migration_paths = ActiveRecord::Migrator.migrations_paths
     ActiveRecord::Migrator.migrations_paths = [MIGRATION_FIXTURES]
   end
@@ -30,6 +34,9 @@ RSpec.configure do |config|
   # Cleans up the database after each example ala Database Cleaner
   config.around(:each) do |example|
     example.run
-    TestDatabase.new(db_config).create if example.metadata[:integration]
+
+    if example.metadata[:integration]
+      test_database.create_test_database
+    end
   end
 end
