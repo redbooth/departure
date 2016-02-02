@@ -102,17 +102,33 @@ describe PerconaMigrator do
     context 'droping column' do
       let(:direction) { :down }
 
-      before { described_class.migrate(version, :up, logger) }
+      before do
+        ActiveRecord::Migrator.new(
+          :up,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+      end
 
       it 'drops the column from the DB table' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version - 1
+        ).migrate
+
         Comment.reset_column_information
         expect(Comment.column_names).not_to include('some_id_field')
       end
 
       it 'marks the migration as down' do
-        described_class.migrate(version, direction, logger)
-        expect(ActiveRecord::Migrator.current_version).to eq(0)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version - 1
+        ).migrate
+
+        expect(ActiveRecord::Migrator.current_version).to eq(version - 1)
       end
     end
   end
