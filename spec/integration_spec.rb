@@ -133,7 +133,7 @@ describe PerconaMigrator do
     end
   end
 
-  context 'specifing connection vars and parsing tablename' do
+  context 'specifing connection vars and parsing tablename', integration: true do
     let(:host)      { 'test_host' }
     let(:user)      { 'test_user' }
     let(:password)  { 'test_password' }
@@ -151,10 +151,15 @@ describe PerconaMigrator do
     end
 
     it 'executes the percona command with the right connection details' do
-      described_class.migrate(version, direction, logger)
+      ActiveRecord::Migrator.new(
+        direction,
+        [MIGRATION_FIXTURES],
+        version
+      ).migrate
+
       expect(PerconaMigrator::Runner).to(
         have_received(:execute)
-        .with(include("-h #{host} -u #{user} -p #{password} D=#{db_name},t=comments"), logger)
+        .with(include("-h #{host} -u #{user} -p #{password} D=#{db_name},t=comments"), kind_of(NullLogger))
       )
     end
 
@@ -164,10 +169,15 @@ describe PerconaMigrator do
       end
 
       it 'executes the percona command with the right connection details' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         expect(PerconaMigrator::Runner).to(
           have_received(:execute)
-          .with(include("-h #{host} -u #{user} D=#{db_name},t=comments"), logger)
+          .with(include("-h #{host} -u #{user} D=#{db_name},t=comments"), kind_of(NullLogger))
         )
       end
     end
