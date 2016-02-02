@@ -47,4 +47,8 @@ RSpec.configure do |config|
       example.run
     end
   end
+
+  config.order = :random
+
+  Kernel.srand config.seed
 end
