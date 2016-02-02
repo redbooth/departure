@@ -7,6 +7,8 @@ describe PerconaMigrator do
   let(:direction) { :up }
   let(:logger) { double(:logger, puts: true) }
 
+  before { ActiveRecord::Migration.verbose = false }
+
   it 'has a version number' do
     expect(PerconaMigrator::VERSION).not_to be nil
   end
