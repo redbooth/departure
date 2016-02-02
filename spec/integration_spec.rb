@@ -264,30 +264,48 @@ describe PerconaMigrator do
   context 'working with an empty migration' do
     let(:version) { 5 }
 
-    subject { described_class.migrate(version, direction, logger) }
+    subject(:migration) do
+      ActiveRecord::Migrator.new(
+        direction,
+        [MIGRATION_FIXTURES],
+        version
+      ).migrate
+    end
 
     it 'errors' do
-      expect { subject }.to raise_error(/no statements were parsed/i)
+      expect { migration }.to raise_error(/An error has occurred, all later migrations canceled/i)
     end
   end
 
   context 'working with broken migration' do
     let(:version) { 6 }
 
-    subject { described_class.migrate(version, direction, logger) }
+    subject(:migration) do
+      ActiveRecord::Migrator.new(
+        direction,
+        [MIGRATION_FIXTURES],
+        version
+      ).migrate
+    end
 
     it 'errors' do
-      expect { subject }.to raise_error(/don't know how to parse/i)
+      expect { migration }.to raise_error(/An error has occurred, all later migrations canceled/i)
     end
   end
 
   context 'working with non-lhm migration' do
     let(:version) { 7 }
 
-    subject { described_class.migrate(version, direction, logger) }
+    subject(:migration) do
+      ActiveRecord::Migrator.new(
+        direction,
+        [MIGRATION_FIXTURES],
+        version
+      ).migrate
+    end
 
     it 'errors' do
-      expect { subject }.to raise_error(/passed non-lhm migration/i)
+      expect { migration }.to raise_error(/An error has occurred, all later migrations canceled/i)
     end
   end
 
