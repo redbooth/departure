@@ -16,38 +16,58 @@ describe PerconaMigrator do
   context 'creating/removing columns' do
     let(:version) { 1 }
 
-    describe 'command' do
+    describe 'command', integration: true do
       before { allow(PerconaMigrator::Runner).to receive(:execute) }
 
       it 'runs pt-online-schema-change' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         expect(PerconaMigrator::Runner).to(
           have_received(:execute)
-          .with(include('pt-online-schema-change'), logger)
+          .with(include('pt-online-schema-change'), kind_of(NullLogger))
         )
       end
 
       it 'executes the migration' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         expect(PerconaMigrator::Runner).to(
           have_received(:execute)
-          .with(include('--execute'), logger)
+          .with(include('--execute'), kind_of(NullLogger))
         )
       end
 
       it 'does not define --recursion-method' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         expect(PerconaMigrator::Runner).to(
           have_received(:execute)
-          .with(include('--recursion-method=none'), logger)
+          .with(include('--recursion-method=none'), kind_of(NullLogger))
         )
       end
 
       it 'sets the --alter-foreign-keys-method option to auto' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         expect(PerconaMigrator::Runner).to(
           have_received(:execute)
-          .with(include('--alter-foreign-keys-method=auto'), logger)
+          .with(include('--alter-foreign-keys-method=auto'), kind_of(NullLogger))
         )
       end
     end
