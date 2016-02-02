@@ -5,12 +5,18 @@ require 'percona_migrator'
 
 db_config = Configuration.new
 
+class NullLogger
+  def puts(_str)
+  end
+end
+
 ActiveRecord::Base.establish_connection(
   adapter: 'percona',
   host: 'localhost',
   username: db_config['username'],
   password: db_config['password'],
-  database: 'percona_migrator_test'
+  database: 'percona_migrator_test',
+  logger: NullLogger.new
 )
 
 MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)

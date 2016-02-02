@@ -10,7 +10,7 @@ module ActiveRecord
     def self.percona_connection(config)
       connection = mysql2_connection(config)
       client = connection.raw_connection
-      logger = $stdout
+      logger = config[:logger]
 
       connection_options = { mysql_adapter: connection }
 
