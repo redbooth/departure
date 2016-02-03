@@ -74,8 +74,6 @@ describe PerconaMigrator do
     end
 
     context 'creating column' do
-      require 'fixtures/migrate/1_create_column_on_comments'
-
       let(:direction) { :up }
 
       it 'adds the column in the DB table' do
