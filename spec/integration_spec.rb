@@ -4,6 +4,10 @@ require 'spec_helper'
 describe PerconaMigrator do
   class Comment < ActiveRecord::Base; end
 
+  def indexes_from(table_name)
+    ActiveRecord::Base.connection.indexes(:comments).map(&:name)
+  end
+
   let(:direction) { :up }
   # TODO: use this logger
   let(:logger) { double(:logger, puts: true) }
@@ -182,21 +186,39 @@ describe PerconaMigrator do
     end
   end
 
-  context 'adding/removing indexes' do
+  context 'adding/removing indexes', index: true do
     let(:version) { 2 }
 
     context 'adding indexes' do
       let(:direction) { :up }
 
-      before { described_class.migrate(1, :up, logger) }
+      # TODO: Create it directly like this?
+      before do
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          1
+        ).migrate
+      end
 
       it 'executes the percona command' do
-        described_class.migrate(version, direction, logger)
-        expect(ActiveRecord::Base.connection.indexes(:comments).map { |index| index.name }).to match_array(['index_comments_on_some_id_field'])
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
+        indexes = ActiveRecord::Base.connection.indexes(:comments).map(&:name)
+        expect(indexes).to match_array(['index_comments_on_some_id_field'])
       end
 
       it 'marks the migration as up' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
@@ -205,17 +227,38 @@ describe PerconaMigrator do
       let(:direction) { :down }
 
       before do
-        described_class.migrate(1, :up, logger)
-        described_class.migrate(version, :up, logger)
+        ActiveRecord::Migrator.new(
+          :up,
+          [MIGRATION_FIXTURES],
+          1
+        ).migrate
+
+        ActiveRecord::Migrator.new(
+          :up,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
       end
 
       it 'executes the percona command' do
-        described_class.migrate(version, direction, logger)
-        expect(ActiveRecord::Base.connection.indexes(:comments).map { |index| index.name }).not_to match_array(['index_comments_on_some_id_field'])
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version - 1
+        ).migrate
+
+        expect(indexes_from(:comments)).not_to(
+          include('index_comments_on_some_id_field')
+        )
       end
 
       it 'marks the migration as down' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version - 1
+        ).migrate
+
         expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
     end
@@ -227,15 +270,31 @@ describe PerconaMigrator do
     context 'adding indexes' do
       let(:direction) { :up }
 
-      before { described_class.migrate(1, :up, logger) }
+      before do
+        ActiveRecord::Migrator.new(
+          :up,
+          [MIGRATION_FIXTURES],
+          1
+        ).migrate
+      end
 
       it 'executes the percona command' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         expect(ActiveRecord::Base.connection.indexes(:comments).select { |index| index.unique }.map { |index| index.name }).to match_array(['index_comments_on_some_id_field'])
       end
 
       it 'marks the migration as up' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
+
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
@@ -244,17 +303,33 @@ describe PerconaMigrator do
       let(:direction) { :down }
 
       before do
-        described_class.migrate(1, :up, logger)
-        described_class.migrate(version, :up, logger)
+        ActiveRecord::Migrator.new(
+          :up,
+          [MIGRATION_FIXTURES],
+          1
+        ).migrate
+        ActiveRecord::Migrator.new(
+          :up,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
       end
 
       it 'executes the percona command' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
         expect(ActiveRecord::Base.connection.indexes(:comments).map { |index| index.name }).not_to match_array(['index_comments_on_some_id_field'])
       end
 
       it 'marks the migration as down' do
-        described_class.migrate(version, direction, logger)
+        ActiveRecord::Migrator.new(
+          direction,
+          [MIGRATION_FIXTURES],
+          version
+        ).migrate
         expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
     end

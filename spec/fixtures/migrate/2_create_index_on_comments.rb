@@ -1,13 +1,5 @@
 class CreateIndexOnComments < ActiveRecord::Migration
-  def up
-    Lhm.change_table :comments, { stride: 5000, throttle: 150 } do |c|
-      c.add_index :some_id_field
-    end
-  end
-
-  def down
-    Lhm.change_table :comments, { stride: 5000, throttle: 150 } do |c|
-      c.remove_index :some_id_field
-    end
+  def change
+    add_index :comments, :some_id_field
   end
 end

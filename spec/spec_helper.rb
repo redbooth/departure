@@ -43,6 +43,11 @@ RSpec.configure do |config|
       test_database.create_schema_migrations_table
       example.run
       test_database.create_schema_migrations_table
+    elsif example.metadata[:index]
+      test_database.create_test_database
+      test_database.create_schema_migrations_table
+      example.run
+      test_database.create_test_database
     else
       example.run
     end

@@ -45,7 +45,11 @@ module ActiveRecord
       end
 
       def each_hash(result)
-        mysql_adapter.each_hash(result)
+        if block_given?
+          mysql_adapter.each_hash(result, &Proc.new)
+        else
+          mysql_adapter.each_hash(result)
+        end
       end
 
       def new_column(field, default, type, null, collation)
@@ -62,6 +66,27 @@ module ActiveRecord
 
       def remove_column(table_name, *column_names)
         super
+        cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
+        command = cli_generator.generate
+        PerconaMigrator::Runner.execute(command, logger)
+      end
+
+      # TODO: Implement all methods in ConnectionAdapters::SchemaStatements?
+      # It must use ALTER TABLE syntax, so the SchemaStatements#add_index doesn't work for pt-online-schema-change
+      def add_index(table_name, column_name, options = {})
+        index_name, index_type, index_columns, index_options = add_index_options(table_name, column_name, options)
+        execute "ADD INDEX #{quote_column_name(index_name)} #{index_type} (#{index_columns})#{index_options}"
+
+        cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
+        command = cli_generator.generate
+        PerconaMigrator::Runner.execute(command, logger)
+      end
+
+      # Copied from SchemaStatments#remove_index
+      def remove_index(table_name, options = {})
+        index_name = index_name_for_remove(table_name, options)
+        execute "DROP INDEX #{quote_column_name(index_name)}"
+
         cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
         command = cli_generator.generate
         PerconaMigrator::Runner.execute(command, logger)
