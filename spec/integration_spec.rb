@@ -5,7 +5,12 @@ describe PerconaMigrator do
   class Comment < ActiveRecord::Base; end
 
   def indexes_from(table_name)
-    ActiveRecord::Base.connection.indexes(:comments).map(&:name)
+    ActiveRecord::Base.connection.indexes(:comments)
+  end
+
+  def unique_indexes_from(table_name)
+    indexes = indexes_from(:comments)
+    indexes.select(&:unique).map(&:name)
   end
 
   let(:direction) { :up }
@@ -208,8 +213,9 @@ describe PerconaMigrator do
           version
         ).migrate
 
-        indexes = ActiveRecord::Base.connection.indexes(:comments).map(&:name)
-        expect(indexes).to match_array(['index_comments_on_some_id_field'])
+        expect(indexes_from(:comments).map(&:name)).to(
+          contain_exactly('index_comments_on_some_id_field')
+        )
       end
 
       it 'marks the migration as up' do
@@ -247,7 +253,7 @@ describe PerconaMigrator do
           version - 1
         ).migrate
 
-        expect(indexes_from(:comments)).not_to(
+        expect(indexes_from(:comments).map(&:name)).not_to(
           include('index_comments_on_some_id_field')
         )
       end
@@ -264,37 +270,26 @@ describe PerconaMigrator do
     end
   end
 
-  context 'adding/removing unique indexes' do
+  context 'adding/removing unique indexes', index: true do
     let(:version) { 3 }
 
     context 'adding indexes' do
       let(:direction) { :up }
 
       before do
-        ActiveRecord::Migrator.new(
-          :up,
-          [MIGRATION_FIXTURES],
-          1
-        ).migrate
+        ActiveRecord::Migrator.new(:up, [MIGRATION_FIXTURES], 1).migrate
       end
 
       it 'executes the percona command' do
-        ActiveRecord::Migrator.new(
-          direction,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
+        ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
 
-        expect(ActiveRecord::Base.connection.indexes(:comments).select { |index| index.unique }.map { |index| index.name }).to match_array(['index_comments_on_some_id_field'])
+        expect(unique_indexes_from(:comments)).to(
+          match_array(['index_comments_on_some_id_field'])
+        )
       end
 
       it 'marks the migration as up' do
-        ActiveRecord::Migrator.new(
-          direction,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
-
+        ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
@@ -303,33 +298,20 @@ describe PerconaMigrator do
       let(:direction) { :down }
 
       before do
-        ActiveRecord::Migrator.new(
-          :up,
-          [MIGRATION_FIXTURES],
-          1
-        ).migrate
-        ActiveRecord::Migrator.new(
-          :up,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
+        ActiveRecord::Migrator.new(:up, [MIGRATION_FIXTURES], 1).migrate
+        ActiveRecord::Migrator.run(:up, [MIGRATION_FIXTURES], version)
       end
 
       it 'executes the percona command' do
-        ActiveRecord::Migrator.new(
-          direction,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
-        expect(ActiveRecord::Base.connection.indexes(:comments).map { |index| index.name }).not_to match_array(['index_comments_on_some_id_field'])
+        ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
+
+        expect(unique_indexes_from(:comments)).not_to(
+          match_array(['index_comments_on_some_id_field'])
+        )
       end
 
       it 'marks the migration as down' do
-        ActiveRecord::Migrator.new(
-          direction,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
+        ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
         expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
     end
@@ -383,17 +365,18 @@ describe PerconaMigrator do
     end
   end
 
+  # TODO: Handle LHM migrations, using an adapter, but not as part the public API
   context 'detecting lhm migrations' do
     subject { described_class.lhm_migration?(version) }
 
     context 'lhm migration' do
       let(:version) { 1 }
-      it { is_expected.to be_truthy }
+      xit { is_expected.to be_truthy }
     end
 
     context 'working with an non lhm migration' do
       let(:version) { 7 }
-      it { is_expected.to be_falsey }
+      xit { is_expected.to be_falsey }
     end
   end
 end

@@ -75,7 +75,7 @@ module ActiveRecord
       # It must use ALTER TABLE syntax, so the SchemaStatements#add_index doesn't work for pt-online-schema-change
       def add_index(table_name, column_name, options = {})
         index_name, index_type, index_columns, index_options = add_index_options(table_name, column_name, options)
-        execute "ADD INDEX #{quote_column_name(index_name)} #{index_type} (#{index_columns})#{index_options}"
+        execute "ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}"
 
         cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
         command = cli_generator.generate
