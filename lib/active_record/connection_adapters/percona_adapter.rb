@@ -59,14 +59,22 @@ module ActiveRecord
       # TODO: Inject cli_generator and runner
       def add_column(table_name, column_name, type, options = {})
         super
-        cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
+        cli_generator = PerconaMigrator::CliGenerator.new(
+          @sql,
+          table_name,
+          config
+        )
         command = cli_generator.generate
         PerconaMigrator::Runner.execute(command, logger)
       end
 
       def remove_column(table_name, *column_names)
         super
-        cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
+        cli_generator = PerconaMigrator::CliGenerator.new(
+          @sql,
+          table_name,
+          config
+        )
         command = cli_generator.generate
         PerconaMigrator::Runner.execute(command, logger)
       end
@@ -77,7 +85,11 @@ module ActiveRecord
         index_name, index_type, index_columns, index_options = add_index_options(table_name, column_name, options)
         execute "ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}"
 
-        cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
+        cli_generator = PerconaMigrator::CliGenerator.new(
+          @sql,
+          table_name,
+          config
+        )
         command = cli_generator.generate
         PerconaMigrator::Runner.execute(command, logger)
       end
@@ -87,12 +99,19 @@ module ActiveRecord
         index_name = index_name_for_remove(table_name, options)
         execute "DROP INDEX #{quote_column_name(index_name)}"
 
-        cli_generator = PerconaMigrator::CliGenerator.new(@sql, table_name, config)
+        cli_generator = PerconaMigrator::CliGenerator.new(
+          @sql,
+          table_name,
+          config
+        )
         command = cli_generator.generate
         PerconaMigrator::Runner.execute(command, logger)
       end
 
-      # Used as a result of calling all of the schema statements: add_column,
+      # TODO: Prepared statements?
+      # TODO: How does this play with executing raw SQL from a migration? You
+      # normally use #execute Used as a result of calling all of the schema
+      # statements: add_column,
       # remove_column, etc.
       def execute(sql, name = nil)
         @sql = sql
