@@ -6,7 +6,7 @@ require 'percona_migrator'
 db_config = Configuration.new
 
 ActiveRecord::Base.establish_connection(
-  adapter: 'mysql2',
+  adapter: 'percona',
   host: 'localhost',
   username: db_config['username'],
   password: db_config['password'],

@@ -29,12 +29,13 @@ module PerconaMigrator
     end
 
     def add_alter_statement(statements)
-      parsed_statements = %Q[#{statements.join(', ')}]
+      parsed_statements = statements
+      parsed_statements = %Q[#{statements.join(', ')}] if statements.is_a?(Array)
       @command.push("--alter \"#{parsed_statements}\"")
     end
 
     def add_connection_details(table_name, connection_data)
-      @command.push("-h #{ENV['PERCONA_DB_HOST'] || connection_data[:host]}")
+      @command.push("-h #{ENV['PERCONA_DB_HOST'] || connection_data[:host] || 'localhost'}")
       @command.push("-u #{ENV['PERCONA_DB_USER'] || connection_data[:username]}")
       add_password(connection_data)
       @command.push("D=#{ENV['PERCONA_DB_NAME'] || connection_data[:database]},t=#{table_name}")

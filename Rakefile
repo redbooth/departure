@@ -14,7 +14,7 @@ namespace :db do
     config = Configuration.new
 
     ActiveRecord::Base.establish_connection(
-      adapter: 'mysql2',
+      adapter: 'percona',
       host: 'localhost',
       username: config['username'],
       password: config['password'],

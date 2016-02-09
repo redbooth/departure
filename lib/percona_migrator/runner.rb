@@ -34,6 +34,7 @@ module PerconaMigrator
     attr_reader :command, :logger, :status
 
     def log_started
+      # TODO: log as a migration logger subitem
       logger.puts "\n#{CYAN}-- #{command}#{NONE}\n\n"
     end
 
