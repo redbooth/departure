@@ -5,7 +5,6 @@ require 'percona_migrator/runner'
 require 'percona_migrator/migrator'
 require 'percona_migrator/lhm_parser'
 require 'percona_migrator/cli_generator'
-require 'percona_migrator/railtie'
 require 'percona_migrator/schema_migration'
 
 module PerconaMigrator

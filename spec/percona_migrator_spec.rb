@@ -49,16 +49,17 @@ describe PerconaMigrator do
     end
   end
 
+  # TODO: Handle LHM migrations, using an adapter, but not as part of the public API. Support fixtures 5, 6, 7
   describe '#lhm_migration?' do
-    subject { PerconaMigrator.lhm_migration?(version) }
+    subject { described_class.lhm_migration?(version) }
 
     context 'when the migration uses LHM' do
-      let(:version) { 1 }
+      let(:version) { 7 }
       it { is_expected.to be true }
     end
 
     context 'when the migration does not use LHM' do
-      let(:version) { 7 }
+      let(:version) { 1 }
       it { is_expected.to be false }
     end
   end

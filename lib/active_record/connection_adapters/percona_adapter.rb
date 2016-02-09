@@ -2,6 +2,7 @@ require 'active_record/connection_adapters/abstract_mysql_adapter'
 require 'active_record/connection_adapters/statement_pool'
 require 'active_record/connection_adapters/mysql2_adapter'
 require 'percona_migrator'
+require 'forwardable'
 
 module ActiveRecord
   class Base
@@ -12,9 +13,17 @@ module ActiveRecord
       client = connection.raw_connection
       logger = config[:logger]
 
-      connection_options = { mysql_adapter: connection }
+      connection_options = {
+        mysql_adapter: connection,
+        runner: PerconaMigrator::Runner.new(logger)
+      }
 
-      ConnectionAdapters::PerconaMigratorAdapter.new(client, logger, connection_options, config)
+      ConnectionAdapters::PerconaMigratorAdapter.new(
+        client,
+        logger,
+        connection_options,
+        config
+      )
     end
   end
 
@@ -38,6 +47,7 @@ module ActiveRecord
         @mysql_adapter = connection_options[:mysql_adapter]
         @config = config
         @logger = logger
+        @runner = connection_options[:runner]
       end
 
       def supports_migrations?
@@ -65,7 +75,7 @@ module ActiveRecord
           config
         )
         command = cli_generator.generate
-        PerconaMigrator::Runner.execute(command, logger)
+        runner.execute(command)
       end
 
       def remove_column(table_name, *column_names)
@@ -76,7 +86,7 @@ module ActiveRecord
           config
         )
         command = cli_generator.generate
-        PerconaMigrator::Runner.execute(command, logger)
+        runner.execute(command)
       end
 
       # TODO: Implement all methods in ConnectionAdapters::SchemaStatements?
@@ -91,7 +101,7 @@ module ActiveRecord
           config
         )
         command = cli_generator.generate
-        PerconaMigrator::Runner.execute(command, logger)
+        runner.execute(command)
       end
 
       # Copied from SchemaStatments#remove_index
@@ -105,7 +115,7 @@ module ActiveRecord
           config
         )
         command = cli_generator.generate
-        PerconaMigrator::Runner.execute(command, logger)
+        runner.execute(command)
       end
 
       # TODO: Prepared statements?
@@ -143,7 +153,7 @@ module ActiveRecord
 
       private
 
-      attr_reader :mysql_adapter, :config, :logger
+      attr_reader :mysql_adapter, :config, :logger, :runner
     end
   end
 end

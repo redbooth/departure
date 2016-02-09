@@ -28,11 +28,37 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
 
   let(:connection) { double(:connection) }
   let(:logger) { double(:logger, puts: true) }
-  let(:connection_options) { { mysql_adapter: mysql_adapter } }
+  let(:runner) { instance_double(PerconaMigrator::Runner) }
+  let(:connection_options) do
+    {
+      mysql_adapter: mysql_adapter,
+      runner: runner
+    }
+  end
   let(:config) { { prepared_statements: '' } }
+
+  let(:runner) { instance_double(PerconaMigrator::Runner) }
+  let(:cli_generator) do
+    instance_double(
+      PerconaMigrator::CliGenerator,
+      generate: 'percona command'
+    )
+  end
 
   let(:adapter) do
     described_class.new(connection, logger, connection_options, config)
+  end
+
+  before do
+    allow(runner).to(
+      receive(:execute).with('percona command').and_return(true)
+    )
+    allow(PerconaMigrator::CliGenerator).to(
+      receive(:new).and_return(cli_generator)
+    )
+    allow(PerconaMigrator::Runner).to(
+      receive(:new).with(logger)
+    ).and_return(runner)
   end
 
   describe '#supports_migrations?' do
@@ -54,25 +80,11 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
   end
 
   describe 'schema statements' do
-    let(:cli_generator) do
-      instance_double(
-        PerconaMigrator::CliGenerator,
-        generate: 'percona command'
-      )
-    end
-
     describe '#add_column' do
       let(:table_name) { :foo }
       let(:column_name) { :bar_id }
       let(:type) { :integer }
       let(:options) { {} }
-
-      before do
-        allow(PerconaMigrator::CliGenerator).to(
-          receive(:new).and_return(cli_generator)
-        )
-        allow(PerconaMigrator::Runner).to receive(:execute)
-      end
 
       it 'passes the built SQL to the CliGenerator' do
         expect(PerconaMigrator::CliGenerator).to(
@@ -88,9 +100,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       end
 
       it 'runs the command' do
-        expect(PerconaMigrator::Runner).to(
-          receive(:execute).with('percona command', logger)
-        )
+        expect(runner).to receive(:execute).with('percona command')
         adapter.add_column(table_name, column_name, type, options)
       end
     end
@@ -98,13 +108,6 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     describe '#remove_column' do
       let(:table_name) { :foo }
       let(:column_name) { :bar_id }
-
-      before do
-        allow(PerconaMigrator::CliGenerator).to(
-          receive(:new).and_return(cli_generator)
-        )
-        allow(PerconaMigrator::Runner).to receive(:execute)
-      end
 
       it 'passes the built SQL to the CliGenerator' do
         expect(PerconaMigrator::CliGenerator).to(
@@ -120,9 +123,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       end
 
       it 'runs the command' do
-        expect(PerconaMigrator::Runner).to(
-          receive(:execute).with('percona command', logger)
-        )
+        expect(runner).to receive(:execute).with('percona command')
         adapter.remove_column(table_name, column_name)
       end
     end
@@ -162,9 +163,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       end
 
       it 'runs the command' do
-        expect(PerconaMigrator::Runner).to(
-          receive(:execute).with('percona command', logger)
-        )
+        expect(runner).to receive(:execute).with('percona command')
         adapter.add_index(table_name, column_name, options)
       end
     end
@@ -199,9 +198,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       end
 
       it 'runs the command' do
-        expect(PerconaMigrator::Runner).to(
-          receive(:execute).with('percona command', logger)
-        )
+        expect(runner).to receive(:execute).with('percona command')
         adapter.remove_index(table_name, options)
       end
     end

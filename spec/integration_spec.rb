@@ -1,6 +1,7 @@
 require 'byebug'
 require 'spec_helper'
 
+# TODO: Handle #change_table syntax
 describe PerconaMigrator do
   class Comment < ActiveRecord::Base; end
 
@@ -26,63 +27,7 @@ describe PerconaMigrator do
   context 'creating/removing columns' do
     let(:version) { 1 }
 
-    describe 'command', integration: true do
-      before { allow(PerconaMigrator::Runner).to receive(:execute) }
-
-      it 'runs pt-online-schema-change' do
-        ActiveRecord::Migrator.new(
-          direction,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
-
-        expect(PerconaMigrator::Runner).to(
-          have_received(:execute)
-          .with(include('pt-online-schema-change'), kind_of(NullLogger))
-        )
-      end
-
-      it 'executes the migration' do
-        ActiveRecord::Migrator.new(
-          direction,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
-
-        expect(PerconaMigrator::Runner).to(
-          have_received(:execute)
-          .with(include('--execute'), kind_of(NullLogger))
-        )
-      end
-
-      it 'does not define --recursion-method' do
-        ActiveRecord::Migrator.new(
-          direction,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
-
-        expect(PerconaMigrator::Runner).to(
-          have_received(:execute)
-          .with(include('--recursion-method=none'), kind_of(NullLogger))
-        )
-      end
-
-      it 'sets the --alter-foreign-keys-method option to auto' do
-        ActiveRecord::Migrator.new(
-          direction,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
-
-        expect(PerconaMigrator::Runner).to(
-          have_received(:execute)
-          .with(include('--alter-foreign-keys-method=auto'), kind_of(NullLogger))
-        )
-      end
-    end
-
-    context 'creating column' do
+    context 'creating column', integration: true do
       let(:direction) { :up }
 
       it 'adds the column in the DB table' do
@@ -107,7 +52,7 @@ describe PerconaMigrator do
       end
     end
 
-    context 'droping column' do
+    context 'droping column', integration: true do
       let(:direction) { :down }
 
       before do
@@ -137,56 +82,6 @@ describe PerconaMigrator do
         ).migrate
 
         expect(ActiveRecord::Migrator.current_version).to eq(version - 1)
-      end
-    end
-  end
-
-  context 'specifing connection vars and parsing tablename', integration: true do
-    let(:host)      { 'test_host' }
-    let(:user)      { 'test_user' }
-    let(:password)  { 'test_password' }
-    let(:db_name)   { 'test_db' }
-
-    let(:version) { 1 }
-
-    before { allow(PerconaMigrator::Runner).to receive(:execute) }
-
-    before do
-      allow(ENV).to receive(:[]).with('PERCONA_DB_HOST').and_return(host)
-      allow(ENV).to receive(:[]).with('PERCONA_DB_USER').and_return(user)
-      allow(ENV).to receive(:[]).with('PERCONA_DB_PASSWORD').and_return(password)
-      allow(ENV).to receive(:[]).with('PERCONA_DB_NAME').and_return(db_name)
-    end
-
-    it 'executes the percona command with the right connection details' do
-      ActiveRecord::Migrator.new(
-        direction,
-        [MIGRATION_FIXTURES],
-        version
-      ).migrate
-
-      expect(PerconaMigrator::Runner).to(
-        have_received(:execute)
-        .with(include("-h #{host} -u #{user} -p #{password} D=#{db_name},t=comments"), kind_of(NullLogger))
-      )
-    end
-
-    context 'when there is no password' do
-      before do
-        allow(ENV).to receive(:[]).with('PERCONA_DB_PASSWORD').and_return(nil)
-      end
-
-      it 'executes the percona command with the right connection details' do
-        ActiveRecord::Migrator.new(
-          direction,
-          [MIGRATION_FIXTURES],
-          version
-        ).migrate
-
-        expect(PerconaMigrator::Runner).to(
-          have_received(:execute)
-          .with(include("-h #{host} -u #{user} D=#{db_name},t=comments"), kind_of(NullLogger))
-        )
       end
     end
   end
@@ -314,55 +209,6 @@ describe PerconaMigrator do
         ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
         expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
-    end
-  end
-
-  # TODO: Handle #change_table syntax
-
-  context 'working with an empty migration' do
-    let(:version) { 5 }
-
-    subject(:migration) do
-      ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
-    end
-
-    xit 'errors' do
-      expect { migration }.to(
-        raise_error(
-          /An error has occurred, all later migrations canceled/i
-        )
-      )
-    end
-  end
-
-  context 'working with broken migration' do
-    let(:version) { 6 }
-
-    subject(:migration) do
-      ActiveRecord::Migrator.new(
-        direction,
-        [MIGRATION_FIXTURES],
-        version
-      ).migrate
-    end
-
-    xit 'errors' do
-      expect { migration }.to raise_error(/An error has occurred, all later migrations canceled/i)
-    end
-  end
-
-  # TODO: Handle LHM migrations, using an adapter, but not as part of the public API. Support fixtures 5, 6, 7
-  context 'detecting lhm migrations' do
-    subject { described_class.lhm_migration?(version) }
-
-    context 'lhm migration' do
-      let(:version) { 1 }
-      xit { is_expected.to be_truthy }
-    end
-
-    context 'working with an non lhm migration' do
-      let(:version) { 7 }
-      xit { is_expected.to be_falsey }
     end
   end
 end

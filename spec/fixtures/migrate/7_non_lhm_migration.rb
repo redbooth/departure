@@ -1,10 +1,13 @@
 class NonLhmMigration < ActiveRecord::Migration
   def up
-    change_table :products do |t|
-      t.change :price, :string
+    Lhm.change_table :products, { stride: 5000, throttle: 150 } do |p|
+      p.add_column :price, 'VARCHAR(255)'
     end
   end
 
   def down
+    Lhm.change_table :products, { stride: 5000, throttle: 150 } do |p|
+      p.remove_column :price
+    end
   end
 end
