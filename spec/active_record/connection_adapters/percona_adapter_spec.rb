@@ -87,9 +87,9 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       let(:options) { {} }
 
       it 'passes the built SQL to the CliGenerator' do
-        expect(PerconaMigrator::CliGenerator).to(
-          receive(:new)
-          .with('ALTER TABLE `foo` ADD `bar_id` int(11)', table_name, config)
+        expect(cli_generator).to(
+          receive(:generate)
+          .with(table_name, 'ALTER TABLE `foo` ADD `bar_id` int(11)')
         )
         adapter.add_column(table_name, column_name, type, options)
       end
@@ -110,9 +110,9 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       let(:column_name) { :bar_id }
 
       it 'passes the built SQL to the CliGenerator' do
-        expect(PerconaMigrator::CliGenerator).to(
-          receive(:new)
-          .with('ALTER TABLE `foo` DROP `bar_id`', table_name, config)
+        expect(cli_generator).to(
+          receive(:generate)
+          .with(table_name, 'ALTER TABLE `foo` DROP `bar_id`')
         )
         adapter.remove_column(table_name, column_name)
       end
@@ -146,12 +146,11 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       end
 
       it 'passes the built SQL to the CliGenerator' do
-        expect(PerconaMigrator::CliGenerator).to(
-          receive(:new)
+        expect(cli_generator).to(
+          receive(:generate)
           .with(
-            'ADD index_type INDEX `index_name` (`bar_id`)',
             table_name,
-            config
+            'ADD index_type INDEX `index_name` (`bar_id`)'
           )
         )
         adapter.add_index(table_name, column_name, options)
@@ -185,9 +184,9 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       end
 
       it 'passes the built SQL to the CliGenerator' do
-        expect(PerconaMigrator::CliGenerator).to(
-          receive(:new)
-          .with('DROP INDEX `index_name`', table_name, config)
+        expect(cli_generator).to(
+          receive(:generate)
+          .with(table_name, 'DROP INDEX `index_name`')
         )
         adapter.remove_index(table_name, options)
       end

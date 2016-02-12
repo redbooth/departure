@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe PerconaMigrator::CliGenerator do
-  let(:cli_generator) do
-    described_class.new(statements, table_name, connection_data)
-  end
+  let(:cli_generator) { described_class.new(connection_data) }
   let(:connection_data) do
     {
       host: 'localhost',
@@ -12,11 +10,10 @@ describe PerconaMigrator::CliGenerator do
     }
   end
   let(:table_name) { 'tasks' }
+  let(:statement) { 'ALTER TABLE `tasks` ADD foo INT' }
 
   describe '#generate' do
-    subject { cli_generator.generate }
-
-    let(:statements) { 'ALTER TABLE `tasks` ADD foo INT' }
+    subject { cli_generator.generate(table_name, statement) }
 
     describe 'connection details' do
       context 'when the host is not specified' do
