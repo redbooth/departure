@@ -6,7 +6,7 @@ before_install:
   - echo "deb http://repo.percona.com/apt `lsb_release -cs` main" | sudo tee -a /etc/apt/sources.list
   - sudo apt-get update -qq
   - sudo apt-get install percona-toolkit
-  - gem install bundler -v 1.10.6
+  - gem update bundler
   - bin/setup
 
 branches:
