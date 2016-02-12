@@ -44,14 +44,22 @@ module PerconaMigrator
         @status = process.value
         logger.puts stdout.read
       end
+
+      if status.nil?
+        Kernel.warn("Error running '#{command}': status could not be retrieved")
+      end
+
+      if status && status.signaled?
+        Kernel.warn("Error running '#{command}': #{status.to_s}")
+      end
     end
 
     def log_finished
-      if status.nil?
-        return Kernel.warn("status for '#{command}' could not be retrieved")
-      end
+      return unless status
 
       value = status.exitstatus
+      return unless value
+
       message = value.zero? ? "#{GREEN}Done!#{NONE}" : "#{RED}Failed!#{NONE}"
 
       logger.puts("\n#{message}")

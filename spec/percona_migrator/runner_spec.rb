@@ -8,7 +8,9 @@ describe PerconaMigrator::Runner do
   let(:runner) { described_class.new(logger) }
 
   describe '#execute' do
-    let(:status) { instance_double(Process::Status, exitstatus: 0) }
+    let(:status) do
+      instance_double(Process::Status, exitstatus: 0, signaled?: false)
+    end
     let(:stdout) { double(:stdout, read: 'command output') }
     let(:process) { instance_double(Thread, value: status) }
 
@@ -45,7 +47,9 @@ describe PerconaMigrator::Runner do
     end
 
     context 'when the execution failed' do
-      let(:status) { instance_double(Process::Status, exitstatus: 1) }
+      let(:status) do
+        instance_double(Process::Status, exitstatus: 1, signaled?: false)
+      end
 
       it 'logs it as failure' do
         runner.execute(command)
@@ -55,6 +59,18 @@ describe PerconaMigrator::Runner do
 
     context 'when the command\'s exit status could not be retrieved' do
       let(:status) { nil }
+      before { allow(Kernel).to receive(:warn).and_return(true) }
+
+      it 'writes to the STDERR' do
+        runner.execute(command)
+        expect(Kernel).to have_received(:warn)
+      end
+    end
+
+    context 'when the command did not catch a signal' do
+      let(:status) do
+        instance_double(Process::Status, exitstatus: 1, signaled?: true)
+      end
       before { allow(Kernel).to receive(:warn).and_return(true) }
 
       it 'writes to the STDERR' do
