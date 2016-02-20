@@ -40,7 +40,8 @@ module ActiveRecord
 
       ADAPTER_NAME = 'Percona'.freeze
 
-      def_delegators :mysql_adapter, :tables, :select_values
+      def_delegators :mysql_adapter, :tables, :select_values, :exec_delete,
+        :exec_insert, :exec_query, :last_inserted_id
 
       def initialize(connection, logger, connection_options, config)
         super
@@ -110,25 +111,6 @@ module ActiveRecord
 
       def execute_and_free(sql, name = nil)
         yield mysql_adapter.execute(sql, name)
-      end
-
-      # TODO: We'll probably need to differentiate the delete statements that
-      # came from a change in schema_migrations from those that come from the
-      # migration itself
-      def exec_delete(sql, name, binds)
-        mysql_adapter.exec_delete(sql, name, binds)
-      end
-
-      def exec_insert(sql, name, binds)
-        mysql_adapter.exec_insert(sql, name, binds)
-      end
-
-      def exec_query(sql, name, binds)
-        mysql_adapter.exec_query(sql, name, binds)
-      end
-
-      def last_inserted_id(result)
-        mysql_adapter.last_inserted_id(result)
       end
 
       private
