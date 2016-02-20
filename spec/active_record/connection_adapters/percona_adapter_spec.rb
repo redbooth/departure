@@ -28,14 +28,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
 
   let(:connection) { double(:connection) }
   let(:logger) { double(:logger, puts: true) }
-  let(:runner) { instance_double(PerconaMigrator::Runner) }
-  let(:connection_options) do
-    {
-      mysql_adapter: mysql_adapter,
-      runner: runner
-    }
-  end
-  let(:config) { { prepared_statements: '' } }
+  let(:connection_options) { { mysql_adapter: mysql_adapter } }
 
   let(:runner) { instance_double(PerconaMigrator::Runner) }
   let(:cli_generator) do
@@ -43,6 +36,14 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       PerconaMigrator::CliGenerator,
       generate: 'percona command'
     )
+  end
+
+  let(:config) do
+    {
+      prepared_statements: '',
+      runner: runner,
+      cli_generator: cli_generator
+    }
   end
 
   let(:adapter) do

@@ -13,10 +13,12 @@ module ActiveRecord
       client = connection.raw_connection
       logger = config[:logger]
 
-      connection_options = {
-        mysql_adapter: connection,
-        runner: PerconaMigrator::Runner.new(logger)
-      }
+      config.merge!(
+        runner: PerconaMigrator::Runner.new(logger),
+        cli_generator: PerconaMigrator::CliGenerator.new(config)
+      )
+
+      connection_options = { mysql_adapter: connection }
 
       ConnectionAdapters::PerconaMigratorAdapter.new(
         client,
@@ -46,10 +48,9 @@ module ActiveRecord
       def initialize(connection, logger, connection_options, config)
         super
         @mysql_adapter = connection_options[:mysql_adapter]
-        @config = config
         @logger = logger
-        @runner = connection_options[:runner]
-        @cli_generator = PerconaMigrator::CliGenerator.new(config)
+        @runner = config[:runner]
+        @cli_generator = config[:cli_generator]
       end
 
       def supports_migrations?
@@ -115,7 +116,7 @@ module ActiveRecord
 
       private
 
-      attr_reader :mysql_adapter, :config, :logger, :runner, :cli_generator
+      attr_reader :mysql_adapter, :logger, :runner, :cli_generator
     end
   end
 end
