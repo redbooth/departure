@@ -12,8 +12,7 @@ module PerconaMigrator
       new(command, logger).execute
     end
 
-    def initialize(command, logger)
-      @command = command
+    def initialize(logger)
       @logger = logger
       @status = nil
     end
@@ -21,7 +20,9 @@ module PerconaMigrator
     # Runs and logs the given command
     #
     # @return [Boolean]
-    def execute
+    def execute(command)
+      @command = command
+
       log_started
       run_command
       log_finished
@@ -33,6 +34,7 @@ module PerconaMigrator
 
     attr_reader :command, :logger, :status
 
+    # TODO: log as a migration logger subitem
     def log_started
       logger.puts "\n#{CYAN}-- #{command}#{NONE}\n\n"
     end
@@ -42,10 +44,25 @@ module PerconaMigrator
         @status = process.value
         logger.puts stdout.read
       end
+
+      if status.nil?
+        Kernel.warn("Error running '#{command}': status could not be retrieved")
+      end
+
+      if status && status.signaled?
+        Kernel.warn("Error running '#{command}': #{status.to_s}")
+      end
     end
 
     def log_finished
-      logger.puts(status ? "\n#{GREEN}Done!#{NONE}" : "\n#{RED}Failed!#{NONE}")
+      return unless status
+
+      value = status.exitstatus
+      return unless value
+
+      message = value.zero? ? "#{GREEN}Done!#{NONE}" : "#{RED}Failed!#{NONE}"
+
+      logger.puts("\n#{message}")
     end
   end
 end

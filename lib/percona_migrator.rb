@@ -5,7 +5,6 @@ require 'percona_migrator/runner'
 require 'percona_migrator/migrator'
 require 'percona_migrator/lhm_parser'
 require 'percona_migrator/cli_generator'
-require 'percona_migrator/railtie'
 require 'percona_migrator/schema_migration'
 
 module PerconaMigrator
@@ -41,9 +40,9 @@ module PerconaMigrator
   # @return [String]
   def mark(direction, version)
     if direction == :up
-      PerconaMigrator::SchemaMigration.create!(version: version.to_s)
+      SchemaMigration.create!(version: version.to_s)
     elsif direction == :down
-      PerconaMigrator::SchemaMigration.where(version: version.to_s).delete_all
+      SchemaMigration.where(version: version.to_s).delete_all
     end
   end
 end

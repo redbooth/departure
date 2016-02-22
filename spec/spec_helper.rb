@@ -5,20 +5,30 @@ require 'percona_migrator'
 
 db_config = Configuration.new
 
+class NullLogger
+  def puts(_str)
+  end
+end
+
 ActiveRecord::Base.establish_connection(
-  adapter: 'mysql2',
+  adapter: 'percona',
   host: 'localhost',
   username: db_config['username'],
   password: db_config['password'],
-  database: 'percona_migrator_test'
+  database: 'percona_migrator_test',
+  logger: NullLogger.new
 )
 
 MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)
+
+test_database = TestDatabase.new(db_config)
 
 RSpec.configure do |config|
   config.order = 'random'
 
   config.before(:all) do
+    test_database.create_schema_migrations_table
+
     @initial_migration_paths = ActiveRecord::Migrator.migrations_paths
     ActiveRecord::Migrator.migrations_paths = [MIGRATION_FIXTURES]
   end
@@ -29,7 +39,21 @@ RSpec.configure do |config|
 
   # Cleans up the database after each example ala Database Cleaner
   config.around(:each) do |example|
-    example.run
-    TestDatabase.new(db_config).create
+    if example.metadata[:integration]
+      test_database.create_schema_migrations_table
+      example.run
+      test_database.create_schema_migrations_table
+    elsif example.metadata[:index]
+      test_database.create_test_database
+      test_database.create_schema_migrations_table
+      example.run
+      test_database.create_test_database
+    else
+      example.run
+    end
   end
+
+  config.order = :random
+
+  Kernel.srand config.seed
 end

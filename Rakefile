@@ -12,15 +12,6 @@ namespace :db do
   desc 'Create the test database'
   task :create do
     config = Configuration.new
-
-    ActiveRecord::Base.establish_connection(
-      adapter: 'mysql2',
-      host: 'localhost',
-      username: config['username'],
-      password: config['password'],
-      database: 'percona_migrator_test'
-    )
-
-    TestDatabase.new(config).create
+    TestDatabase.new(config).create_test_database
   end
 end
