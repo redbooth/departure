@@ -5,6 +5,8 @@ require 'spec_helper'
 describe PerconaMigrator do
   class Comment < ActiveRecord::Base; end
 
+  let(:migration_fixtures) { MIGRATION_FIXTURES }
+
   def indexes_from(table_name)
     ActiveRecord::Base.connection.indexes(:comments)
   end
@@ -33,7 +35,7 @@ describe PerconaMigrator do
       it 'adds the column in the DB table' do
         ActiveRecord::Migrator.new(
           direction,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version
         ).migrate
 
@@ -44,7 +46,7 @@ describe PerconaMigrator do
       it 'marks the migration as up' do
         ActiveRecord::Migrator.new(
           direction,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version
         ).migrate
 
@@ -58,7 +60,7 @@ describe PerconaMigrator do
       before do
         ActiveRecord::Migrator.new(
           :up,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version
         ).migrate
       end
@@ -66,7 +68,7 @@ describe PerconaMigrator do
       it 'drops the column from the DB table' do
         ActiveRecord::Migrator.new(
           direction,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version - 1
         ).migrate
 
@@ -77,7 +79,7 @@ describe PerconaMigrator do
       it 'marks the migration as down' do
         ActiveRecord::Migrator.new(
           direction,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version - 1
         ).migrate
 
@@ -96,7 +98,7 @@ describe PerconaMigrator do
       before do
         ActiveRecord::Migrator.new(
           direction,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           1
         ).migrate
       end
@@ -104,7 +106,7 @@ describe PerconaMigrator do
       it 'executes the percona command' do
         ActiveRecord::Migrator.new(
           direction,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version
         ).migrate
 
@@ -116,7 +118,7 @@ describe PerconaMigrator do
       it 'marks the migration as up' do
         ActiveRecord::Migrator.new(
           direction,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version
         ).migrate
 
@@ -130,13 +132,13 @@ describe PerconaMigrator do
       before do
         ActiveRecord::Migrator.new(
           :up,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           1
         ).migrate
 
         ActiveRecord::Migrator.new(
           :up,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version
         ).migrate
       end
@@ -144,7 +146,7 @@ describe PerconaMigrator do
       it 'executes the percona command' do
         ActiveRecord::Migrator.new(
           direction,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version - 1
         ).migrate
 
@@ -156,7 +158,7 @@ describe PerconaMigrator do
       it 'marks the migration as down' do
         ActiveRecord::Migrator.new(
           direction,
-          [MIGRATION_FIXTURES],
+          [migration_fixtures],
           version - 1
         ).migrate
 
@@ -172,11 +174,11 @@ describe PerconaMigrator do
       let(:direction) { :up }
 
       before do
-        ActiveRecord::Migrator.new(:up, [MIGRATION_FIXTURES], 1).migrate
+        ActiveRecord::Migrator.new(:up, [migration_fixtures], 1).migrate
       end
 
       it 'executes the percona command' do
-        ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
+        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
 
         expect(unique_indexes_from(:comments)).to(
           match_array(['index_comments_on_some_id_field'])
@@ -184,7 +186,7 @@ describe PerconaMigrator do
       end
 
       it 'marks the migration as up' do
-        ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
+        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
@@ -193,12 +195,12 @@ describe PerconaMigrator do
       let(:direction) { :down }
 
       before do
-        ActiveRecord::Migrator.new(:up, [MIGRATION_FIXTURES], 1).migrate
-        ActiveRecord::Migrator.run(:up, [MIGRATION_FIXTURES], version)
+        ActiveRecord::Migrator.new(:up, [migration_fixtures], 1).migrate
+        ActiveRecord::Migrator.run(:up, [migration_fixtures], version)
       end
 
       it 'executes the percona command' do
-        ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
+        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
 
         expect(unique_indexes_from(:comments)).not_to(
           match_array(['index_comments_on_some_id_field'])
@@ -206,7 +208,7 @@ describe PerconaMigrator do
       end
 
       it 'marks the migration as down' do
-        ActiveRecord::Migrator.run(direction, [MIGRATION_FIXTURES], version)
+        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
         expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
     end

@@ -6,6 +6,7 @@ require 'percona_migrator/migrator'
 require 'percona_migrator/lhm_parser'
 require 'percona_migrator/cli_generator'
 require 'percona_migrator/schema_migration'
+require 'percona_migrator/lhm/fake'
 
 module PerconaMigrator
   module_function
