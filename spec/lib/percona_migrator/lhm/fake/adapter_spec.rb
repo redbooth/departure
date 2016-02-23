@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+# TODO: Support NOT NULL
 describe PerconaMigrator::Lhm::Fake::Adapter do
   let(:migration) { double(:migration) }
   let(:table_name) { :comments }
@@ -53,6 +54,34 @@ describe PerconaMigrator::Lhm::Fake::Adapter do
             .with(table_name, column_name, type, options)
           )
         end
+      end
+    end
+
+    context 'with :date' do
+      let(:definition) { 'DATE DEFAULT NULL' }
+      let(:column_name) { :due_on }
+      let(:type) { :date }
+      let(:options) { { limit: nil, default: nil } }
+
+      it 'calls #add_column in the migration' do
+        expect(migration).to(
+          have_received(:add_column)
+          .with(table_name, column_name, type, options)
+        )
+      end
+    end
+
+    context 'with :datetime' do
+      let(:definition) { 'DATETIME' }
+      let(:column_name) { :created_at }
+      let(:type) { :datetime }
+      let(:options) { { limit: nil, default: nil } }
+
+      it 'calls #add_column in the migration' do
+        expect(migration).to(
+          have_received(:add_column)
+          .with(table_name, column_name, type, options)
+        )
       end
     end
   end
