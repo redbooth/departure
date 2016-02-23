@@ -96,6 +96,32 @@ describe PerconaMigrator::Lhm::Fake::Adapter do
       end
     end
 
+    context 'with :text' do
+      let(:definition) { 'TEXT' }
+      let(:column_name) { :body }
+      let(:type) { :text }
+      let(:options) { { limit: nil, default: nil, null: true } }
+
+      it 'calls #add_column in the migration' do
+        expect(migration).to(
+          have_received(:add_column)
+          .with(table_name, column_name, type, options)
+        )
+      end
+
+      context 'when a default value is specified' do
+        let(:definition) { "TEXT DEFAULT 'a random text'" }
+        let(:options) { { limit: nil, default: 'a random text', null: true } }
+
+        it 'calls #add_column in the migration' do
+          expect(migration).to(
+            have_received(:add_column)
+            .with(table_name, column_name, type, options)
+          )
+        end
+      end
+    end
+
     context 'with :date' do
       let(:definition) { 'DATE DEFAULT NULL' }
       let(:column_name) { :due_on }
