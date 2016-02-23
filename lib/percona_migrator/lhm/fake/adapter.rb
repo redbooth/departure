@@ -26,6 +26,15 @@ module PerconaMigrator
           migration.add_index(table_name, columns, options || {})
         end
 
+        def remove_index(columns, index_name = nil)
+          options = if index_name
+                      { name: index_name }
+                    else
+                      { column: columns }
+                    end
+          migration.remove_index(table_name, options)
+        end
+
         private
 
         attr_reader :migration, :table_name
