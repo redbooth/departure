@@ -35,6 +35,13 @@ module PerconaMigrator
           migration.remove_index(table_name, options)
         end
 
+        def change_column(column_name, definition)
+          type = type_from(column_name, definition)
+          options = options_from(column_name, definition)
+
+          migration.change_column(table_name, column_name, type, options)
+        end
+
         private
 
         attr_reader :migration, :table_name
