@@ -44,6 +44,32 @@ describe PerconaMigrator::Lhm::Fake::Adapter do
       end
     end
 
+    context 'with :float' do
+      let(:definition) { 'FLOAT' }
+      let(:column_name) { :amount }
+      let(:type) { :float }
+      let(:options) { { limit: nil, default: nil, null: true } }
+
+      it 'calls #add_column in the migration' do
+        expect(migration).to(
+          have_received(:add_column)
+          .with(table_name, column_name, type, options)
+        )
+      end
+
+      context 'when specifying DEFAULT' do
+        let(:definition) { 'FLOAT DEFAULT 0' }
+        let(:options) { { limit: nil, default: 0.0, null: true } }
+
+        it 'calls #add_column in the migration' do
+          expect(migration).to(
+            have_received(:add_column)
+            .with(table_name, column_name, type, options)
+          )
+        end
+      end
+    end
+
     context 'with :string' do
       let(:definition) { 'VARCHAR(255)' }
       let(:column_name) { :body }
