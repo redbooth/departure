@@ -17,6 +17,10 @@ module PerconaMigrator
           migration.add_column(table_name, column_name, type, options)
         end
 
+        def remove_column(column_name)
+          migration.remove_column(table_name, column_name)
+        end
+
         private
 
         attr_reader :migration, :table_name
