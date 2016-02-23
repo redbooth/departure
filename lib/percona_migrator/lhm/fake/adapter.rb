@@ -45,6 +45,9 @@ module PerconaMigrator
 
         def default_value(definition)
           match = /default '?(\w+)'?/i.match(definition)
+          if definition =~ /timestamp/i
+            match = /default '?(.+[^'])'?/i.match(definition)
+          end
           return unless match
 
           if match

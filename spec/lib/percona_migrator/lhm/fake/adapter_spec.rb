@@ -183,6 +183,39 @@ describe PerconaMigrator::Lhm::Fake::Adapter do
       end
     end
 
+
+    context 'with :timestamp' do
+      let(:definition) { 'TIMESTAMP' }
+      let(:column_name) { :at }
+      let(:type) { :timestamp }
+      let(:options) { { limit: nil, default: nil, null: true } }
+
+      it 'calls #add_column in the migration' do
+        expect(migration).to(
+          have_received(:add_column)
+          .with(table_name, column_name, type, options)
+        )
+      end
+
+      context 'when specifying DEFAULT' do
+        let(:definition) { "TIMESTAMP DEFAULT '2016-02-23 15:16:00'" }
+        let(:options) do
+          {
+            limit: nil,
+            default: Time.parse('2016-02-23 15:16:00'),
+            null: true
+          }
+        end
+
+        it 'calls #add_column in the migration' do
+          expect(migration).to(
+            have_received(:add_column)
+            .with(table_name, column_name, type, options)
+          )
+        end
+      end
+    end
+
     context 'with :boolean' do
       let(:column_name) { :deleted }
       let(:type) { :boolean }
