@@ -171,7 +171,6 @@ describe PerconaMigrator::Lhm::Fake::Adapter do
       end
     end
 
-
     context 'with :timestamp' do
       let(:definition) { 'TIMESTAMP' }
       let(:column_name) { :at }
@@ -203,6 +202,33 @@ describe PerconaMigrator::Lhm::Fake::Adapter do
         end
       end
     end
+
+    context 'with :binary' do
+      let(:definition) { 'BINARY' }
+      let(:column_name) { :binary_data }
+      let(:type) { :binary }
+      let(:options) { { limit: nil, default: nil, null: true } }
+
+      it 'calls #add_column in the migration' do
+        expect(migration).to(
+          have_received(:add_column)
+          .with(table_name, column_name, type, options)
+        )
+      end
+
+      context 'when specifying DEFAULT' do
+        let(:definition) { "BINARY DEFAULT 'a'" }
+        let(:options) { { limit: nil, default: 'a', null: true } }
+
+        it 'calls #add_column in the migration' do
+          expect(migration).to(
+            have_received(:add_column)
+            .with(table_name, column_name, type, options)
+          )
+        end
+      end
+    end
+
 
     context 'with :boolean' do
       let(:column_name) { :deleted }
