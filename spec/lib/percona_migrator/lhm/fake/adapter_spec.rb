@@ -3,6 +3,7 @@ require 'spec_helper'
 
 # TODO: Support NOT NULL
 # TODO: Add WithLimit and WithDefault contexts
+# TODO: What about ENUM?
 describe PerconaMigrator::Lhm::Fake::Adapter do
   let(:migration) { double(:migration) }
   let(:table_name) { :comments }
@@ -147,6 +148,38 @@ describe PerconaMigrator::Lhm::Fake::Adapter do
           have_received(:add_column)
           .with(table_name, column_name, type, options)
         )
+      end
+    end
+
+    context 'with :time' do
+      let(:definition) { 'TIME' }
+      let(:column_name) { :at }
+      let(:type) { :time }
+      let(:options) { { limit: nil, default: nil, null: true } }
+
+      it 'calls #add_column in the migration' do
+        expect(migration).to(
+          have_received(:add_column)
+          .with(table_name, column_name, type, options)
+        )
+      end
+
+      context 'when specifying DEFAULT' do
+        let(:definition) { 'TIME DEFAULT 12:00:00' }
+        let(:options) do
+          {
+            limit: nil,
+            default: Time.parse('2000-01-01 12:00:00'),
+            null: true
+          }
+        end
+
+        it 'calls #add_column in the migration' do
+          expect(migration).to(
+            have_received(:add_column)
+            .with(table_name, column_name, type, options)
+          )
+        end
       end
     end
 
