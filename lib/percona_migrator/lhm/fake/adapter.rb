@@ -31,20 +31,34 @@ module PerconaMigrator
         # definition, as an integer it will default it to 4 not an integer
         def options_from(name, definition)
           column = column(name, definition)
-          { limit: column.limit, default: column.default }
-        end
-
-        def default_value(definition)
-          match = /default '(\w+)'/i.match(definition)
-          match ? match[1] : nil
+          { limit: column.limit, default: column.default, null: column.null }
         end
 
         def column(name, definition)
           @column ||= self.class.column_factory.new(
             name,
             default_value(definition),
-            definition
+            definition,
+            null_value(definition)
           )
+        end
+
+        def default_value(definition)
+          match = /default '?(\w+)'?/i.match(definition)
+          return unless match
+
+          if match
+            match[1].downcase != 'null' ? match[1] : nil
+          end
+        end
+
+        def null_value(definition)
+          match = /((\w*) NULL)/i.match(definition)
+          return true unless match
+
+          if match
+            match[2].downcase == 'not' ? false : true
+          end
         end
 
         def self.column_factory
