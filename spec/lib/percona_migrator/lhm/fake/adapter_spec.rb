@@ -1,6 +1,8 @@
+require 'byebug'
 require 'spec_helper'
 
 # TODO: Support NOT NULL
+# TODO: Add WithLimit and WithDefault contexts
 describe PerconaMigrator::Lhm::Fake::Adapter do
   let(:migration) { double(:migration) }
   let(:table_name) { :comments }
@@ -20,7 +22,6 @@ describe PerconaMigrator::Lhm::Fake::Adapter do
       let(:definition) { 'INT(11) DEFAULT NULL' }
       let(:column_name) { :some_id_field }
       let(:type) { :integer }
-      # Add WithLimit and WithDefault contexts
       let(:options) { { limit: 4, default: nil, null: true } }
 
       it 'calls #add_column in the migration' do
@@ -28,6 +29,18 @@ describe PerconaMigrator::Lhm::Fake::Adapter do
           have_received(:add_column)
           .with(table_name, column_name, type, options)
         )
+      end
+
+      context 'when MEDIUMINT is specified' do
+        let(:definition) { 'MEDIUMINT(11) NOT NULL DEFAULT 0' }
+        let(:options) { { limit: 3, default: 0, null: false } }
+
+        it 'calls #add_column in the migration' do
+          expect(migration).to(
+            have_received(:add_column)
+            .with(table_name, column_name, type, options)
+          )
+        end
       end
     end
 
