@@ -42,6 +42,10 @@ module PerconaMigrator
           migration.change_column(table_name, column_name, type, options)
         end
 
+        def rename_column(old_name, new_name)
+          migration.rename_column(table_name, old_name, new_name)
+        end
+
         private
 
         attr_reader :migration, :table_name
