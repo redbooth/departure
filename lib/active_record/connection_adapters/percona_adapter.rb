@@ -11,9 +11,10 @@ module ActiveRecord
     def self.percona_connection(config)
       connection = mysql2_connection(config)
       client = connection.raw_connection
-      logger = config[:logger]
+      logger = config[:logger] || $stdout
 
       config.merge!(
+        logger: logger,
         runner: PerconaMigrator::Runner.new(logger),
         cli_generator: PerconaMigrator::CliGenerator.new(config)
       )
