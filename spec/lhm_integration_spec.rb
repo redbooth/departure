@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe PerconaMigrator do
   class Comment < ActiveRecord::Base; end
 

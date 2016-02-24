@@ -2,6 +2,7 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require './configuration'
 require './test_database'
 require 'percona_migrator'
+require 'rspec/its'
 
 db_config = Configuration.new
 

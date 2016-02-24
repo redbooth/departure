@@ -1,4 +1,3 @@
-require 'byebug'
 require 'spec_helper'
 
 # TODO: Handle #change_table syntax

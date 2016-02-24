@@ -1,3 +1,5 @@
+require 'percona_migrator/lhm/fake/column'
+
 module PerconaMigrator
   module Lhm
     module Fake
@@ -11,10 +13,14 @@ module PerconaMigrator
         # Translates the Lhm's add_column syntax to ActiveRecord's and calls it
         # in the given migration
         def add_column(column_name, definition)
-          type = type_from(column_name, definition)
-          options = options_from(column_name, definition)
+          column = column(column_name, definition)
 
-          migration.add_column(table_name, column_name, type, options)
+          migration.add_column(
+            table_name,
+            column_name,
+            column.type,
+            column.to_hash
+          )
         end
 
         def remove_column(column_name)
@@ -36,10 +42,14 @@ module PerconaMigrator
         end
 
         def change_column(column_name, definition)
-          type = type_from(column_name, definition)
-          options = options_from(column_name, definition)
+          column = column(column_name, definition)
 
-          migration.change_column(table_name, column_name, type, options)
+          migration.change_column(
+            table_name,
+            column_name,
+            column.type,
+            column.to_hash
+          )
         end
 
         def rename_column(old_name, new_name)
@@ -57,51 +67,8 @@ module PerconaMigrator
 
         attr_reader :migration, :table_name
 
-        def type_from(name, definition)
-          column(name, definition).type
-        end
-
-        # TODO: investigate
-        #
-        # Rails doesn't take into account lenght argument of INT in the
-        # definition, as an integer it will default it to 4 not an integer
-        def options_from(name, definition)
-          column = column(name, definition)
-          { limit: column.limit, default: column.default, null: column.null }
-        end
-
         def column(name, definition)
-          @column ||= self.class.column_factory.new(
-            name,
-            default_value(definition),
-            definition,
-            null_value(definition)
-          )
-        end
-
-        def default_value(definition)
-          match = /default '?(\w+)'?/i.match(definition)
-          if definition =~ /timestamp/i
-            match = /default '?(.+[^'])'?/i.match(definition)
-          end
-          return unless match
-
-          if match
-            match[1].downcase != 'null' ? match[1] : nil
-          end
-        end
-
-        def null_value(definition)
-          match = /((\w*) NULL)/i.match(definition)
-          return true unless match
-
-          if match
-            match[2].downcase == 'not' ? false : true
-          end
-        end
-
-        def self.column_factory
-          ::ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter::Column
+          @column ||= Column.new(name, definition)
         end
       end
     end
