@@ -1,5 +1,6 @@
 require 'active_record'
 require 'active_support/all'
+require 'percona_migrator/railtie'
 require 'percona_migrator/version'
 require 'percona_migrator/runner'
 require 'percona_migrator/migrator'

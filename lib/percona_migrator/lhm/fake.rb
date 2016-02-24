@@ -28,6 +28,12 @@ module PerconaMigrator
           remove_method(:orig_change_table)
         end
       end
+
+      def self.patching_lhm(migration)
+        PerconaMigrator::Lhm::Fake.patch_lhm(migration)
+        yield
+        PerconaMigrator::Lhm::Fake.unpatch_lhm
+      end
     end
   end
 end
