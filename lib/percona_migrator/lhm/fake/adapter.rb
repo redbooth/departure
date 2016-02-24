@@ -46,6 +46,13 @@ module PerconaMigrator
           migration.rename_column(table_name, old_name, new_name)
         end
 
+        def add_unique_index(columns, index_name = nil)
+          options = { unique: true }
+          options.merge!(name: index_name) if index_name
+
+          migration.add_index(table_name, columns, options)
+        end
+
         private
 
         attr_reader :migration, :table_name
