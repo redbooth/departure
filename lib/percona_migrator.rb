@@ -8,12 +8,7 @@ require 'percona_migrator/cli_generator'
 require 'percona_migrator/schema_migration'
 require 'percona_migrator/lhm/fake'
 
-def using_percona?
-  return unless defined?(ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter)
-  ActiveRecord::Base.connection.is_a?(ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter)
-end
-
-require 'percona_migrator/railtie' if using_percona?
+require 'percona_migrator/railtie' if defined?(Rails)
 
 module PerconaMigrator
   module_function
