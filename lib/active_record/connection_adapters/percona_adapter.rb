@@ -11,9 +11,10 @@ module ActiveRecord
     def self.percona_connection(config)
       connection = mysql2_connection(config)
       client = connection.raw_connection
-      logger = config[:logger]
+      logger = config[:logger] || $stdout
 
       config.merge!(
+        logger: logger,
         runner: PerconaMigrator::Runner.new(logger),
         cli_generator: PerconaMigrator::CliGenerator.new(config)
       )
@@ -30,6 +31,8 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
+    # It doesn't implement #create_table as this statement is harmless and
+    # pretty fast. No need to do it with Percona
     class PerconaMigratorAdapter < AbstractMysqlAdapter
 
       class Column < AbstractMysqlAdapter::Column
@@ -43,7 +46,7 @@ module ActiveRecord
       ADAPTER_NAME = 'Percona'.freeze
 
       def_delegators :mysql_adapter, :tables, :select_values, :exec_delete,
-        :exec_insert, :exec_query, :last_inserted_id
+        :exec_insert, :exec_query, :last_inserted_id, :select
 
       def initialize(connection, logger, connection_options, config)
         super
