@@ -14,12 +14,3 @@ end
   next unless Rake::Task.task_defined?("db:migrate:#{task}")
   Rake::Task["db:migrate:#{task}"].enhance [:warn_in_production]
 end
-
-namespace :percona do
-  task :patch_lhm do
-    %x(
-      gsed -i '/ActiveRecord::Migration/i \
-      require "percona_migrator/lhm/fake"\\n' db/migrate/*
-    )
-  end
-end
