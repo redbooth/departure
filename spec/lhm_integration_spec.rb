@@ -16,7 +16,7 @@ describe PerconaMigrator do
     context 'creating column', index: true do
       let(:direction) { :up }
 
-      it 'adds the column in the DB table' do
+      xit 'adds the column in the DB table' do
         ActiveRecord::Migrator.new(
           direction,
           [migration_fixtures],
