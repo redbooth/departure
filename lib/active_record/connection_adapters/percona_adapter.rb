@@ -31,6 +31,8 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
+    # It doesn't implement #create_table as this statement is harmless and
+    # pretty fast. No need to do it with Percona
     class PerconaMigratorAdapter < AbstractMysqlAdapter
 
       class Column < AbstractMysqlAdapter::Column
