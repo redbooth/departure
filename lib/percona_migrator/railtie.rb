@@ -9,6 +9,7 @@ module PerconaMigrator
     # will make migrations written with LHM to go through the regular Rails
     # Migration DSL
     initializer 'percona_migrator.configure_rails_initialization' do
+
       ActiveRecord::Migration.class_eval do
         alias_method :original_migrate, :migrate
         def migrate(direction)
