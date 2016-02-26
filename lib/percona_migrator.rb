@@ -5,7 +5,6 @@ require 'percona_migrator/version'
 require 'percona_migrator/runner'
 require 'percona_migrator/lhm_parser'
 require 'percona_migrator/cli_generator'
-require 'percona_migrator/schema_migration'
 require 'percona_migrator/lhm/fake'
 
 require 'percona_migrator/railtie' if defined?(Rails)
