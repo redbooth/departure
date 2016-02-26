@@ -22,10 +22,5 @@ module PerconaMigrator
         end
       end
     end
-
-    # TODO: Make it work! It doesn't show up in a rake -T
-    rake_tasks do
-      load 'tasks/percona_migrator.rake'
-    end
   end
 end
