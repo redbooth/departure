@@ -4,16 +4,20 @@ module PerconaMigrator
   module Lhm
     module Fake
 
-      # Monkeypatch LHM not to run a migration, but return the parsed statements
-      # Refinements will not work here because LHM is a module and it can't be
-      # refined
+      # Monkeypatches Lhm in the specified migration to return an instance of
+      # Adapter. This makes the migratio to go through regular ActiveRecord
+      #
+      # @param migration [ActiveRecord::Migtration]
       def self.patch_lhm(migration)
         ::Lhm.module_eval do
           @migration = migration
 
           # Yields an adapter instance so that Lhm migration Dsl methods get
-          # passed to ActiveRecord upon translation instead of executing the
-          # migration through Lhm
+          # delegated to ActiveRecord::Migration ones instead of executing
+          #
+          # @param table_name [String]
+          # @param _options [Hash]
+          # @param block [Block]
           def change_table(table_name, _options = {}, &block)
             yield Adapter.new(@migration, table_name)
           end
@@ -29,6 +33,10 @@ module PerconaMigrator
         end
       end
 
+      # Monkeypatches Lhm like in .patch_lhm, yields and then undoes the
+      # monkeypatch
+      #
+      # @param migration [ActiveRecord::Migtration]
       def self.patching_lhm(migration)
         PerconaMigrator::Lhm::Fake.patch_lhm(migration)
         yield

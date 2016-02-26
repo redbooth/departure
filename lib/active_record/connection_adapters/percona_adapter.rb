@@ -56,10 +56,14 @@ module ActiveRecord
         @cli_generator = config[:cli_generator]
       end
 
+      # Returns true, as this adapter supports migrations
       def supports_migrations?
         true
       end
 
+      # Delegates #each_hash to the mysql adapter
+      #
+      # @param result [Mysql2::Result]
       def each_hash(result)
         if block_given?
           mysql_adapter.each_hash(result, &Proc.new)
@@ -72,20 +76,33 @@ module ActiveRecord
         Column.new(field, default, type, null, collation)
       end
 
+      # Adds a new column to the named table
+      #
+      # @param table_name [String, Symbol]
+      # @param column_name [String, Symbol]
+      # @param type [Symbol]
+      # @param options [Hash] optional
       def add_column(table_name, column_name, type, options = {})
         super
         command = cli_generator.generate(table_name, @sql)
         runner.execute(command)
       end
 
+      # Removes the column(s) from the table definition
+      #
+      # @param table_name [String, Symbol]
+      # @param column_names [String, Symbol, Array<String>, Array<Symbol>]
       def remove_column(table_name, *column_names)
         super
         command = cli_generator.generate(table_name, @sql)
         runner.execute(command)
       end
 
-      # TODO: Implement all methods in ConnectionAdapters::SchemaStatements?
-      # It must use ALTER TABLE syntax, so the SchemaStatements#add_index doesn't work for pt-online-schema-change
+      # Adds a new index to the table
+      #
+      # @param table_name [String, Symbol]
+      # @param column_name [String, Symbol]
+      # @param options [Hash] optional
       def add_index(table_name, column_name, options = {})
         index_name, index_type, index_columns, index_options = add_index_options(table_name, column_name, options)
         execute "ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}"
@@ -94,7 +111,10 @@ module ActiveRecord
         runner.execute(command)
       end
 
-      # Copied from SchemaStatments#remove_index
+      # Remove the given index from the table.
+      #
+      # @param table_name [String, Symbol]
+      # @param options [Hash] optional
       def remove_index(table_name, options = {})
         index_name = index_name_for_remove(table_name, options)
         execute "DROP INDEX #{quote_column_name(index_name)}"
@@ -103,16 +123,21 @@ module ActiveRecord
         runner.execute(command)
       end
 
-      # TODO: Prepared statements?
-      # TODO: How does this play with executing raw SQL from a migration? You
-      # normally use #execute Used as a result of calling all of the schema
-      # statements: add_column,
-      # remove_column, etc.
+      # Records the SQL statement to be executed. This is used to then delegate
+      # the execution to Percona's pt-online-schema-change.
+      #
+      # @param sql [String]
+      # @param _name [String] optional
       def execute(sql, _name = nil)
         @sql = sql
         true
       end
 
+      # This abstract method leaves up to the connection adapter freeing the
+      # result, if it needs to. Check out: https://github.com/rails/rails/blob/330c6af05c8b188eb072afa56c07d5fe15767c3c/activerecord/lib/active_record/connection_adapters/abstract_mysql_adapter.rb#L247
+      #
+      # @param sql [String]
+      # @param name [String] optional
       def execute_and_free(sql, name = nil)
         yield mysql_adapter.execute(sql, name)
       end

@@ -1,6 +1,9 @@
 require 'open3'
 
 module PerconaMigrator
+
+  # It executes pt-online-schema-change commands in a new process and gets its
+  # output and status
   class Runner
 
     NONE = "\e[0m"
@@ -8,10 +11,17 @@ module PerconaMigrator
     GREEN = "\e[32m"
     RED = "\e[31m"
 
+    # Executes the given command printing the output to the logger
+    #
+    # @param command [String]
+    # @param logger [IO]
     def self.execute(command, logger)
       new(command, logger).execute
     end
 
+    # Constructor
+    #
+    # @param logger [IO]
     def initialize(logger)
       @logger = logger
       @status = nil
@@ -19,6 +29,7 @@ module PerconaMigrator
 
     # Runs and logs the given command
     #
+    # @param command [String]
     # @return [Boolean]
     def execute(command)
       @command = command
@@ -35,10 +46,15 @@ module PerconaMigrator
     attr_reader :command, :logger, :status
 
     # TODO: log as a migration logger subitem
+    #
+    # Logs when the execution started
     def log_started
       logger.puts "\n#{CYAN}-- #{command}#{NONE}\n\n"
     end
 
+    # Executes the command outputing any errors
+    #
+    # @raise [Errno::ENOENT] if pt-online-schema-change can't be found
     def run_command
       Open3.popen2(command) do |_stdin, stdout, process|
         @status = process.value
@@ -57,6 +73,7 @@ module PerconaMigrator
       raise Errno::ENOENT, "Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit"
     end
 
+    # Logs the status of the execution once it's finished
     def log_finished
       return unless status
 

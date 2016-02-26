@@ -1,12 +1,22 @@
 require 'percona_migrator/alter_argument'
 
 module PerconaMigrator
+
+  # Represents the 'DSN' argument of Percona's pt-online-schema-change
+  # See https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html#dsn-options
   class DSN
+
+    # Constructor
+    #
+    # @param database [String, Symbol]
+    # @param table_name [String, Symbol]
     def initialize(database, table_name)
       @database = database
       @table_name = table_name
     end
 
+    # Returns the pt-online-schema-change DSN string. See
+    # https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html#dsn-options
     def to_s
       "D=#{database},t=#{table_name}"
     end
@@ -16,6 +26,8 @@ module PerconaMigrator
     attr_reader :table_name, :database
   end
 
+  # Generates the equivalent Percona's pt-online-schema-change command to the
+  # given SQL statement
   class CliGenerator # Command
     BASE_COMMAND = 'pt-online-schema-change'
     BASE_OPTIONS = %w(
@@ -54,33 +66,50 @@ module PerconaMigrator
 
     attr_reader :connection_data
 
+    # Sets up the command with its options
     def init_base_command
       @command = [BASE_COMMAND, BASE_OPTIONS.join(' ')]
     end
 
+    # Adds the host, user and password, if present, to the command
     def add_connection_details
       @command.push("-h #{host}")
       @command.push("-u #{user}")
       @command.push("-p #{password}") if password.present?
     end
 
+    # Returns the command as a string that can be executed in a shell
     def to_s
       @command.join(' ')
     end
 
+    # Returns the database host name, defaulting to localhost. If PERCONA_DB_HOST
+    # is passed its value will be used instead
+    #
+    # @return [String]
     def host
       ENV['PERCONA_DB_HOST'] || connection_data[:host] || 'localhost'
     end
 
+    # Returns the database user. If PERCONA_DB_USER is passed its value will be
+    # used instead
+    #
+    # @return [String]
     def user
       ENV['PERCONA_DB_USER'] || connection_data[:username]
     end
 
+    # Returns the database user's password. If PERCONA_DB_PASSWORD is passed its
+    # value will be used instead
+    #
+    # @return [String]
     def password
       ENV['PERCONA_DB_PASSWORD'] || connection_data[:password]
     end
 
     # TODO: Doesn't the abstract adapter already handle this somehow?
+    # Returns the database name. If PERCONA_DB_NAME is passed its value will be
+    # used instead
     def database
       ENV['PERCONA_DB_NAME'] || connection_data[:database]
     end
