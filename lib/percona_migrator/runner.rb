@@ -52,6 +52,9 @@ module PerconaMigrator
       if status && status.signaled?
         Kernel.warn("Error running '#{command}': #{status.to_s}")
       end
+
+    rescue Errno::ENOENT
+      raise Errno::ENOENT, "Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit"
     end
 
     def log_finished
