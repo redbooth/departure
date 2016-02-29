@@ -6,8 +6,6 @@ module Lhm
   class Column
     extend Forwardable
 
-    def_delegators :column, :limit, :type, :default, :null
-
     # Returns the column's class to be used
     #
     # @return [Constant]
@@ -24,6 +22,16 @@ module Lhm
       @definition = definition
     end
 
+    def attributes
+      [type, column_options]
+    end
+
+    private
+
+    def_delegators :column, :limit, :type, :default, :null
+
+    attr_reader :name, :definition
+
     # TODO: investigate
     #
     # Rails doesn't take into account lenght argument of INT in the
@@ -32,13 +40,9 @@ module Lhm
     # Returns the columns data as a Hash
     #
     # @return [Hash]
-    def to_hash
+    def column_options
       { limit: column.limit, default: column.default, null: column.null }
     end
-
-    private
-
-    attr_reader :name, :definition
 
     # Returns the column instance with the provided data
     #

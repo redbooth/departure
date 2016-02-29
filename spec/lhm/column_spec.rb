@@ -4,86 +4,32 @@ describe Lhm::Column do
   let(:name) { :some_field_name }
   let(:column) { described_class.new(name, definition) }
 
-  describe '#type' do
-    subject { column.type }
-
-    context 'when defining INT' do
-      let(:definition) { 'INT' }
-      it { is_expected.to eq(:integer) }
-    end
-
-    context 'when defining MEDIUMINT' do
-      let(:definition) { 'MEDIUMINT' }
-      it { is_expected.to eq(:integer) }
-    end
-
-    context 'when defining TINYINT' do
-      let(:definition) { 'TINYINT' }
-      it { is_expected.to eq(:integer) }
-    end
-
-    context 'when defining FLOAT' do
-      let(:definition) { 'FLOAT' }
-      it { is_expected.to eq(:float) }
-    end
-
-    context 'when defining VARCHAR' do
-      let(:definition) { 'VARCHAR' }
-      it { is_expected.to eq(:string) }
-    end
-
-    context 'when defining TEXT' do
-      let(:definition) { 'TEXT' }
-      it { is_expected.to eq(:text) }
-    end
-
-    context 'when defining DATE' do
-      let(:definition) { 'DATE' }
-      it { is_expected.to eq(:date) }
-    end
-
-    context 'when defining DATETIME' do
-      let(:definition) { 'DATETIME' }
-      it { is_expected.to eq(:datetime) }
-    end
-
-    context 'when defining TIMESTAMP' do
-      let(:definition) { 'TIMESTAMP' }
-      it { is_expected.to eq(:timestamp) }
-    end
-
-    context 'when defining BINARY' do
-      let(:definition) { 'BINARY' }
-      it { is_expected.to eq(:binary) }
-    end
-
-    context 'when defining BOOLEAN' do
-      let(:definition) { 'BOOLEAN' }
-      it { is_expected.to eq(:boolean) }
-    end
-  end
-
-  describe '#to_hash' do
-    subject { column.to_hash }
+  describe '#attributes' do
+    subject { column.attributes }
 
     context 'when defining INT' do
       let(:definition) { 'INT' }
 
-      its([:limit]) { is_expected.to eq(4)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:integer) }
+      its([1]) { is_expected.to eq(limit: 4, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'INT DEFAULT NULL' }
-        its([:default]) { is_expected.to eq(nil)  }
+        its([:default]) { is_expected.to eq(nil) }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'INT NOT NULL' }
-        its([:null]) { is_expected.to eq(false)  }
+        its([:null]) { is_expected.to eq(false) }
       end
 
       context 'with limit' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'INT(11)' }
         its([:limit]) { is_expected.to eq(4)  }
       end
@@ -92,21 +38,26 @@ describe Lhm::Column do
     context 'when defining MEDIUMINT' do
       let(:definition) { 'MEDIUMINT' }
 
-      its([:limit]) { is_expected.to eq(3)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:integer) }
+      its([1]) { is_expected.to eq(limit: 3, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'MEDIUMINT DEFAULT 0' }
         its([:default]) { is_expected.to eq(0)  }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'MEDIUMINT NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
 
       context 'with limit' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'MEDIUMINT(11)' }
         its([:limit]) { is_expected.to eq(3)  }
       end
@@ -115,21 +66,26 @@ describe Lhm::Column do
     context 'when defining TINYINT' do
       let(:definition) { 'TINYINT' }
 
-      its([:limit]) { is_expected.to eq(1)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:integer) }
+      its([1]) { is_expected.to eq(limit: 1, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'TINYINT default 0' }
         its([:default]) { is_expected.to eq(0)  }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'TINYINT NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
 
       context 'with limit' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'TINYINT(1)' }
         its([:limit]) { is_expected.to eq(1)  }
       end
@@ -140,16 +96,19 @@ describe Lhm::Column do
     context 'when defining FLOAT' do
       let(:definition) { 'FLOAT' }
 
-      its([:limit]) { is_expected.to eq(nil)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:float) }
+      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'FLOAT DEFAULT 0' }
         its([:default]) { is_expected.to eq(0.0)  }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'FLOAT NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
@@ -158,21 +117,26 @@ describe Lhm::Column do
     context 'when defining VARCHAR' do
       let(:definition) { 'VARCHAR' }
 
-      its([:limit]) { is_expected.to eq(nil)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:string) }
+      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { "VARCHAR DEFAULT 'foo'" }
         its([:default]) { is_expected.to eq('foo')  }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'VARCHAR NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
 
       context 'with limit' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'VARCHAR(255)' }
         its([:limit]) { is_expected.to eq(255)  }
       end
@@ -181,11 +145,12 @@ describe Lhm::Column do
     context 'when defining TEXT' do
       let(:definition) { 'TEXT' }
 
-      its([:limit]) { is_expected.to eq(nil)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:text) }
+      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'TEXT NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
@@ -194,16 +159,19 @@ describe Lhm::Column do
     context 'when defining DATE' do
       let(:definition) { 'DATE' }
 
-      its([:limit]) { is_expected.to eq(nil)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:date) }
+      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { "DATE DEFAULT NULL" }
         its([:default]) { is_expected.to eq(nil)  }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'DATE NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
@@ -212,16 +180,19 @@ describe Lhm::Column do
     context 'when defining DATETIME' do
       let(:definition) { 'DATETIME' }
 
-      its([:limit]) { is_expected.to eq(nil)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:datetime) }
+      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { "DATETIME DEFAULT '2016-02-24 13:21:00'" }
         its([:default]) { is_expected.to eq(Time.parse('2016-02-24 13:21:00')) }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'DATETIME NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
@@ -230,16 +201,19 @@ describe Lhm::Column do
     context 'when defining TIMESTAMP' do
       let(:definition) { 'TIMESTAMP' }
 
-      its([:limit]) { is_expected.to eq(nil)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:timestamp) }
+      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { "TIMESTAMP DEFAULT '2016-02-24 13:21:00'" }
         its([:default]) { is_expected.to eq(Time.parse('2016-02-24 13:21:00')) }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'TIMESTAMP NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
@@ -248,21 +222,26 @@ describe Lhm::Column do
     context 'when defining BINARY' do
       let(:definition) { 'BINARY' }
 
-      its([:limit]) { is_expected.to eq(nil)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:binary) }
+      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { "BINARY DEFAULT 'a'" }
         its([:default]) { is_expected.to eq('a')  }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'BINARY NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
 
       context 'with limit' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'BINARY(3)' }
         its([:limit]) { is_expected.to eq(3)  }
       end
@@ -271,16 +250,19 @@ describe Lhm::Column do
     context 'when defining BOOLEAN' do
       let(:definition) { 'BOOLEAN' }
 
-      its([:limit]) { is_expected.to eq(nil)  }
-      its([:default]) { is_expected.to eq(nil)  }
-      its([:null]) { is_expected.to eq(true)  }
+      its([0]) { is_expected.to eq(:boolean) }
+      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
 
       context 'with DEFAULT' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'BOOLEAN DEFAULT FALSE' }
         its([:default]) { is_expected.to eq(false)  }
       end
 
       context 'with NOT NULL' do
+        subject { column.attributes[1] }
+
         let(:definition) { 'BOOLEAN NOT NULL' }
         its([:null]) { is_expected.to eq(false)  }
       end
