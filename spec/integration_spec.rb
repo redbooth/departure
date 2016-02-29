@@ -25,6 +25,28 @@ describe PerconaMigrator do
     expect(PerconaMigrator::VERSION).not_to be nil
   end
 
+  context 'when ActiveRecord is loaded' do
+    it 'reconnects to the database using PerconaAdapter' do
+      ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      expect(ActiveRecord::Base.connection_pool.spec.config[:adapter]).to eq('percona')
+    end
+
+    # TODO: Use dummy app so that we actually go through the railtie's code
+    context 'when there is LHM' do
+      xit 'patches it to use regular Rails migration methods' do
+        expect(PerconaMigrator::Lhm::Fake::Adapter).to receive(:new).and_return(true)
+        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      end
+    end
+
+    context 'when there is no LHM' do
+      xit 'does not patch it' do
+        expect(PerconaMigrator::Lhm::Fake).not_to receive(:patching_lhm)
+        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      end
+    end
+  end
+
   context 'creating/removing columns' do
     let(:version) { 1 }
 
