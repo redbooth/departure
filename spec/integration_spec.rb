@@ -25,7 +25,7 @@ describe PerconaMigrator do
     expect(PerconaMigrator::VERSION).not_to be nil
   end
 
-  context 'when ActiveRecord is loaded' do
+  context 'when ActiveRecord is loaded', integration: true do
     it 'reconnects to the database using PerconaAdapter' do
       ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
       expect(ActiveRecord::Base.connection_pool.spec.config[:adapter]).to eq('percona')

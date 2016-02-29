@@ -1,7 +1,7 @@
 require 'byebug'
 require 'spec_helper'
 
-describe PerconaMigrator::Lhm::Fake::Adapter, '#remove_column' do
+describe Lhm::Adapter, '#remove_column' do
   let(:migration) { double(:migration) }
   let(:table_name) { :comments }
 
