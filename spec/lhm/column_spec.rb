@@ -1,7 +1,6 @@
-require 'byebug'
 require 'spec_helper'
 
-describe PerconaMigrator::Lhm::Fake::Column do
+describe Lhm::Column do
   let(:name) { :some_field_name }
   let(:column) { described_class.new(name, definition) }
 

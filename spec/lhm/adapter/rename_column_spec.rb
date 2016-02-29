@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::Lhm::Fake::Adapter, '#rename_column' do
+describe Lhm::Adapter, '#rename_column' do
   let(:migration) { double(:migration) }
   let(:table_name) { :comments }
 

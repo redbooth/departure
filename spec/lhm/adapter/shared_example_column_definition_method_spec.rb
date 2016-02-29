@@ -4,13 +4,13 @@ shared_examples 'column-definition method' do |method_name|
   let(:table_name) { :comments }
 
   let(:adapter) { described_class.new(migration, table_name) }
-  let(:column) { instance_double(PerconaMigrator::Lhm::Fake::Column) }
+  let(:column) { instance_double(Lhm::Column) }
 
   before do
     allow(migration).to(
       receive(method_name).with(table_name, column_name, type, options)
     )
-    allow(PerconaMigrator::Lhm::Fake::Column).to(
+    allow(Lhm::Column).to(
       receive(:new).and_return(column)
     )
   end

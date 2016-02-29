@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::Lhm::Fake::Adapter, '#remove_index' do
+describe Lhm::Adapter, '#remove_index' do
   let(:migration) { double(:migration) }
   let(:table_name) { :comments }
 
