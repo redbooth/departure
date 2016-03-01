@@ -2,8 +2,9 @@ require 'forwardable'
 
 module Lhm
 
-  # Abstracts the details of a database table column
-  class Column
+  # Abstracts the details of a table column definition when specified with a MySQL
+  # column definition string
+  class ColumnWithSql
     extend Forwardable
 
     # Returns the column's class to be used
@@ -22,6 +23,10 @@ module Lhm
       @definition = definition
     end
 
+    # Returns the column data as an Array to be used with the splat operator.
+    # See Lhm::Adaper#add_column
+    #
+    # @return [Array]
     def attributes
       [type, column_options]
     end

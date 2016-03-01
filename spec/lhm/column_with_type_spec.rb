@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Lhm::SimpleColumn do
+describe Lhm::ColumnWithType do
   let(:name) { :some_field_name }
   let(:definition) { :integer }
   let(:column) { described_class.new(name, definition) }

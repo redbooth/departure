@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Lhm::Column do
+describe Lhm::ColumnWithSql do
   let(:name) { :some_field_name }
   let(:column) { described_class.new(name, definition) }
 

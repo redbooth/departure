@@ -1,5 +1,5 @@
-require 'lhm/column'
-require 'lhm/simple_column'
+require 'lhm/column_with_sql'
+require 'lhm/column_with_type'
 
 module Lhm
 
@@ -95,9 +95,9 @@ module Lhm
     # @param definition [String]
     def column(name, definition)
       @column ||= if definition.is_a?(Symbol)
-                    SimpleColumn.new(name, definition)
+                    ColumnWithType.new(name, definition)
                   else
-                    Column.new(name, definition)
+                    ColumnWithSql.new(name, definition)
                   end
     end
 

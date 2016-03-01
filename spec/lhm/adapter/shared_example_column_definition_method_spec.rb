@@ -9,7 +9,7 @@ shared_examples 'column-definition method' do |method_name|
   end
 
   context 'when the definition is passed as a String' do
-    before { allow(Lhm::Column).to receive(:new).and_return(column) }
+    before { allow(Lhm::ColumnWithSql).to receive(:new).and_return(column) }
 
     before do
       allow(migration).to(
@@ -19,7 +19,7 @@ shared_examples 'column-definition method' do |method_name|
 
     before { adapter.public_send(method_name, column_name, definition) }
 
-    let(:column) { instance_double(Lhm::Column) }
+    let(:column) { instance_double(Lhm::ColumnWithSql) }
 
     let(:definition) { 'INT(11) DEFAULT NULL' }
     let(:column_name) { :some_id_field }
@@ -41,7 +41,7 @@ shared_examples 'column-definition method' do |method_name|
 
   context 'when the definition is passed as a Symbol' do
     before do
-      allow(Lhm::SimpleColumn).to receive(:new).and_return(column)
+      allow(Lhm::ColumnWithType).to receive(:new).and_return(column)
     end
 
     before do
@@ -52,7 +52,7 @@ shared_examples 'column-definition method' do |method_name|
 
     before { adapter.public_send(method_name, column_name, definition) }
 
-    let(:column) { instance_double(Lhm::SimpleColumn) }
+    let(:column) { instance_double(Lhm::ColumnWithType) }
 
     let(:definition) { :integer }
     let(:column_name) { :some_id_field }
