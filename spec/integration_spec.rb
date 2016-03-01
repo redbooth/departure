@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 # TODO: Handle #change_table syntax
-describe PerconaMigrator do
+describe PerconaMigrator, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) { MIGRATION_FIXTURES }
@@ -28,7 +28,7 @@ describe PerconaMigrator do
     expect(PerconaMigrator::VERSION).not_to be nil
   end
 
-  context 'when ActiveRecord is loaded', integration: true do
+  context 'when ActiveRecord is loaded' do
     it 'reconnects to the database using PerconaAdapter' do
       ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
       expect(ActiveRecord::Base.connection_pool.spec.config[:adapter]).to eq('percona')
@@ -53,7 +53,7 @@ describe PerconaMigrator do
   context 'creating/removing columns' do
     let(:version) { 1 }
 
-    context 'creating column', integration: true do
+    context 'creating column' do
       let(:direction) { :up }
 
       it 'adds the column in the DB table' do
@@ -78,7 +78,7 @@ describe PerconaMigrator do
       end
     end
 
-    context 'droping column', integration: true do
+    context 'droping column' do
       let(:direction) { :down }
 
       before do
@@ -112,7 +112,7 @@ describe PerconaMigrator do
     end
   end
 
-  context 'adding/removing indexes', index: true do
+  context 'adding/removing indexes' do
     let(:version) { 2 }
 
     context 'adding indexes' do
@@ -191,7 +191,7 @@ describe PerconaMigrator do
     end
   end
 
-  context 'adding/removing unique indexes', index: true do
+  context 'adding/removing unique indexes' do
     let(:version) { 3 }
 
     context 'adding indexes' do

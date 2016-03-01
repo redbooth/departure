@@ -41,14 +41,9 @@ RSpec.configure do |config|
   # Cleans up the database after each example ala Database Cleaner
   config.around(:each) do |example|
     if example.metadata[:integration]
-      test_database.create_schema_migrations_table
-      example.run
-      test_database.create_schema_migrations_table
-    elsif example.metadata[:index]
       test_database.create_test_database
       test_database.create_schema_migrations_table
       example.run
-      test_database.create_test_database
     else
       example.run
     end
