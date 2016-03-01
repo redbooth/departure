@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe PerconaMigrator::Runner do
   let(:command) { 'pt-online-schema-change command' }
-  let(:logger) { double(:logger, puts: true) }
+  let(:logger) { instance_double(Logger, info: true) }
 
   let(:runner) { described_class.new(logger) }
 
@@ -31,18 +31,18 @@ describe PerconaMigrator::Runner do
 
     it 'logs that the execution started' do
       runner.execute(command)
-      expect(logger).to have_received(:puts).with('command output')
+      expect(logger).to have_received(:info).with('command output')
     end
 
     it 'logs that the command\'s output' do
       runner.execute(command)
-      expect(logger).to have_received(:puts).with('command output')
+      expect(logger).to have_received(:info).with('command output')
     end
 
     context 'when the execution was succsessfull' do
       it 'logs it as success' do
         runner.execute(command)
-        expect(logger).to have_received(:puts).with(/Done!/)
+        expect(logger).to have_received(:info).with(/Done!/)
       end
     end
 
@@ -53,7 +53,7 @@ describe PerconaMigrator::Runner do
 
       it 'logs it as failure' do
         runner.execute(command)
-        expect(logger).to have_received(:puts).with(/Failed!/)
+        expect(logger).to have_received(:info).with(/Failed!/)
       end
     end
 

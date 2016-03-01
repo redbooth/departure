@@ -49,7 +49,7 @@ module PerconaMigrator
     #
     # Logs when the execution started
     def log_started
-      logger.puts "\n#{CYAN}-- #{command}#{NONE}\n\n"
+      logger.info "\n#{CYAN}-- #{command}#{NONE}\n\n"
     end
 
     # Executes the command outputing any errors
@@ -58,7 +58,7 @@ module PerconaMigrator
     def run_command
       Open3.popen2(command) do |_stdin, stdout, process|
         @status = process.value
-        logger.puts stdout.read
+        logger.info stdout.read
       end
 
       if status.nil?
@@ -82,7 +82,7 @@ module PerconaMigrator
 
       message = value.zero? ? "#{GREEN}Done!#{NONE}" : "#{RED}Failed!#{NONE}"
 
-      logger.puts("\n#{message}")
+      logger.info("\n#{message}")
     end
   end
 end

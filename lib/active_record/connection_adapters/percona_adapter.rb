@@ -12,10 +12,6 @@ module ActiveRecord
       connection = mysql2_connection(config)
       client = connection.raw_connection
 
-      # TODO: use AR's logger. It must pass a logger instance around, at least
-      # the one the migration uses
-      logger = config[:logger] || $stdout
-
       config.merge!(
         logger: logger,
         runner: PerconaMigrator::Runner.new(logger),
