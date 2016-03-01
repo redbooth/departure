@@ -2,11 +2,10 @@ require 'forwardable'
 
 module Lhm
 
-  # Abstracts the details of a database table column
-  class Column
+  # Abstracts the details of a table column definition when specified with a MySQL
+  # column definition string
+  class ColumnWithSql
     extend Forwardable
-
-    def_delegators :column, :limit, :type, :default, :null
 
     # Returns the column's class to be used
     #
@@ -24,6 +23,20 @@ module Lhm
       @definition = definition
     end
 
+    # Returns the column data as an Array to be used with the splat operator.
+    # See Lhm::Adaper#add_column
+    #
+    # @return [Array]
+    def attributes
+      [type, column_options]
+    end
+
+    private
+
+    def_delegators :column, :limit, :type, :default, :null
+
+    attr_reader :name, :definition
+
     # TODO: investigate
     #
     # Rails doesn't take into account lenght argument of INT in the
@@ -32,13 +45,9 @@ module Lhm
     # Returns the columns data as a Hash
     #
     # @return [Hash]
-    def to_hash
+    def column_options
       { limit: column.limit, default: column.default, null: column.null }
     end
-
-    private
-
-    attr_reader :name, :definition
 
     # Returns the column instance with the provided data
     #

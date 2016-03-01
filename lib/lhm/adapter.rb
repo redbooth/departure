@@ -1,4 +1,5 @@
-require 'lhm/column'
+require 'lhm/column_with_sql'
+require 'lhm/column_with_type'
 
 module Lhm
 
@@ -19,16 +20,10 @@ module Lhm
     # Adds the specified column through ActiveRecord
     #
     # @param column_name [String, Symbol]
-    # @param definition [String]
+    # @param definition [String, Symbol]
     def add_column(column_name, definition)
-      column = column(column_name, definition)
-
-      migration.add_column(
-        table_name,
-        column_name,
-        column.type,
-        column.to_hash
-      )
+      attributes = column_attributes(column_name, definition)
+      migration.add_column(*attributes)
     end
 
     # Removes the specified column through ActiveRecord
@@ -64,16 +59,10 @@ module Lhm
     # Change the column to use the provided definition, through ActiveRecord
     #
     # @param column_name [String, Symbol]
-    # @param definition [String]
+    # @param definition [String, Symbol]
     def change_column(column_name, definition)
-      column = column(column_name, definition)
-
-      migration.change_column(
-        table_name,
-        column_name,
-        column.type,
-        column.to_hash
-      )
+      attributes = column_attributes(column_name, definition)
+      migration.change_column(*attributes)
     end
 
     # Renames the old_name column to new_name by using ActiveRecord
@@ -105,7 +94,16 @@ module Lhm
     # @param name [String, Symbol]
     # @param definition [String]
     def column(name, definition)
-      @column ||= Column.new(name, definition)
+      @column ||= if definition.is_a?(Symbol)
+                    ColumnWithType.new(name, definition)
+                  else
+                    ColumnWithSql.new(name, definition)
+                  end
+    end
+
+    def column_attributes(name, definition)
+      attributes = column(name, definition).attributes
+      [table_name, name].concat(attributes)
     end
   end
 end
