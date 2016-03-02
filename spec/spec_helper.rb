@@ -9,18 +9,15 @@ require 'lhm'
 
 db_config = Configuration.new
 
-class NullLogger
-  def puts(_str)
-  end
-end
+fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
+ActiveRecord::Base.logger = Logger.new(fd)
 
 ActiveRecord::Base.establish_connection(
   adapter: 'percona',
   host: 'localhost',
   username: db_config['username'],
   password: db_config['password'],
-  database: 'percona_migrator_test',
-  logger: NullLogger.new
+  database: 'percona_migrator_test'
 )
 
 MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)

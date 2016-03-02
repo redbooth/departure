@@ -16,8 +16,6 @@ describe PerconaMigrator do
   end
 
   let(:direction) { :up }
-  # TODO: use this logger
-  let(:logger) { double(:logger, puts: true) }
 
   before { ActiveRecord::Migration.verbose = false }
 
