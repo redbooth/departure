@@ -1,6 +1,33 @@
 require 'open3'
 
 module PerconaMigrator
+  class Error < StandardError; end
+
+  # Used when for whatever reason we couldn't get the spawned process'
+  # status.
+  class NoStatusError < Error
+    def message
+      'Status could not be retrieved'.freeze
+    end
+  end
+
+  # Used when the spawned process failed by receiving a signal.
+  # pt-online-schema-change returns "SIGSEGV (signal 11)" on failures.
+  class SignalError < Error
+    attr_reader :status
+
+    # Constructor
+    #
+    # @param status [Process::Status]
+    def initialize(status)
+      super
+      @status = status
+    end
+
+    def message
+      status.to_s
+    end
+  end
 
   # It executes pt-online-schema-change commands in a new process and gets its
   # output and status
@@ -10,14 +37,6 @@ module PerconaMigrator
     CYAN = "\e[38;5;86m"
     GREEN = "\e[32m"
     RED = "\e[31m"
-
-    # Executes the given command printing the output to the logger
-    #
-    # @param command [String]
-    # @param logger [IO]
-    def self.execute(command, logger)
-      new(command, logger).execute
-    end
 
     # Constructor
     #
@@ -63,19 +82,17 @@ module PerconaMigrator
     def run_command
       Open3.popen3(command) do |_stdin, stdout, _stderr, waith_thr|
         @status = waith_thr.value
-        logger.info stdout.read
+        logger.info(stdout.read)
       end
 
-      if status.nil?
-        Kernel.warn("Error running '#{command}': status could not be retrieved")
-      end
-
-      if status && status.signaled?
-        Kernel.warn("Error running '#{command}': #{status}")
-      end
+      raise NoStatusError if status.nil?
+      raise SignalError.new(status) if status.signaled?
 
     rescue Errno::ENOENT
-      raise Errno::ENOENT, "Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit"
+      raise(
+        Errno::ENOENT,
+        "Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit"
+      )
     end
 
     # Logs the status of the execution once it's finished

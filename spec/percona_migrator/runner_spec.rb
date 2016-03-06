@@ -61,23 +61,23 @@ describe PerconaMigrator::Runner do
 
     context 'when the command\'s exit status could not be retrieved' do
       let(:status) { nil }
-      before { allow(Kernel).to receive(:warn).and_return(true) }
 
-      it 'writes to the STDERR' do
-        runner.execute(command)
-        expect(Kernel).to have_received(:warn)
+      it 'raises a NoStatusError' do
+        expect { runner.execute(command) }.to(
+          raise_exception(PerconaMigrator::NoStatusError)
+        )
       end
     end
 
-    context 'when the command did not catch a signal' do
+    context 'when the command was signaled' do
       let(:status) do
         instance_double(Process::Status, exitstatus: 1, signaled?: true)
       end
-      before { allow(Kernel).to receive(:warn).and_return(true) }
 
-      it 'writes to the STDERR' do
-        runner.execute(command)
-        expect(Kernel).to have_received(:warn)
+      it 'raises a SignalError specifying the status' do
+        expect { runner.execute(command) }.to(
+          raise_exception(PerconaMigrator::SignalError, status.to_s)
+        )
       end
     end
   end
