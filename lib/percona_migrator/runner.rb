@@ -56,8 +56,8 @@ module PerconaMigrator
     #
     # @raise [Errno::ENOENT] if pt-online-schema-change can't be found
     def run_command
-      Open3.popen2(command) do |_stdin, stdout, process|
-        @status = process.value
+      Open3.popen3(command) do |_stdin, stdout, _stderr, waith_thr|
+        @status = waith_thr.value
         logger.info stdout.read
       end
 

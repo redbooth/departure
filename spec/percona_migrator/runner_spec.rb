@@ -1,4 +1,3 @@
-require 'byebug'
 require 'spec_helper'
 
 describe PerconaMigrator::Runner do
@@ -12,17 +11,20 @@ describe PerconaMigrator::Runner do
       instance_double(Process::Status, exitstatus: 0, signaled?: false)
     end
     let(:stdout) { double(:stdout, read: 'command output') }
-    let(:process) { instance_double(Thread, value: status) }
+    let(:stderr) { double(:stderr) }
+    let(:wait_thread) { instance_double(Thread, value: status) }
 
     before do
       allow(Open3).to(
-        receive(:popen2).with(command).and_yield(nil, stdout, process)
+        receive(:popen3)
+        .with(command)
+        .and_yield(nil, stdout, stderr, wait_thread)
       )
     end
 
     it 'executes the pt-online-schema-change command' do
       runner.execute(command)
-      expect(Open3).to have_received(:popen2).with(command)
+      expect(Open3).to have_received(:popen3).with(command)
     end
 
     it 'returns the command status' do
