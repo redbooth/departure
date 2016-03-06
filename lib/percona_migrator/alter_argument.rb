@@ -17,6 +17,13 @@ module PerconaMigrator
       "--alter \"#{parsed_statement}\""
     end
 
+    # Returns the name of the table the alter statement refers to
+    #
+    # @return [String]
+    def table_name
+      statement.match(/ALTER TABLE `(\w+)` /).captures[0]
+    end
+
     private
 
     attr_reader :statement

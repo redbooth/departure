@@ -130,6 +130,15 @@ module ActiveRecord
         true
       end
 
+      def percona_execute(sql)
+        if sql =~ /alter table/i
+          command = cli_generator.parse_statement(sql)
+          runner.execute(command)
+        else
+          mysql_adapter.execute(sql)
+        end
+      end
+
       # This abstract method leaves up to the connection adapter freeing the
       # result, if it needs to. Check out: https://github.com/rails/rails/blob/330c6af05c8b188eb072afa56c07d5fe15767c3c/activerecord/lib/active_record/connection_adapters/abstract_mysql_adapter.rb#L247
       #

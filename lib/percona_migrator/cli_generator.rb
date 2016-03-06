@@ -56,8 +56,23 @@ module PerconaMigrator
     # @param statement [String] MySQL statement
     # @return [String]
     def generate(table_name, statement)
-      dsn = DSN.new(database, table_name)
       alter_argument = AlterArgument.new(statement)
+      dsn = DSN.new(database, table_name)
+
+      "#{to_s} #{dsn} #{alter_argument}"
+    end
+
+    # Generates the percona command for a raw MySQL statement. Fills all the
+    # connection credentials from the current AR connection, but that can
+    # amended via ENV-vars: PERCONA_DB_HOST, PERCONA_DB_USER,
+    # PERCONA_DB_PASSWORD, PERCONA_DB_NAME Table name can't not be amended, it
+    # populates automatically from the migration data
+    #
+    # @param statement [String] MySQL statement
+    # @return [String]
+    def parse_statement(statement)
+      alter_argument = AlterArgument.new(statement)
+      dsn = DSN.new(database, alter_argument.table_name)
 
       "#{to_s} #{dsn} #{alter_argument}"
     end
@@ -79,6 +94,8 @@ module PerconaMigrator
     end
 
     # Returns the command as a string that can be executed in a shell
+    #
+    # @return [String]
     def to_s
       @command.join(' ')
     end

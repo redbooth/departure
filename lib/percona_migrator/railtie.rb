@@ -37,6 +37,17 @@ module PerconaMigrator
               connection_config.merge(adapter: 'percona')
             )
           end
+
+          # It executes the passed statement through the PerconaAdapter if it's
+          # an alter statement. It uses the mysql adapter otherwise.
+          #
+          # This is because +pt-online-schema-change+ is intended for alter
+          # statements only.
+          #
+          # @param statement [String] MySQL statement
+          def execute(statement)
+            percona_execute(statement)
+          end
         end
       end
     end
