@@ -1,8 +1,9 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
+Bundler.require(:default, :development)
+
 require './configuration'
 require './test_database'
-require 'rspec/its'
 
 require 'percona_migrator'
 require 'lhm'
