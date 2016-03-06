@@ -219,7 +219,7 @@ describe PerconaMigrator, integration: true do
       let(:direction) { :down }
 
       before do
-        ActiveRecord::Migrator.new(:up, [migration_fixtures], 1).migrate
+        ActiveRecord::Migrator.run(:up, [migration_fixtures], 1)
         ActiveRecord::Migrator.run(:up, [migration_fixtures], version)
       end
 
@@ -264,6 +264,55 @@ describe PerconaMigrator, integration: true do
     it 'updates the schema_migrations' do
       ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
       expect(ActiveRecord::Migrator.current_version).to eq(0)
+    end
+  end
+
+  context 'when the migration failed' do
+    context 'and the migration is not an alter table statement' do
+      let(:version) { 8 }
+
+      before { ActiveRecord::Base.connection.create_table(:things) }
+
+      it 'raises and halts the execution' do
+        expect {
+          ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+        }.to raise_error(ActiveRecord::StatementInvalid)
+      end
+    end
+
+    context 'and the migration is an alter table statement' do
+      let(:version) { 1 }
+
+      before do
+        ActiveRecord::Base.connection.add_column(
+          :comments,
+          :some_id_field,
+          :integer
+        )
+      end
+
+      it 'raises and halts the execution' do
+        expect {
+          ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+        }.to raise_error(ActiveRecord::StatementInvalid)
+      end
+    end
+  end
+
+  context 'when pt-online-schema-change is not installed' do
+    let(:version) { 1 }
+
+    around do |example|
+      original_path = ENV['PATH']
+      ENV['PATH'] = ''
+      example.run
+      ENV['PATH'] = original_path
+    end
+
+    it 'raises and halts the execution' do
+      expect {
+        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+      }.to raise_error(ActiveRecord::StatementInvalid)
     end
   end
 end

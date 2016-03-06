@@ -8,10 +8,15 @@ describe PerconaMigrator::Runner do
 
   describe '#execute' do
     let(:status) do
-      instance_double(Process::Status, exitstatus: 0, signaled?: false)
+      instance_double(
+        Process::Status,
+        exitstatus: 0,
+        signaled?: false,
+        success?: true
+      )
     end
     let(:stdout) { double(:stdout, read: 'command output') }
-    let(:stderr) { double(:stderr) }
+    let(:stderr) { double(:stderr, read: nil) }
     let(:wait_thread) { instance_double(Thread, value: status) }
 
     before do
@@ -50,12 +55,18 @@ describe PerconaMigrator::Runner do
 
     context 'when the execution failed' do
       let(:status) do
-        instance_double(Process::Status, exitstatus: 1, signaled?: false)
+        instance_double(
+          Process::Status,
+          exitstatus: 1,
+          signaled?: false,
+          success?: false
+        )
       end
 
-      it 'logs it as failure' do
-        runner.execute(command)
-        expect(logger).to have_received(:info).with(/Failed!/)
+      it 'raises a PerconaMigrator::Error' do
+        expect { runner.execute(command) }.to(
+          raise_exception(PerconaMigrator::Error)
+        )
       end
     end
 
@@ -71,12 +82,38 @@ describe PerconaMigrator::Runner do
 
     context 'when the command was signaled' do
       let(:status) do
-        instance_double(Process::Status, exitstatus: 1, signaled?: true)
+        instance_double(
+          Process::Status,
+          exitstatus: 1,
+          signaled?: true,
+          success?: false
+        )
       end
 
       it 'raises a SignalError specifying the status' do
         expect { runner.execute(command) }.to(
           raise_exception(PerconaMigrator::SignalError, status.to_s)
+        )
+      end
+    end
+
+    context 'when pt-online-schema-change is not installed' do
+      let(:status) do
+        instance_double(
+          Process::Status,
+          exitstatus: 127,
+          signaled?: false,
+          success?: false
+        )
+      end
+      let(:stderr) { double(:stderr, read: 'command not found') }
+
+      it 'raises a detailed CommandNotFoundError' do
+        expect { runner.execute(command) }.to(
+          raise_exception(
+            PerconaMigrator::CommandNotFoundError,
+            /Please install pt-online-schema-change/
+          )
         )
       end
     end
