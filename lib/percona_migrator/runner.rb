@@ -33,17 +33,22 @@ module PerconaMigrator
     # @return [Boolean]
     def execute(command)
       @command = command
-
-      log_started
-      run_command
-      log_finished
-
+      logging { run_command }
       status
     end
 
     private
 
     attr_reader :command, :logger, :status
+
+    # Logs the start and end of the execution
+    #
+    # @yield
+    def logging
+      log_started
+      yield
+      log_finished
+    end
 
     # TODO: log as a migration logger subitem
     #
