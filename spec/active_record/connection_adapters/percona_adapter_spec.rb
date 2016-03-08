@@ -95,11 +95,6 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
         adapter.add_column(table_name, column_name, type, options)
       end
 
-      it 'generates the Percona\'s command' do
-        expect(cli_generator).to receive(:generate)
-        adapter.add_column(table_name, column_name, type, options)
-      end
-
       it 'runs the command' do
         expect(runner).to receive(:execute).with('percona command')
         adapter.add_column(table_name, column_name, type, options)
@@ -115,11 +110,6 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
           receive(:generate)
           .with(table_name, 'ALTER TABLE `foo` DROP `bar_id`')
         )
-        adapter.remove_column(table_name, column_name)
-      end
-
-      it 'generates the Percona\'s command' do
-        expect(cli_generator).to receive(:generate)
         adapter.remove_column(table_name, column_name)
       end
 
@@ -150,15 +140,9 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
         expect(cli_generator).to(
           receive(:generate)
           .with(
-            table_name,
-            'ADD index_type INDEX `index_name` (`bar_id`)'
+            table_name, 'ADD index_type INDEX `index_name` (`bar_id`)'
           )
         )
-        adapter.add_index(table_name, column_name, options)
-      end
-
-      it 'generates the Percona\'s command' do
-        expect(cli_generator).to receive(:generate)
         adapter.add_index(table_name, column_name, options)
       end
 
@@ -189,11 +173,6 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
           receive(:generate)
           .with(table_name, 'DROP INDEX `index_name`')
         )
-        adapter.remove_index(table_name, options)
-      end
-
-      it 'generates the Percona\'s command' do
-        expect(cli_generator).to receive(:generate)
         adapter.remove_index(table_name, options)
       end
 
@@ -291,6 +270,16 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     it 'delegates to the mysql adapter' do
       expect(mysql_adapter).to receive(:select_values).with(arel, name)
       adapter.select_values(arel, name)
+    end
+  end
+
+  describe '#create_table' do
+    let(:table_name) { :comments }
+    let(:options) { {} }
+
+    it 'delegates to the mysql adapter' do
+      expect(mysql_adapter).to receive(:create_table).with(table_name)
+      adapter.create_table(table_name)
     end
   end
 end

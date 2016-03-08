@@ -30,8 +30,6 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    # It doesn't implement #create_table as this statement is harmless and
-    # pretty fast. No need to do it with Percona
     class PerconaMigratorAdapter < AbstractMysqlAdapter
 
       class Column < AbstractMysqlAdapter::Column
@@ -45,7 +43,7 @@ module ActiveRecord
       ADAPTER_NAME = 'Percona'.freeze
 
       def_delegators :mysql_adapter, :tables, :select_values, :exec_delete,
-        :exec_insert, :exec_query, :last_inserted_id, :select
+        :exec_insert, :exec_query, :last_inserted_id, :select, :create_table
 
       def initialize(connection, logger, connection_options, config)
         super
