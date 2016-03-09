@@ -15,6 +15,11 @@ describe PerconaMigrator do
     indexes.select(&:unique).map(&:name)
   end
 
+  def tables
+    tables = ActiveRecord::Base.connection.select_all('SHOW TABLES')
+    tables.flat_map { |table| table.values }
+  end
+
   let(:direction) { :up }
 
   before { ActiveRecord::Migration.verbose = false }
@@ -230,6 +235,20 @@ describe PerconaMigrator do
         ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
         expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
+    end
+  end
+
+  context 'creating a table', index: true do
+    let(:version) { 8 }
+
+    it 'creates the table' do
+      ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+      expect(tables).to include('things')
+    end
+
+    it 'marks the migration as up' do
+      ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+      expect(ActiveRecord::Migrator.current_version).to eq(version)
     end
   end
 end
