@@ -130,12 +130,17 @@ module ActiveRecord
         true
       end
 
-      def percona_execute(sql)
-        if sql =~ /alter table/i
+      # Executes the passed statement through pt-online-schema-change if it's
+      # an alter statement, or through the mysql adapter otherwise
+      #
+      # @param sql [String]
+      # @param name [String]
+      def percona_execute(sql, name)
+        if alter_statement?(sql)
           command = cli_generator.parse_statement(sql)
           runner.execute(command)
         else
-          mysql_adapter.execute(sql)
+          mysql_adapter.execute(sql, name)
         end
       end
 
@@ -151,6 +156,14 @@ module ActiveRecord
       private
 
       attr_reader :mysql_adapter, :logger, :runner, :cli_generator
+
+      # Checks whether the sql statement is an ALTER TABLE
+      #
+      # @param sql [String]
+      # @return [Boolean]
+      def alter_statement?(sql)
+        sql =~ /alter table/i
+      end
     end
   end
 end

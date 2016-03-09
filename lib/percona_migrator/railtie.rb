@@ -44,9 +44,10 @@ module PerconaMigrator
           # This is because +pt-online-schema-change+ is intended for alter
           # statements only.
           #
-          # @param statement [String] MySQL statement
-          def execute(statement)
-            percona_execute(statement)
+          # @param sql [String]
+          # @param name [String] optional
+          def execute(sql, name = nil)
+            percona_execute(sql, name)
           end
         end
       end
