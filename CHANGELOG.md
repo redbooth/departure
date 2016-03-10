@@ -6,6 +6,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [0.1.0.rc.3] - 2016-03-10
+
 ### Added
 
 - Support #execute. Allows to execute raw SQL from the migration
