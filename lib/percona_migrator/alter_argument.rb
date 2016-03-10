@@ -3,6 +3,7 @@ module PerconaMigrator
   # Represents the '--alter' argument of Percona's pt-online-schema-change
   # See https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html
   class AlterArgument
+    ALTER_TABLE_REGEX = /ALTER TABLE `(\w+)` /
 
     # Constructor
     #
@@ -17,6 +18,13 @@ module PerconaMigrator
       "--alter \"#{parsed_statement}\""
     end
 
+    # Returns the name of the table the alter statement refers to
+    #
+    # @return [String]
+    def table_name
+      statement.match(ALTER_TABLE_REGEX).captures[0]
+    end
+
     private
 
     attr_reader :statement
@@ -26,7 +34,7 @@ module PerconaMigrator
     # @return [String]
     def parsed_statement
       @parsed_statement ||= statement
-        .gsub(/ALTER TABLE `(\w+)` /, '')
+        .gsub(ALTER_TABLE_REGEX, '')
         .gsub('`','\\\`')
     end
   end
