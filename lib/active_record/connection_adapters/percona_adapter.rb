@@ -43,7 +43,8 @@ module ActiveRecord
       ADAPTER_NAME = 'Percona'.freeze
 
       def_delegators :mysql_adapter, :tables, :select_values, :exec_delete,
-        :exec_insert, :exec_query, :last_inserted_id, :select, :create_table
+        :exec_insert, :exec_query, :last_inserted_id, :select, :create_table,
+        :drop_table
 
       def initialize(connection, logger, connection_options, config)
         super
