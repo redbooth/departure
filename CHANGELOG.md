@@ -11,6 +11,7 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ### Added
 
 - Support #execute. Allows to execute raw SQL from the migration
+- Support #drop_table
 
 ## [0.1.0.rc.2] - 2016-03-09
 
