@@ -6,12 +6,15 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+- Support #drop_table
+- Support [Foreigner gem](https://github.com/matthuhiggins/foreigner) foreign
+    keys in Rails 3 apps that use it.
+
 ## [0.1.0.rc.3] - 2016-03-10
 
 ### Added
 
 - Support #execute. Allows to execute raw SQL from the migration
-- Support #drop_table
 
 ## [0.1.0.rc.2] - 2016-03-09
 
