@@ -6,6 +6,10 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [0.1.0.rc.4] - 2016-03-15
+
+### Added
+
 - Support #drop_table
 - Support [Foreigner gem](https://github.com/matthuhiggins/foreigner) foreign
     keys in Rails 3 apps that use it.
