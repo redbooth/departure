@@ -283,6 +283,16 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     end
   end
 
+  describe '#drop_table' do
+    let(:table_name) { :comments }
+    let(:options) { {} }
+
+    it 'delegates to the mysql adapter' do
+      expect(mysql_adapter).to receive(:drop_table).with(table_name)
+      adapter.drop_table(table_name)
+    end
+  end
+
   describe '#percona_execute' do
     let(:name) { nil }
 

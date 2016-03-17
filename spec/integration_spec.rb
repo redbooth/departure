@@ -251,4 +251,19 @@ describe PerconaMigrator do
       expect(ActiveRecord::Migrator.current_version).to eq(version)
     end
   end
+
+  context 'dropping a table', index: true do
+    let(:version) { 8 }
+    let(:direction) { :down }
+
+    it 'drops the table' do
+      ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+      expect(tables).not_to include('things')
+    end
+
+    it 'updates the schema_migrations' do
+      ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+      expect(ActiveRecord::Migrator.current_version).to eq(0)
+    end
+  end
 end
