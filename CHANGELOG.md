@@ -11,8 +11,10 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ### Added
 
 - Support #drop_table
-- Support [Foreigner gem](https://github.com/matthuhiggins/foreigner) foreign
-    keys in Rails 3 apps that use it.
+- Support for foreing keys in db/schema.rb when using [Foreigner
+gem](https://github.com/matthuhiggins/foreigner) in Rails 3 apps. This allows to
+define foreign keys with #execute, but does not provide support for
+#add_foreign_key yet.
 
 ## [0.1.0.rc.3] - 2016-03-10
 
