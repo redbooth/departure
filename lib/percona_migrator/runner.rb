@@ -66,7 +66,7 @@ module PerconaMigrator
       end
 
       if status && status.signaled?
-        Kernel.warn("Error running '#{command}': #{status.to_s}")
+        Kernel.warn("Error running '#{command}': #{status}")
       end
 
     rescue Errno::ENOENT

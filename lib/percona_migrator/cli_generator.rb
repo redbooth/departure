@@ -59,7 +59,7 @@ module PerconaMigrator
       alter_argument = AlterArgument.new(statement)
       dsn = DSN.new(database, table_name)
 
-      "#{to_s} #{dsn} #{alter_argument}"
+      "#{self} #{dsn} #{alter_argument}"
     end
 
     # Generates the percona command for a raw MySQL statement. Fills all the
@@ -74,7 +74,7 @@ module PerconaMigrator
       alter_argument = AlterArgument.new(statement)
       dsn = DSN.new(database, alter_argument.table_name)
 
-      "#{to_s} #{dsn} #{alter_argument}"
+      "#{self} #{dsn} #{alter_argument}"
     end
 
     private
