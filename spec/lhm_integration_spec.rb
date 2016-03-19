@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator do
+describe PerconaMigrator, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) do
@@ -10,10 +10,10 @@ describe PerconaMigrator do
 
   before { ActiveRecord::Migration.verbose = false }
 
-  context 'creating/removing columns', ingreation: true do
+  context 'creating/removing columns' do
     let(:version) { 1 }
 
-    context 'creating column', index: true do
+    context 'creating column' do
       let(:direction) { :up }
 
       xit 'adds the column in the DB table' do

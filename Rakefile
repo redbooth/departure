@@ -6,12 +6,12 @@ require './test_database'
 
 RSpec::Core::RakeTask.new(:spec)
 
-task :default => :spec
+task default: :spec
 
 namespace :db do
   desc 'Create the test database'
   task :create do
     config = Configuration.new
-    TestDatabase.new(config).create_test_database
+    TestDatabase.new(config).setup_test_database
   end
 end
