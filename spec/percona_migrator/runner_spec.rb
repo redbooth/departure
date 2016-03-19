@@ -3,8 +3,9 @@ require 'spec_helper'
 describe PerconaMigrator::Runner do
   let(:command) { 'pt-online-schema-change command' }
   let(:logger) { instance_double(Logger, info: true) }
+  let(:cli_generator) { instance_double(PerconaMigrator::CliGenerator) }
 
-  let(:runner) { described_class.new(logger) }
+  let(:runner) { described_class.new(logger, cli_generator) }
 
   describe '#execute' do
     let(:status) do

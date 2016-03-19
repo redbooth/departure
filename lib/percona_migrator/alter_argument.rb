@@ -22,7 +22,10 @@ module PerconaMigrator
     #
     # @return [String]
     def table_name
-      statement.match(ALTER_TABLE_REGEX).captures[0]
+      match = statement.match(ALTER_TABLE_REGEX)
+      raise StandardError, 'Invalid alter statement' unless match
+
+      match.captures[0]
     end
 
     private

@@ -47,9 +47,15 @@ module PerconaMigrator
     # Constructor
     #
     # @param logger [IO]
-    def initialize(logger)
+    def initialize(logger, cli_generator)
       @logger = logger
+      @cli_generator = cli_generator
       @status = nil
+    end
+
+    def query(sql)
+      command = cli_generator.parse_statement(sql)
+      execute(command)
     end
 
     # Runs and logs the given command
@@ -64,7 +70,7 @@ module PerconaMigrator
 
     private
 
-    attr_reader :command, :logger, :status
+    attr_reader :command, :logger, :status, :cli_generator
 
     # Logs the start and end of the execution
     #

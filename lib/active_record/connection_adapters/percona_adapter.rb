@@ -11,17 +11,19 @@ module ActiveRecord
     def self.percona_connection(config)
       connection = mysql2_connection(config)
       client = connection.raw_connection
+      cli_generator = PerconaMigrator::CliGenerator.new(config)
+      runner = PerconaMigrator::Runner.new(logger, cli_generator)
 
       config.merge!(
         logger: logger,
-        runner: PerconaMigrator::Runner.new(logger),
-        cli_generator: PerconaMigrator::CliGenerator.new(config)
+        runner: runner,
+        cli_generator: cli_generator
       )
 
       connection_options = { mysql_adapter: connection }
 
       ConnectionAdapters::PerconaMigratorAdapter.new(
-        client,
+        runner,
         logger,
         connection_options,
         config
@@ -50,7 +52,6 @@ module ActiveRecord
         super
         @mysql_adapter = connection_options[:mysql_adapter]
         @logger = logger
-        @runner = config[:runner]
         @cli_generator = config[:cli_generator]
       end
 
@@ -74,28 +75,6 @@ module ActiveRecord
         Column.new(field, default, type, null, collation)
       end
 
-      # Adds a new column to the named table
-      #
-      # @param table_name [String, Symbol]
-      # @param column_name [String, Symbol]
-      # @param type [Symbol]
-      # @param options [Hash] optional
-      def add_column(table_name, column_name, type, options = {})
-        super
-        command = cli_generator.generate(table_name, @sql)
-        log(@sql, nil) { runner.execute(command) }
-      end
-
-      # Removes the column(s) from the table definition
-      #
-      # @param table_name [String, Symbol]
-      # @param column_names [String, Symbol, Array<String>, Array<Symbol>]
-      def remove_column(table_name, *column_names)
-        super
-        command = cli_generator.generate(table_name, @sql)
-        log(@sql, nil) { runner.execute(command) }
-      end
-
       # Adds a new index to the table
       #
       # @param table_name [String, Symbol]
@@ -103,10 +82,7 @@ module ActiveRecord
       # @param options [Hash] optional
       def add_index(table_name, column_name, options = {})
         index_name, index_type, index_columns, index_options = add_index_options(table_name, column_name, options)
-        execute "ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}"
-
-        command = cli_generator.generate(table_name, @sql)
-        log(@sql, nil) { runner.execute(command) }
+        execute "ALTER TABLE #{quote_table_name(table_name)} ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}"
       end
 
       # Remove the given index from the table.
@@ -115,20 +91,7 @@ module ActiveRecord
       # @param options [Hash] optional
       def remove_index(table_name, options = {})
         index_name = index_name_for_remove(table_name, options)
-        execute "DROP INDEX #{quote_column_name(index_name)}"
-
-        command = cli_generator.generate(table_name, @sql)
-        log(@sql, nil) { runner.execute(command) }
-      end
-
-      # Records the SQL statement to be executed. This is used to then delegate
-      # the execution to Percona's pt-online-schema-change.
-      #
-      # @param sql [String]
-      # @param _name [String] optional
-      def execute(sql, _name = nil)
-        @sql = sql
-        true
+        execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
       end
 
       # Executes the passed statement through pt-online-schema-change if it's
@@ -139,7 +102,7 @@ module ActiveRecord
       def percona_execute(sql, name)
         if alter_statement?(sql)
           command = cli_generator.parse_statement(sql)
-          log(sql, nil) { runner.execute(command) }
+          @connection.execute(command)
         else
           mysql_adapter.execute(sql, name)
         end
