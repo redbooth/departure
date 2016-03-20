@@ -258,11 +258,6 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
         adapter.percona_execute(statement, name)
       end
 
-      it 'logs the execution' do
-        expect(adapter).to receive(:log).with(statement, nil)
-        adapter.percona_execute(statement, name)
-      end
-
       context 'and providing a name' do
         let(:name) { 'name' }
 
