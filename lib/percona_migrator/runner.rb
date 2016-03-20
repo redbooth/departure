@@ -43,7 +43,6 @@ module PerconaMigrator
     NONE = "\e[0m"
     CYAN = "\e[38;5;86m"
     GREEN = "\e[32m"
-    RED = "\e[31m"
 
     # Constructor
     #
