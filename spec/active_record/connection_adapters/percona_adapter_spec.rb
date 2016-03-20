@@ -86,17 +86,22 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       let(:column_name) { :bar_id }
       let(:type) { :integer }
       let(:options) { {} }
+      let(:sql) { 'ALTER TABLE `foo` ADD `bar_id` int(11)' }
 
       it 'passes the built SQL to the CliGenerator' do
         expect(cli_generator).to(
-          receive(:generate)
-          .with(table_name, 'ALTER TABLE `foo` ADD `bar_id` int(11)')
+          receive(:generate).with(table_name, sql)
         )
         adapter.add_column(table_name, column_name, type, options)
       end
 
       it 'runs the command' do
         expect(runner).to receive(:execute).with('percona command')
+        adapter.add_column(table_name, column_name, type, options)
+      end
+
+      it 'logs the execution' do
+        expect(adapter).to receive(:log).with(sql, nil)
         adapter.add_column(table_name, column_name, type, options)
       end
     end
@@ -104,17 +109,23 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     describe '#remove_column' do
       let(:table_name) { :foo }
       let(:column_name) { :bar_id }
+      let(:sql) { 'ALTER TABLE `foo` DROP `bar_id`' }
 
       it 'passes the built SQL to the CliGenerator' do
         expect(cli_generator).to(
           receive(:generate)
-          .with(table_name, 'ALTER TABLE `foo` DROP `bar_id`')
+          .with(table_name, sql)
         )
         adapter.remove_column(table_name, column_name)
       end
 
       it 'runs the command' do
         expect(runner).to receive(:execute).with('percona command')
+        adapter.remove_column(table_name, column_name)
+      end
+
+      it 'logs the execution' do
+        expect(adapter).to receive(:log).with(sql, nil)
         adapter.remove_column(table_name, column_name)
       end
     end
@@ -123,6 +134,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       let(:table_name) { :foo }
       let(:column_name) { :bar_id }
       let(:options) { {} }
+      let(:sql) { 'ADD index_type INDEX `index_name` (`bar_id`)' }
 
       before do
         allow(PerconaMigrator::CliGenerator).to(
@@ -138,10 +150,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
 
       it 'passes the built SQL to the CliGenerator' do
         expect(cli_generator).to(
-          receive(:generate)
-          .with(
-            table_name, 'ADD index_type INDEX `index_name` (`bar_id`)'
-          )
+          receive(:generate).with(table_name, sql)
         )
         adapter.add_index(table_name, column_name, options)
       end
@@ -150,11 +159,17 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
         expect(runner).to receive(:execute).with('percona command')
         adapter.add_index(table_name, column_name, options)
       end
+
+      it 'logs the execution' do
+        expect(adapter).to receive(:log).with(sql, nil)
+        adapter.add_index(table_name, column_name, options)
+      end
     end
 
     describe '#remove_index' do
       let(:table_name) { :foo }
       let(:options) { { column: :bar_id } }
+      let(:sql) { 'DROP INDEX `index_name`' }
 
       before do
         allow(PerconaMigrator::CliGenerator).to(
@@ -171,13 +186,18 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       it 'passes the built SQL to the CliGenerator' do
         expect(cli_generator).to(
           receive(:generate)
-          .with(table_name, 'DROP INDEX `index_name`')
+          .with(table_name, sql)
         )
         adapter.remove_index(table_name, options)
       end
 
       it 'runs the command' do
         expect(runner).to receive(:execute).with('percona command')
+        adapter.remove_index(table_name, options)
+      end
+
+      it 'logs the execution' do
+        expect(adapter).to receive(:log).with(sql, nil)
         adapter.remove_index(table_name, options)
       end
     end
@@ -315,6 +335,11 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
 
       it 'runs the command' do
         expect(runner).to receive(:execute).with('percona command')
+        adapter.percona_execute(statement, name)
+      end
+
+      it 'logs the execution' do
+        expect(adapter).to receive(:log).with(statement, nil)
         adapter.percona_execute(statement, name)
       end
 

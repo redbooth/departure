@@ -83,7 +83,7 @@ module ActiveRecord
       def add_column(table_name, column_name, type, options = {})
         super
         command = cli_generator.generate(table_name, @sql)
-        runner.execute(command)
+        log(@sql, nil) { runner.execute(command) }
       end
 
       # Removes the column(s) from the table definition
@@ -93,7 +93,7 @@ module ActiveRecord
       def remove_column(table_name, *column_names)
         super
         command = cli_generator.generate(table_name, @sql)
-        runner.execute(command)
+        log(@sql, nil) { runner.execute(command) }
       end
 
       # Adds a new index to the table
@@ -106,7 +106,7 @@ module ActiveRecord
         execute "ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}"
 
         command = cli_generator.generate(table_name, @sql)
-        runner.execute(command)
+        log(@sql, nil) { runner.execute(command) }
       end
 
       # Remove the given index from the table.
@@ -118,7 +118,7 @@ module ActiveRecord
         execute "DROP INDEX #{quote_column_name(index_name)}"
 
         command = cli_generator.generate(table_name, @sql)
-        runner.execute(command)
+        log(@sql, nil) { runner.execute(command) }
       end
 
       # Records the SQL statement to be executed. This is used to then delegate
@@ -139,7 +139,7 @@ module ActiveRecord
       def percona_execute(sql, name)
         if alter_statement?(sql)
           command = cli_generator.parse_statement(sql)
-          runner.execute(command)
+          log(sql, nil) { runner.execute(command) }
         else
           mysql_adapter.execute(sql, name)
         end
@@ -152,6 +152,9 @@ module ActiveRecord
       # @param name [String] optional
       def execute_and_free(sql, name = nil)
         yield mysql_adapter.execute(sql, name)
+      end
+
+      def error_number(exception)
       end
 
       private

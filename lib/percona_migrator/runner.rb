@@ -1,23 +1,48 @@
 require 'open3'
 
 module PerconaMigrator
+  class Error < StandardError; end
+
+  # Used when for whatever reason we couldn't get the spawned process'
+  # status.
+  class NoStatusError < Error
+    def message
+      'Status could not be retrieved'.freeze
+    end
+  end
+
+  # Used when the spawned process failed by receiving a signal.
+  # pt-online-schema-change returns "SIGSEGV (signal 11)" on failures.
+  class SignalError < Error
+    attr_reader :status
+
+    # Constructor
+    #
+    # @param status [Process::Status]
+    def initialize(status)
+      super
+      @status = status
+    end
+
+    def message
+      status.to_s
+    end
+  end
+
+  class CommandNotFoundError < Error
+    def message
+      'Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit for further details'
+    end
+  end
 
   # It executes pt-online-schema-change commands in a new process and gets its
   # output and status
   class Runner
+    COMMAND_NOT_FOUND = 127
 
     NONE = "\e[0m"
     CYAN = "\e[38;5;86m"
     GREEN = "\e[32m"
-    RED = "\e[31m"
-
-    # Executes the given command printing the output to the logger
-    #
-    # @param command [String]
-    # @param logger [IO]
-    def self.execute(command, logger)
-      new(command, logger).execute
-    end
 
     # Constructor
     #
@@ -33,17 +58,22 @@ module PerconaMigrator
     # @return [Boolean]
     def execute(command)
       @command = command
-
-      log_started
-      run_command
-      log_finished
-
+      logging { run_command }
       status
     end
 
     private
 
     attr_reader :command, :logger, :status
+
+    # Logs the start and end of the execution
+    #
+    # @yield
+    def logging
+      log_started
+      yield
+      log_finished
+    end
 
     # TODO: log as a migration logger subitem
     #
@@ -56,33 +86,24 @@ module PerconaMigrator
     #
     # @raise [Errno::ENOENT] if pt-online-schema-change can't be found
     def run_command
-      Open3.popen2(command) do |_stdin, stdout, process|
-        @status = process.value
-        logger.info stdout.read
+      message = nil
+      Open3.popen3(command) do |_stdin, stdout, stderr, waith_thr|
+        @status = waith_thr.value
+        message = stderr.read
+        logger.info(stdout.read)
       end
 
-      if status.nil?
-        Kernel.warn("Error running '#{command}': status could not be retrieved")
-      end
+      raise NoStatusError if status.nil?
+      raise SignalError.new(status) if status.signaled?
+      raise CommandNotFoundError if status.exitstatus == COMMAND_NOT_FOUND
 
-      if status && status.signaled?
-        Kernel.warn("Error running '#{command}': #{status}")
-      end
-
-    rescue Errno::ENOENT
-      raise Errno::ENOENT, "Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit"
+      raise Error, message unless status.success?
     end
 
-    # Logs the status of the execution once it's finished
+    # Logs the status of the execution once it's finished. At this point we
+    # know it's a success
     def log_finished
-      return unless status
-
-      value = status.exitstatus
-      return unless value
-
-      message = value.zero? ? "#{GREEN}Done!#{NONE}" : "#{RED}Failed!#{NONE}"
-
-      logger.info("\n#{message}")
+      logger.info("\n#{GREEN}Done!#{NONE}")
     end
   end
 end

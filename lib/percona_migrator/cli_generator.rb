@@ -47,7 +47,7 @@ module PerconaMigrator
     end
 
     # Generates the percona command. Fills all the connection credentials from
-    # the current AR connection, but that can amended via ENV-vars:
+    # the current AR connection, but that can be amended via ENV-vars:
     # PERCONA_DB_HOST, PERCONA_DB_USER, PERCONA_DB_PASSWORD, PERCONA_DB_NAME
     # Table name can't not be amended, it populates automatically from the
     # migration data
