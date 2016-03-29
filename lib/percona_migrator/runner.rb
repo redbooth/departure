@@ -90,7 +90,9 @@ module PerconaMigrator
 
     # Executes the command outputing any errors
     #
-    # @raise [Errno::ENOENT] if pt-online-schema-change can't be found
+    # @raise [NoStatusError] if the spawned process' status can't be retrieved
+    # @raise [SignalError] if the spawned process receives a signal
+    # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
     def run_command
       message = nil
       Open3.popen3(command) do |_stdin, stdout, stderr, waith_thr|
