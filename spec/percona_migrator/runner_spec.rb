@@ -10,6 +10,22 @@ describe PerconaMigrator::Runner do
 
   let(:runner) { described_class.new(logger, cli_generator, mysql_adapter) }
 
+  describe '#query' do
+  end
+
+  describe '#affected_rows' do
+    let(:mysql_client) { double(:mysql_client) }
+
+    before do
+      allow(mysql_adapter).to receive(:raw_connection).and_return(mysql_client)
+    end
+
+    it 'delegates to the MySQL adapter\'s client' do
+      expect(mysql_client).to receive(:affected_rows)
+      runner.affected_rows
+    end
+  end
+
   describe '#execute' do
     let(:status) do
       instance_double(

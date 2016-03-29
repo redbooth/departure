@@ -48,14 +48,34 @@ module ActiveRecord
 
       ADAPTER_NAME = 'Percona'.freeze
 
-      def_delegators :mysql_adapter, :tables, :select_values, :exec_delete,
-        :exec_insert, :exec_query, :last_inserted_id, :select
+      def_delegators :mysql_adapter, :last_inserted_id, :select
 
       def initialize(connection, logger, connection_options, config)
         super
         @mysql_adapter = connection_options[:mysql_adapter]
         @logger = logger
         @cli_generator = config[:cli_generator]
+      end
+
+      def exec_delete(sql, name, binds)
+        execute(to_sql(sql, binds), name)
+        @connection.affected_rows
+      end
+      alias :exec_update :exec_delete
+
+      def exec_insert(sql, name, binds)
+        execute(to_sql(sql, binds), name)
+      end
+
+      def exec_query(sql, name = 'SQL', binds = [])
+        result = execute(sql, name)
+        ActiveRecord::Result.new(result.fields, result.to_a)
+      end
+
+      # Executes a SELECT query and returns an array of rows. Each row is an
+      # array of field values.
+      def select_rows(sql, name = nil)
+        execute(sql, name).to_a
       end
 
       # Returns true, as this adapter supports migrations

@@ -63,6 +63,11 @@ module PerconaMigrator
       end
     end
 
+    def affected_rows
+      mysql_adapter.raw_connection.affected_rows
+    end
+
+    # TODO: rename it so we don't confuse it with AR's #execute
     # Runs and logs the given command
     #
     # @param command [String]

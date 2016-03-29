@@ -149,23 +149,32 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
   end
 
   describe '#exec_delete' do
-    let(:sql) { 'DELETE FROM comments' }
+    let(:sql) { 'DELETE FROM comments WHERE id = 1' }
     let(:name) { nil }
     let(:binds) { nil }
 
-    it 'delegates to the mysql adapter' do
-      expect(mysql_adapter).to receive(:exec_delete).with(sql, name, binds)
+    before do
+      allow(runner).to receive(:query).with(sql)
+      allow(runner).to receive(:affected_rows).and_return(1)
+    end
+
+    it 'executes the sql' do
+      expect(adapter).to(receive(:execute).with(sql, name))
       adapter.exec_delete(sql, name, binds)
+    end
+
+    it 'returns the number of affected rows' do
+      expect(adapter.exec_delete(sql, name, binds)).to eq(1)
     end
   end
 
   describe '#exec_insert' do
-    let(:sql) { 'INSERT INTO comments () VALUES ()' }
+    let(:sql) { 'INSERT INTO comments (id) VALUES (20)' }
     let(:name) { nil }
     let(:binds) { nil }
 
-    it 'delegates to the mysql adapter' do
-      expect(mysql_adapter).to receive(:exec_insert).with(sql, name, binds)
+    it 'executes the sql' do
+      expect(adapter).to(receive(:execute).with(sql, name))
       adapter.exec_insert(sql, name, binds)
     end
   end
@@ -174,9 +183,27 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     let(:sql) { 'SELECT * FROM comments' }
     let(:name) { nil }
     let(:binds) { nil }
+    let(:result_set) { double(fields: [:id], to_a: [1]) }
 
-    it 'delegates to the mysql adapter' do
-      expect(mysql_adapter).to receive(:exec_query).with(sql, name, binds)
+    before do
+      allow(runner).to receive(:query).with(sql)
+      allow(adapter).to(
+        receive(:execute).with(sql, name).and_return(result_set)
+      )
+    end
+
+    it 'executes the sql' do
+      expect(adapter).to(
+        receive(:execute).with(sql, name)
+      ).and_return(result_set)
+
+      adapter.exec_query(sql, name, binds)
+    end
+
+    it 'returns an ActiveRecord::Result' do
+      expect(ActiveRecord::Result).to(
+        receive(:new).with(result_set.fields, result_set.to_a)
+      )
       adapter.exec_query(sql, name, binds)
     end
   end
@@ -192,25 +219,31 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     end
   end
 
-  describe '#tables' do
-    let(:name) { nil }
-    let(:database) { nil }
-    let(:like) { nil }
+  describe '#select_rows' do
+    subject { adapter.select_rows(sql, name) }
 
-    it 'delegates to the mysql adapter' do
-      expect(mysql_adapter).to receive(:tables).with(name, database, like)
-      adapter.tables(name, database, like)
-    end
-  end
-
-  describe '#select_values' do
-    let(:arel) { 'SELECT id FROM comments LIMIT 3' }
+    let(:sql) { 'SELECT id, body FROM comments' }
     let(:name) { nil }
 
-    it 'delegates to the mysql adapter' do
-      expect(mysql_adapter).to receive(:select_values).with(arel, name)
-      adapter.select_values(arel, name)
+    let(:array_of_rows) do
+      [{'id'=>'1', 'body' => 'foo'}, {'id'=>'2', 'body' => 'bar'}]
     end
+    let(:mysql2_result) do
+      instance_double(Mysql2::Result, to_a: array_of_rows)
+    end
+
+    before do
+      allow(adapter).to(
+        receive(:execute).with(sql, name)
+      ).and_return(mysql2_result)
+    end
+
+    it 'calls #execute with the provided sql' do
+      expect(adapter).to receive(:execute).with(sql, name)
+      adapter.select_rows(sql, name)
+    end
+
+    it { is_expected.to match_array(array_of_rows) }
   end
 
   describe '#percona_execute' do
