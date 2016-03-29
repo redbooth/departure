@@ -6,6 +6,14 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [0.1.0.rc.5] - 2016-03-29
+
+### Changed
+
+- Raise a ActiveRecord::StatementInvalid on failed migration. It also provides
+    more detailed error message when possible such as pt-onlin-schema-change
+    being missing.
+
 ## [0.1.0.rc.4] - 2016-03-15
 
 ### Added
