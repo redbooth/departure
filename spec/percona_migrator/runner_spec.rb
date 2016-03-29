@@ -4,8 +4,11 @@ describe PerconaMigrator::Runner do
   let(:command) { 'pt-online-schema-change command' }
   let(:logger) { instance_double(Logger, info: true) }
   let(:cli_generator) { instance_double(PerconaMigrator::CliGenerator) }
+  let(:mysql_adapter) do
+    instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
+  end
 
-  let(:runner) { described_class.new(logger, cli_generator) }
+  let(:runner) { described_class.new(logger, cli_generator, mysql_adapter) }
 
   describe '#execute' do
     let(:status) do

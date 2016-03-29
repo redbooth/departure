@@ -47,15 +47,20 @@ module PerconaMigrator
     # Constructor
     #
     # @param logger [IO]
-    def initialize(logger, cli_generator)
+    def initialize(logger, cli_generator, mysql_adapter)
       @logger = logger
       @cli_generator = cli_generator
+      @mysql_adapter = mysql_adapter
       @status = nil
     end
 
     def query(sql)
-      command = cli_generator.parse_statement(sql)
-      execute(command)
+      if alter_statement?(sql)
+        command = cli_generator.parse_statement(sql)
+        execute(command)
+      else
+        mysql_adapter.execute(sql)
+      end
     end
 
     # Runs and logs the given command
@@ -70,7 +75,15 @@ module PerconaMigrator
 
     private
 
-    attr_reader :command, :logger, :status, :cli_generator
+    attr_reader :command, :logger, :status, :cli_generator, :mysql_adapter
+
+    # Checks whether the sql statement is an ALTER TABLE
+    #
+    # @param sql [String]
+    # @return [Boolean]
+    def alter_statement?(sql)
+      sql =~ /alter table/i
+    end
 
     # Logs the start and end of the execution
     #

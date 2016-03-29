@@ -9,10 +9,14 @@ module ActiveRecord
     # Establishes a connection to the database that's used by all Active
     # Record objects.
     def self.percona_connection(config)
-      connection = mysql2_connection(config)
-      client = connection.raw_connection
+      mysql2_connection = mysql2_connection(config)
+
       cli_generator = PerconaMigrator::CliGenerator.new(config)
-      runner = PerconaMigrator::Runner.new(logger, cli_generator)
+      runner = PerconaMigrator::Runner.new(
+        logger,
+        cli_generator,
+        mysql2_connection
+      )
 
       config.merge!(
         logger: logger,
@@ -20,7 +24,7 @@ module ActiveRecord
         cli_generator: cli_generator
       )
 
-      connection_options = { mysql_adapter: connection }
+      connection_options = { mysql_adapter: mysql2_connection }
 
       ConnectionAdapters::PerconaMigratorAdapter.new(
         runner,
@@ -45,8 +49,7 @@ module ActiveRecord
       ADAPTER_NAME = 'Percona'.freeze
 
       def_delegators :mysql_adapter, :tables, :select_values, :exec_delete,
-        :exec_insert, :exec_query, :last_inserted_id, :select, :create_table,
-        :drop_table
+        :exec_insert, :exec_query, :last_inserted_id, :select
 
       def initialize(connection, logger, connection_options, config)
         super
