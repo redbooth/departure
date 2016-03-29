@@ -27,5 +27,13 @@ describe PerconaMigrator::AlterArgument do
     end
 
     it { is_expected.to eq('comments') }
+
+    context 'when the statement is invalid' do
+      let(:statement) { 'CREATE TABLE `things`' }
+
+      it 'raises a StandardError' do
+        expect { alter_argument.table_name }.to raise_error(StandardError)
+      end
+    end
   end
 end
