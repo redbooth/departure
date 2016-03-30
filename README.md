@@ -1,18 +1,13 @@
-# PerconaMigrator [![Build Status](https://travis-ci.org/redbooth/percona_migrator.svg?branch=master)](https://travis-ci.org/redbooth/percona_migrator) [![Code Climate](https://codeclimate.com/github/redbooth/percona_migrator/badges/gpa.svg)](https://codeclimate.com/github/redbooth/percona_migrator)
+# Percona Migrator [![Build Status](https://travis-ci.org/redbooth/percona_migrator.svg?branch=master)](https://travis-ci.org/redbooth/percona_migrator) [![Code Climate](https://codeclimate.com/github/redbooth/percona_migrator/badges/gpa.svg)](https://codeclimate.com/github/redbooth/percona_migrator)
 
-Percona Migrator is a tool for running online and non-blocking
-DDL `ActiveRecord::Migrations` using `pt-online-schema-change` command-line tool of
+Percona Migrator is an **ActiveRecord connection adapter** that allows running
+**MySQL online and non-blocking DDL** `ActiveRecord::Migration`s without needing
+    to use a different DSL other than Rails' migrations DSL.
+
+It uses `pt-online-schema-change` command-line tool of
 [Percona
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
-which supports foreign key constraints.
-
-It adds a `db:percona_migrate:up` runs your migration using the
-`pt-online-schema-change` command.  It will apply exactly the same changes as
-if you run it with `db:migrate:up` avoiding deadlocks and without the need to
-change how you write regular rails migrations.
-
-It also disables `rake db:migrate:up` for the ddl migrations on envs with
-PERCONA_TOOLKIT var set to ensure all these migrations use Percona in production.
+which runs MySQL alter table statements without downtime.
 
 ## Installation
 
@@ -42,20 +37,20 @@ Or install it yourself as:
 
 ## Usage
 
-Percona Migrator is meant to be used only on production or production-like
-environments. To that end, it will only run if the `PERCONA_TOOLKIT`
-environment variable is present.
+Once you added it to your app's Gemfile, you can create and run Rails migrations
+as usual.
 
-From that same environment where you added the variable, execute the following:
+All the `ALTER TABLE` statements will be executed with
+`pt-online-schema-change`, which will provide additional output to the migration
 
-1. `bundle exec rake db:migrate:status` to find out your migration's version
-number
-2. `rake db:percona_migrate:up VERSION=<version>`.  This will run the migration
-and mark it as up. Otherwise, if the migration fails, it will still be listed as down
+### LHM support
 
-You can also mark the migration as run manually, by executing `bundle exec rake
-db:migrate:mark_as_up VERSION=<version>`. Likewise, there's a `bundle exec rake
-db:migrate:mark_as_down VERSION=<version>` that may be of help.
+If you moved to Soundcloud's [Lhm](https://github.com/soundcloud/lhm) already,
+we got you covered. Percona Migrator overrides Lhm's DSL so that all the alter
+statements also go through `pt-online-schema-change` as well.
+
+You can keep your Lhm migrations and start using Rails migration's DSL back
+again in your next migration.
 
 ## Development
 
