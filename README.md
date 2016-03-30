@@ -14,8 +14,10 @@ which runs MySQL alter table statements without downtime.
 Percona Migrator relies on `pt-online-schema-change` from [Percona
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
 
-For Mac, you can install it with homebrew typing `brew install percona-toolkit`. For
-Linux machines check out the [Percona Toolkit download
+For Mac, you can install it with homebrew typing `brew install percona-toolkit`.
+In Ubuntu you can use apt-get `apt-get install percona-toolkit`.
+
+For other Linux distributions check out the [Percona Toolkit download
 page](https://www.percona.com/downloads/percona-toolkit/) to find the package
 that fits your distribution.
 
