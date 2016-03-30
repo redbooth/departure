@@ -1,26 +1,23 @@
-# PerconaMigrator [![Build Status](https://travis-ci.org/redbooth/percona_migrator.svg?branch=master)](https://travis-ci.org/redbooth/percona_migrator) [![Code Climate](https://codeclimate.com/github/redbooth/percona_migrator/badges/gpa.svg)](https://codeclimate.com/github/redbooth/percona_migrator)
+# Percona Migrator [![Build Status](https://travis-ci.org/redbooth/percona_migrator.svg?branch=master)](https://travis-ci.org/redbooth/percona_migrator) [![Code Climate](https://codeclimate.com/github/redbooth/percona_migrator/badges/gpa.svg)](https://codeclimate.com/github/redbooth/percona_migrator)
 
-Percona Migrator is a tool for running online and non-blocking
-DDL `ActiveRecord::Migrations` using `pt-online-schema-change` command-line tool of
+Percona Migrator is an **ActiveRecord connection adapter** that allows running
+**MySQL online and non-blocking DDL** `ActiveRecord::Migration` without needing
+    to use a different DSL other than Rails' migrations DSL.
+
+It uses `pt-online-schema-change` command-line tool of
 [Percona
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
-which supports foreign key constraints.
-
-It adds a `db:percona_migrate:up` runs your migration using the
-`pt-online-schema-change` command.  It will apply exactly the same changes as
-if you run it with `db:migrate:up` avoiding deadlocks and without the need to
-change how you write regular rails migrations.
-
-It also disables `rake db:migrate:up` for the ddl migrations on envs with
-PERCONA_TOOLKIT var set to ensure all these migrations use Percona in production.
+which runs MySQL alter table statements without downtime.
 
 ## Installation
 
-Percona Migrator relies on `pt-online-schema-change` from  [Percona
+Percona Migrator relies on `pt-online-schema-change` from [Percona
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
 
-For mac, you can install it with homebrew typing `brew install percona-toolkit`. For
-linux machines check out the [Percona Toolkit download
+For Mac, you can install it with homebrew typing `brew install percona-toolkit`.
+In Ubuntu you can use apt-get `apt-get install percona-toolkit`.
+
+For other Linux distributions check out the [Percona Toolkit download
 page](https://www.percona.com/downloads/percona-toolkit/) to find the package
 that fits your distribution.
 
@@ -42,20 +39,46 @@ Or install it yourself as:
 
 ## Usage
 
-Percona Migrator is meant to be used only on production or production-like
-environments. To that end, it will only run if the `PERCONA_TOOLKIT`
-environment variable is present.
+Once you added it to your app's Gemfile, you can create and run Rails migrations
+as usual.
 
-From that same environment where you added the variable, execute the following:
+All the `ALTER TABLE` statements will be executed with
+`pt-online-schema-change`, which will provide additional output to the
+migration.
 
-1. `bundle exec rake db:migrate:status` to find out your migration's version
-number
-2. `rake db:percona_migrate:up VERSION=<version>`.  This will run the migration
-and mark it as up. Otherwise, if the migration fails, it will still be listed as down
+### LHM support
 
-You can also mark the migration as run manually, by executing `bundle exec rake
-db:migrate:mark_as_up VERSION=<version>`. Likewise, there's a `bundle exec rake
-db:migrate:mark_as_down VERSION=<version>` that may be of help.
+If you moved to Soundcloud's [Lhm](https://github.com/soundcloud/lhm) already,
+we got you covered. Percona Migrator overrides Lhm's DSL so that all the alter
+statements also go through `pt-online-schema-change` as well.
+
+You can keep your Lhm migrations and start using Rails migration's DSL back
+again in your next migration.
+
+## How it works
+
+When booting your Rails app, Percona Migrator extends the
+`ActiveRecord::Migration#migrate` method to reset the connection and reestablish
+it using the `PerconaAdapter` instead of the one you defined in your
+`config/database.yml`.
+
+Then, when any migration DSL methods such as `add_column` or `create_table` are
+executed, they all go to the
+[PerconaAdapter](https://github.com/redbooth/percona_migrator/blob/master/lib/active_record/connection_adapters/percona_adapter.rb).
+There, the methods that require `ALTER TABLE` SQL statements, like `add_column`,
+are overriden to get executed with
+[PerconaMigrator::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb),
+which deals with the `pt-online-schema-change` binary. All the others, like
+`create_table`, are delegated to the ActiveRecord's built in Mysql2Adapter and
+so they follow the regular path.
+
+[PerconaMigrator::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb)
+spawns a new process that runs the `pt-online-schema-change` binary present in
+the system, with the apropriate arguments for the generated SQL.
+
+When an any error occurs, an `ActiveRecord::StatementInvalid` exception is
+raised and the migration is aborted, as all other ActiveRecord connection
+adapters.
 
 ## Development
 
