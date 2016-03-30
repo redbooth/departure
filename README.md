@@ -11,7 +11,7 @@ which runs MySQL alter table statements without downtime.
 
 ## Installation
 
-Percona Migrator relies on `pt-online-schema-change` from  [Percona
+Percona Migrator relies on `pt-online-schema-change` from [Percona
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
 
 For mac, you can install it with homebrew typing `brew install percona-toolkit`. For
@@ -41,7 +41,8 @@ Once you added it to your app's Gemfile, you can create and run Rails migrations
 as usual.
 
 All the `ALTER TABLE` statements will be executed with
-`pt-online-schema-change`, which will provide additional output to the migration
+`pt-online-schema-change`, which will provide additional output to the
+migration.
 
 ### LHM support
 
@@ -51,6 +52,31 @@ statements also go through `pt-online-schema-change` as well.
 
 You can keep your Lhm migrations and start using Rails migration's DSL back
 again in your next migration.
+
+## How it works
+
+When booting your Rails app, Percona Migrator extends the
+`ActiveRecord::Migration#migrate` method to reset the connection and reestablish
+it using the `PerconaAdapter` instead of the one you defined in your
+`config/database.yml`.
+
+Then, when any migration DSL methods such as `add_column` or `create_table` are
+executed, they all go to the
+[PerconaAdapter](https://github.com/redbooth/percona_migrator/blob/master/lib/active_record/connection_adapters/percona_adapter.rb).
+There, the methods that require `ALTER TABLE` SQL statements, like `add_column`,
+are overriden to get executed with
+[PerconaMigrator::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb),
+which deals with the `pt-online-schema-change` binary. All the others, like
+`create_table`, are delegated to the ActiveRecord's built in Mysql2Adapter and
+so they follow the regular path.
+
+[PerconaMigrator::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb)
+spawns a new process that runs the `pt-online-schema-change` binary present in
+the system, with the apropriate arguments for the generated SQL.
+
+When an any error occurs, an `ActiveRecord::StatementInvalid` exception is
+raised and the migration is aborted, as all other ActiveRecord connection
+adapters.
 
 ## Development
 
