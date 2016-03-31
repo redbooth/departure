@@ -48,7 +48,7 @@ module ActiveRecord
 
       ADAPTER_NAME = 'Percona'.freeze
 
-      def_delegators :mysql_adapter, :last_inserted_id, :select
+      def_delegators :mysql_adapter, :last_inserted_id, :select, :each_hash
 
       def initialize(connection, logger, connection_options, config)
         super
@@ -81,17 +81,6 @@ module ActiveRecord
       # Returns true, as this adapter supports migrations
       def supports_migrations?
         true
-      end
-
-      # Delegates #each_hash to the mysql adapter
-      #
-      # @param result [Mysql2::Result]
-      def each_hash(result)
-        if block_given?
-          mysql_adapter.each_hash(result, &Proc.new)
-        else
-          mysql_adapter.each_hash(result)
-        end
       end
 
       def new_column(field, default, type, null, collation)
@@ -131,7 +120,9 @@ module ActiveRecord
         end
       end
 
-      def error_number(exception)
+      # Returns the MySQL error number from the exception. The
+      # AbstractMysqlAdapter requires it to be implemented
+      def error_number(_exception)
       end
 
       private
