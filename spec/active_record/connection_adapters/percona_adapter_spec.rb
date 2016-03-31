@@ -37,13 +37,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     )
   end
 
-  let(:config) do
-    {
-      prepared_statements: '',
-      runner: runner,
-      cli_generator: cli_generator
-    }
-  end
+  let(:config) { { prepared_statements: '', runner: runner } }
 
   let(:adapter) do
     described_class.new(runner, logger, connection_options, config)
@@ -240,63 +234,6 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       is_expected.to match_array(
         [{"id"=>"1", "body"=>"body"}, {"id"=>"2", "body"=>"body"}]
       )
-    end
-  end
-
-  describe '#percona_execute' do
-    let(:name) { nil }
-
-    context 'when an alter statement is provided' do
-      let(:table_name) { :comments }
-      let(:statement) do
-        'ALTER TABLE `comments` CHANGE `some_id` `some_id` INT(11) DEFAULT NULL'
-      end
-
-      before do
-        allow(cli_generator).to(
-          receive(:parse_statement).with(statement)
-        ).and_return('percona command')
-      end
-
-      it 'passes the built SQL to the CliGenerator' do
-        expect(cli_generator).to receive(:parse_statement).with(statement)
-        adapter.percona_execute(statement, name)
-      end
-
-      it 'runs the command' do
-        expect(runner).to receive(:execute).with('percona command')
-        adapter.percona_execute(statement, name)
-      end
-
-      context 'and providing a name' do
-        let(:name) { 'name' }
-
-        it 'passes the built SQL to the CliGenerator' do
-          expect(cli_generator).to receive(:parse_statement).with(statement)
-          adapter.percona_execute(statement, name)
-        end
-
-        it 'runs the command' do
-          expect(runner).to receive(:execute).with('percona command')
-          adapter.percona_execute(statement, name)
-        end
-      end
-    end
-
-    context 'when a non-alter statement is provided' do
-      let(:statement) { 'UPDATE comments SET some_id = NULL' }
-
-      it 'delegates to the mysql adapter' do
-        expect(mysql_adapter).to receive(:execute).with(statement, nil)
-        adapter.percona_execute(statement, nil)
-      end
-
-      context 'and providing a name' do
-        it 'delegates to the mysql adapter' do
-          expect(mysql_adapter).to receive(:execute).with(statement, 'name')
-          adapter.percona_execute(statement, 'name')
-        end
-      end
     end
   end
 end

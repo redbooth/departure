@@ -18,12 +18,6 @@ module ActiveRecord
         mysql2_connection
       )
 
-      config.merge!(
-        logger: logger,
-        runner: runner,
-        cli_generator: cli_generator
-      )
-
       connection_options = { mysql_adapter: mysql2_connection }
 
       ConnectionAdapters::PerconaMigratorAdapter.new(
@@ -50,11 +44,10 @@ module ActiveRecord
 
       def_delegators :mysql_adapter, :last_inserted_id, :each_hash
 
-      def initialize(connection, logger, connection_options, config)
+      def initialize(connection, logger, connection_options, _config)
         super
         @mysql_adapter = connection_options[:mysql_adapter]
         @logger = logger
-        @cli_generator = config[:cli_generator]
       end
 
       def exec_delete(sql, name, binds)
@@ -112,20 +105,6 @@ module ActiveRecord
         execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
       end
 
-      # Executes the passed statement through pt-online-schema-change if it's
-      # an alter statement, or through the mysql adapter otherwise
-      #
-      # @param sql [String]
-      # @param name [String]
-      def percona_execute(sql, name)
-        if alter_statement?(sql)
-          command = cli_generator.parse_statement(sql)
-          @connection.execute(command)
-        else
-          mysql_adapter.execute(sql, name)
-        end
-      end
-
       # Returns the MySQL error number from the exception. The
       # AbstractMysqlAdapter requires it to be implemented
       def error_number(_exception)
@@ -133,15 +112,7 @@ module ActiveRecord
 
       private
 
-      attr_reader :mysql_adapter, :logger, :runner, :cli_generator
-
-      # Checks whether the sql statement is an ALTER TABLE
-      #
-      # @param sql [String]
-      # @return [Boolean]
-      def alter_statement?(sql)
-        sql =~ /alter table/i
-      end
+      attr_reader :mysql_adapter, :logger
     end
   end
 end
