@@ -128,26 +128,6 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     end
   end
 
-  describe '#execute_and_free' do
-    let(:mysql_adapter) do
-      instance_double(
-        ActiveRecord::ConnectionAdapters::Mysql2Adapter,
-        raw_connection: true,
-        execute: true
-      )
-    end
-
-    it 'yields the mysql adapter execution result' do
-      expect(mysql_adapter).to(
-        receive(:execute).with('a sql statement', nil)
-      ).and_return('yielded')
-
-      adapter.execute_and_free('a sql statement') do |result|
-        expect(result).to eq('yielded')
-      end
-    end
-  end
-
   describe '#exec_delete' do
     let(:sql) { 'DELETE FROM comments WHERE id = 1' }
     let(:name) { nil }

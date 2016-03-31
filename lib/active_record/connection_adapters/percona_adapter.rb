@@ -131,15 +131,6 @@ module ActiveRecord
         end
       end
 
-      # This abstract method leaves up to the connection adapter freeing the
-      # result, if it needs to. Check out: https://github.com/rails/rails/blob/330c6af05c8b188eb072afa56c07d5fe15767c3c/activerecord/lib/active_record/connection_adapters/abstract_mysql_adapter.rb#L247
-      #
-      # @param sql [String]
-      # @param name [String] optional
-      def execute_and_free(sql, name = nil)
-        yield mysql_adapter.execute(sql, name)
-      end
-
       def error_number(exception)
       end
 
