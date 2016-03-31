@@ -44,10 +44,9 @@ module ActiveRecord
 
       def_delegators :mysql_adapter, :last_inserted_id, :each_hash
 
-      def initialize(connection, logger, connection_options, _config)
+      def initialize(connection, _logger, connection_options, _config)
         super
         @mysql_adapter = connection_options[:mysql_adapter]
-        @logger = logger
       end
 
       def exec_delete(sql, name, binds)
@@ -112,7 +111,7 @@ module ActiveRecord
 
       private
 
-      attr_reader :mysql_adapter, :logger
+      attr_reader :mysql_adapter
     end
   end
 end
