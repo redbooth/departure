@@ -205,9 +205,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     let(:sql) { 'SELECT id, body FROM comments' }
     let(:name) { nil }
 
-    let(:array_of_rows) do
-      [{'id'=>'1', 'body' => 'foo'}, {'id'=>'2', 'body' => 'bar'}]
-    end
+    let(:array_of_rows) { [['1', 'body'], ['2', 'body']] }
     let(:mysql2_result) do
       instance_double(Mysql2::Result, to_a: array_of_rows)
     end
@@ -218,12 +216,31 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       ).and_return(mysql2_result)
     end
 
-    it 'calls #execute with the provided sql' do
-      expect(adapter).to receive(:execute).with(sql, name)
-      adapter.select_rows(sql, name)
+    it { is_expected.to match_array(array_of_rows) }
+  end
+
+  describe '#select' do
+    subject { adapter.select(sql, name) }
+
+    let(:sql) { 'SELECT id, body FROM comments' }
+    let(:name) { nil }
+
+    let(:array_of_rows) { [['1', 'body'], ['2', 'body']] }
+    let(:mysql2_result) do
+      instance_double(Mysql2::Result, fields: %w(id body), to_a: array_of_rows)
     end
 
-    it { is_expected.to match_array(array_of_rows) }
+    before do
+      allow(adapter).to(
+        receive(:execute).with(sql, name)
+      ).and_return(mysql2_result)
+    end
+
+    it do
+      is_expected.to match_array(
+        [{"id"=>"1", "body"=>"body"}, {"id"=>"2", "body"=>"body"}]
+      )
+    end
   end
 
   describe '#percona_execute' do

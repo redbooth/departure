@@ -48,7 +48,7 @@ module ActiveRecord
 
       ADAPTER_NAME = 'Percona'.freeze
 
-      def_delegators :mysql_adapter, :last_inserted_id, :select, :each_hash
+      def_delegators :mysql_adapter, :last_inserted_id, :each_hash
 
       def initialize(connection, logger, connection_options, config)
         super
@@ -76,6 +76,12 @@ module ActiveRecord
       # array of field values.
       def select_rows(sql, name = nil)
         execute(sql, name).to_a
+      end
+
+      # Executes a SELECT query and returns an array of record hashes with the
+      # column names as keys and column values as values.
+      def select(sql, name = nil, binds = [])
+        exec_query(sql, name, binds).to_a
       end
 
       # Returns true, as this adapter supports migrations
