@@ -46,6 +46,7 @@ module ActiveRecord
 
       def initialize(connection, _logger, connection_options, _config)
         super
+        @visitor = BindSubstitution.new(self)
         @mysql_adapter = connection_options[:mysql_adapter]
       end
 
