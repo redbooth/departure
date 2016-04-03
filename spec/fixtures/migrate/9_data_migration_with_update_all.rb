@@ -1,4 +1,4 @@
-class DataMigrationWithWhere < ActiveRecord::Migration
+class DataMigrationWithUpdateAll < ActiveRecord::Migration
   class Comment < ActiveRecord::Base; end
 
   def up
