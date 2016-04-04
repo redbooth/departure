@@ -87,7 +87,7 @@ module PerconaMigrator
     # @param sql [String]
     # @return [Boolean]
     def alter_statement?(sql)
-      sql =~ /alter table/i
+      sql =~ /\Aalter table/i
     end
 
     # Logs the start and end of the execution

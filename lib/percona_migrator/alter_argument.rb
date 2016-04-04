@@ -4,7 +4,7 @@ module PerconaMigrator
   # Represents the '--alter' argument of Percona's pt-online-schema-change
   # See https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html
   class AlterArgument
-    ALTER_TABLE_REGEX = /ALTER TABLE `(\w+)` /
+    ALTER_TABLE_REGEX = /\AALTER TABLE `(\w+)` /
 
     attr_reader :table_name
 
