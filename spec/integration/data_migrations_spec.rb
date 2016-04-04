@@ -68,4 +68,52 @@ describe PerconaMigrator, integration: true do
       expect(ActiveRecord::Migrator.current_version).to eq(version)
     end
   end
+
+  context 'running a migration with ? interpolation' do
+    let(:version) { 11 }
+
+    it 'updates all the required data' do
+      ActiveRecord::Migrator.run(
+        direction,
+        [migration_fixtures],
+        version
+      )
+
+      expect(Comment.pluck(:read)).to match_array([true, true])
+    end
+
+    it 'marks the migration as up' do
+      ActiveRecord::Migrator.run(
+        direction,
+        [migration_fixtures],
+        version
+      )
+
+      expect(ActiveRecord::Migrator.current_version).to eq(version)
+    end
+  end
+
+  context 'running a migration with named bind variables' do
+    let(:version) { 12 }
+
+    it 'updates all the required data' do
+      ActiveRecord::Migrator.run(
+        direction,
+        [migration_fixtures],
+        version
+      )
+
+      expect(Comment.pluck(:read)).to match_array([true, true])
+    end
+
+    it 'marks the migration as up' do
+      ActiveRecord::Migrator.run(
+        direction,
+        [migration_fixtures],
+        version
+      )
+
+      expect(ActiveRecord::Migrator.current_version).to eq(version)
+    end
+  end
 end
