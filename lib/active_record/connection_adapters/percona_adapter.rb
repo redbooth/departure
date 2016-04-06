@@ -60,7 +60,7 @@ module ActiveRecord
         execute(to_sql(sql, binds), name)
       end
 
-      def exec_query(sql, name = 'SQL', binds = [])
+      def exec_query(sql, name = 'SQL', _binds = [])
         result = execute(sql, name)
         ActiveRecord::Result.new(result.fields, result.to_a)
       end
