@@ -54,6 +54,10 @@ module PerconaMigrator
       @status = nil
     end
 
+    # Executes the passed sql statement using pt-online-schema-change for ALTER
+    # TABLE statements, or the specified mysql adapter otherwise.
+    #
+    # @param sql [String]
     def query(sql)
       if alter_statement?(sql)
         command = cli_generator.parse_statement(sql)
@@ -63,6 +67,10 @@ module PerconaMigrator
       end
     end
 
+    # Returns the number of rows affected by the last UPDATE, DELETE or INSERT
+    # statements
+    #
+    # @return [Integer]
     def affected_rows
       mysql_adapter.raw_connection.affected_rows
     end
