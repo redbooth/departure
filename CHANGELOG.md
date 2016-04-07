@@ -6,6 +6,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [0.1.0.rc.6] - 2016-04-07
+
 ### Added
 
 - Support non-ddl migrations by implementing the methods for the ActiveRecord
