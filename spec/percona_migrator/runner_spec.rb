@@ -3,8 +3,28 @@ require 'spec_helper'
 describe PerconaMigrator::Runner do
   let(:command) { 'pt-online-schema-change command' }
   let(:logger) { instance_double(Logger, info: true) }
+  let(:cli_generator) { instance_double(PerconaMigrator::CliGenerator) }
+  let(:mysql_adapter) do
+    instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
+  end
 
-  let(:runner) { described_class.new(logger) }
+  let(:runner) { described_class.new(logger, cli_generator, mysql_adapter) }
+
+  describe '#query' do
+  end
+
+  describe '#affected_rows' do
+    let(:mysql_client) { double(:mysql_client) }
+
+    before do
+      allow(mysql_adapter).to receive(:raw_connection).and_return(mysql_client)
+    end
+
+    it 'delegates to the MySQL adapter\'s client' do
+      expect(mysql_client).to receive(:affected_rows)
+      runner.affected_rows
+    end
+  end
 
   describe '#execute' do
     let(:status) do

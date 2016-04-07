@@ -9,19 +9,19 @@ module ActiveRecord
     # Establishes a connection to the database that's used by all Active
     # Record objects.
     def self.percona_connection(config)
-      connection = mysql2_connection(config)
-      client = connection.raw_connection
+      mysql2_connection = mysql2_connection(config)
 
-      config.merge!(
-        logger: logger,
-        runner: PerconaMigrator::Runner.new(logger),
-        cli_generator: PerconaMigrator::CliGenerator.new(config)
+      cli_generator = PerconaMigrator::CliGenerator.new(config)
+      runner = PerconaMigrator::Runner.new(
+        logger,
+        cli_generator,
+        mysql2_connection
       )
 
-      connection_options = { mysql_adapter: connection }
+      connection_options = { mysql_adapter: mysql2_connection }
 
       ConnectionAdapters::PerconaMigratorAdapter.new(
-        client,
+        runner,
         logger,
         connection_options,
         config
@@ -42,16 +42,39 @@ module ActiveRecord
 
       ADAPTER_NAME = 'Percona'.freeze
 
-      def_delegators :mysql_adapter, :tables, :select_values, :exec_delete,
-        :exec_insert, :exec_query, :last_inserted_id, :select, :create_table,
-        :drop_table
+      def_delegators :mysql_adapter, :last_inserted_id, :each_hash
 
-      def initialize(connection, logger, connection_options, config)
+      def initialize(connection, _logger, connection_options, _config)
         super
+        @visitor = BindSubstitution.new(self)
         @mysql_adapter = connection_options[:mysql_adapter]
-        @logger = logger
-        @runner = config[:runner]
-        @cli_generator = config[:cli_generator]
+      end
+
+      def exec_delete(sql, name, binds)
+        execute(to_sql(sql, binds), name)
+        @connection.affected_rows
+      end
+      alias :exec_update :exec_delete
+
+      def exec_insert(sql, name, binds)
+        execute(to_sql(sql, binds), name)
+      end
+
+      def exec_query(sql, name = 'SQL', _binds = [])
+        result = execute(sql, name)
+        ActiveRecord::Result.new(result.fields, result.to_a)
+      end
+
+      # Executes a SELECT query and returns an array of rows. Each row is an
+      # array of field values.
+      def select_rows(sql, name = nil)
+        execute(sql, name).to_a
+      end
+
+      # Executes a SELECT query and returns an array of record hashes with the
+      # column names as keys and column values as values.
+      def select(sql, name = nil, binds = [])
+        exec_query(sql, name, binds).to_a
       end
 
       # Returns true, as this adapter supports migrations
@@ -59,41 +82,8 @@ module ActiveRecord
         true
       end
 
-      # Delegates #each_hash to the mysql adapter
-      #
-      # @param result [Mysql2::Result]
-      def each_hash(result)
-        if block_given?
-          mysql_adapter.each_hash(result, &Proc.new)
-        else
-          mysql_adapter.each_hash(result)
-        end
-      end
-
       def new_column(field, default, type, null, collation)
         Column.new(field, default, type, null, collation)
-      end
-
-      # Adds a new column to the named table
-      #
-      # @param table_name [String, Symbol]
-      # @param column_name [String, Symbol]
-      # @param type [Symbol]
-      # @param options [Hash] optional
-      def add_column(table_name, column_name, type, options = {})
-        super
-        command = cli_generator.generate(table_name, @sql)
-        log(@sql, nil) { runner.execute(command) }
-      end
-
-      # Removes the column(s) from the table definition
-      #
-      # @param table_name [String, Symbol]
-      # @param column_names [String, Symbol, Array<String>, Array<Symbol>]
-      def remove_column(table_name, *column_names)
-        super
-        command = cli_generator.generate(table_name, @sql)
-        log(@sql, nil) { runner.execute(command) }
       end
 
       # Adds a new index to the table
@@ -103,10 +93,7 @@ module ActiveRecord
       # @param options [Hash] optional
       def add_index(table_name, column_name, options = {})
         index_name, index_type, index_columns, index_options = add_index_options(table_name, column_name, options)
-        execute "ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}"
-
-        command = cli_generator.generate(table_name, @sql)
-        log(@sql, nil) { runner.execute(command) }
+        execute "ALTER TABLE #{quote_table_name(table_name)} ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}"
       end
 
       # Remove the given index from the table.
@@ -115,59 +102,17 @@ module ActiveRecord
       # @param options [Hash] optional
       def remove_index(table_name, options = {})
         index_name = index_name_for_remove(table_name, options)
-        execute "DROP INDEX #{quote_column_name(index_name)}"
-
-        command = cli_generator.generate(table_name, @sql)
-        log(@sql, nil) { runner.execute(command) }
+        execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
       end
 
-      # Records the SQL statement to be executed. This is used to then delegate
-      # the execution to Percona's pt-online-schema-change.
-      #
-      # @param sql [String]
-      # @param _name [String] optional
-      def execute(sql, _name = nil)
-        @sql = sql
-        true
-      end
-
-      # Executes the passed statement through pt-online-schema-change if it's
-      # an alter statement, or through the mysql adapter otherwise
-      #
-      # @param sql [String]
-      # @param name [String]
-      def percona_execute(sql, name)
-        if alter_statement?(sql)
-          command = cli_generator.parse_statement(sql)
-          log(sql, nil) { runner.execute(command) }
-        else
-          mysql_adapter.execute(sql, name)
-        end
-      end
-
-      # This abstract method leaves up to the connection adapter freeing the
-      # result, if it needs to. Check out: https://github.com/rails/rails/blob/330c6af05c8b188eb072afa56c07d5fe15767c3c/activerecord/lib/active_record/connection_adapters/abstract_mysql_adapter.rb#L247
-      #
-      # @param sql [String]
-      # @param name [String] optional
-      def execute_and_free(sql, name = nil)
-        yield mysql_adapter.execute(sql, name)
-      end
-
-      def error_number(exception)
+      # Returns the MySQL error number from the exception. The
+      # AbstractMysqlAdapter requires it to be implemented
+      def error_number(_exception)
       end
 
       private
 
-      attr_reader :mysql_adapter, :logger, :runner, :cli_generator
-
-      # Checks whether the sql statement is an ALTER TABLE
-      #
-      # @param sql [String]
-      # @return [Boolean]
-      def alter_statement?(sql)
-        sql =~ /alter table/i
-      end
+      attr_reader :mysql_adapter
     end
   end
 end

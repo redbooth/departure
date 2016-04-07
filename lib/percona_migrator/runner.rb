@@ -47,11 +47,35 @@ module PerconaMigrator
     # Constructor
     #
     # @param logger [IO]
-    def initialize(logger)
+    def initialize(logger, cli_generator, mysql_adapter)
       @logger = logger
+      @cli_generator = cli_generator
+      @mysql_adapter = mysql_adapter
       @status = nil
     end
 
+    # Executes the passed sql statement using pt-online-schema-change for ALTER
+    # TABLE statements, or the specified mysql adapter otherwise.
+    #
+    # @param sql [String]
+    def query(sql)
+      if alter_statement?(sql)
+        command = cli_generator.parse_statement(sql)
+        execute(command)
+      else
+        mysql_adapter.execute(sql)
+      end
+    end
+
+    # Returns the number of rows affected by the last UPDATE, DELETE or INSERT
+    # statements
+    #
+    # @return [Integer]
+    def affected_rows
+      mysql_adapter.raw_connection.affected_rows
+    end
+
+    # TODO: rename it so we don't confuse it with AR's #execute
     # Runs and logs the given command
     #
     # @param command [String]
@@ -64,7 +88,15 @@ module PerconaMigrator
 
     private
 
-    attr_reader :command, :logger, :status
+    attr_reader :command, :logger, :status, :cli_generator, :mysql_adapter
+
+    # Checks whether the sql statement is an ALTER TABLE
+    #
+    # @param sql [String]
+    # @return [Boolean]
+    def alter_statement?(sql)
+      sql =~ /\Aalter table/i
+    end
 
     # Logs the start and end of the execution
     #
@@ -84,7 +116,9 @@ module PerconaMigrator
 
     # Executes the command outputing any errors
     #
-    # @raise [Errno::ENOENT] if pt-online-schema-change can't be found
+    # @raise [NoStatusError] if the spawned process' status can't be retrieved
+    # @raise [SignalError] if the spawned process receives a signal
+    # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
     def run_command
       message = nil
       Open3.popen3(command) do |_stdin, stdout, stderr, waith_thr|

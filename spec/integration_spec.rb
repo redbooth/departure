@@ -238,7 +238,7 @@ describe PerconaMigrator, integration: true do
     end
   end
 
-  context 'creating a table', index: true do
+  context 'creating a table' do
     let(:version) { 8 }
 
     it 'creates the table' do
@@ -252,7 +252,7 @@ describe PerconaMigrator, integration: true do
     end
   end
 
-  context 'dropping a table', index: true do
+  context 'dropping a table' do
     let(:version) { 8 }
     let(:direction) { :down }
 
