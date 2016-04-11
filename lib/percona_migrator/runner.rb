@@ -42,7 +42,7 @@ module PerconaMigrator
 
     # Constructor
     #
-    # @param logger [#say]
+    # @param logger [#say, #write]
     # @param cli_generator [CliGenerator]
     # @param mysql_adapter [ActiveRecord::ConnectionAdapter] it must implement
     #   #execute and #raw_connection

@@ -13,7 +13,7 @@ module ActiveRecord
 
       cli_generator = PerconaMigrator::CliGenerator.new(config)
       runner = PerconaMigrator::Runner.new(
-        logger,
+        PerconaMigrator::Logger.new,
         cli_generator,
         mysql2_connection
       )
