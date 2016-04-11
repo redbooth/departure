@@ -2,7 +2,9 @@ require 'spec_helper'
 
 describe PerconaMigrator::Runner do
   let(:command) { 'pt-online-schema-change command' }
-  let(:logger) { instance_double(Logger, info: true) }
+  let(:logger) do
+    instance_double(ActiveRecord::Migration, write: true, say: true)
+  end
   let(:cli_generator) { instance_double(PerconaMigrator::CliGenerator) }
   let(:mysql_adapter) do
     instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
@@ -58,18 +60,18 @@ describe PerconaMigrator::Runner do
 
     it 'logs that the execution started' do
       runner.execute(command)
-      expect(logger).to have_received(:info).with('command output')
+      expect(logger).to have_received(:write).with('command output')
     end
 
     it 'logs that the command\'s output' do
       runner.execute(command)
-      expect(logger).to have_received(:info).with('command output')
+      expect(logger).to have_received(:write).with('command output')
     end
 
     context 'when the execution was succsessfull' do
       it 'logs it as success' do
         runner.execute(command)
-        expect(logger).to have_received(:info).with(/Done!/)
+        expect(logger).to have_received(:say).with(/Done!/)
       end
     end
 

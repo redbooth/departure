@@ -40,13 +40,12 @@ module PerconaMigrator
   class Runner
     COMMAND_NOT_FOUND = 127
 
-    NONE = "\e[0m"
-    CYAN = "\e[38;5;86m"
-    GREEN = "\e[32m"
-
     # Constructor
     #
-    # @param logger [IO]
+    # @param logger [#say]
+    # @param cli_generator [CliGenerator]
+    # @param mysql_adapter [ActiveRecord::ConnectionAdapter] it must implement
+    #   #execute and #raw_connection
     def initialize(logger, cli_generator, mysql_adapter)
       @logger = logger
       @cli_generator = cli_generator
@@ -107,11 +106,9 @@ module PerconaMigrator
       log_finished
     end
 
-    # TODO: log as a migration logger subitem
-    #
     # Logs when the execution started
     def log_started
-      logger.info "\n#{CYAN}-- #{command}#{NONE}\n\n"
+      logger.say("Running #{command}", true)
     end
 
     # Executes the command outputing any errors
@@ -124,7 +121,7 @@ module PerconaMigrator
       Open3.popen3(command) do |_stdin, stdout, stderr, waith_thr|
         @status = waith_thr.value
         message = stderr.read
-        logger.info(stdout.read)
+        logger.write(stdout.read)
       end
 
       raise NoStatusError if status.nil?
@@ -137,7 +134,7 @@ module PerconaMigrator
     # Logs the status of the execution once it's finished. At this point we
     # know it's a success
     def log_finished
-      logger.info("\n#{GREEN}Done!#{NONE}")
+      logger.say("Done!")
     end
   end
 end
