@@ -60,18 +60,21 @@ describe PerconaMigrator::Runner do
 
     it 'logs that the execution started' do
       runner.execute(command)
-      expect(logger).to have_received(:write).with('command output')
+      expect(logger).to have_received(:say).with(
+        "Running pt-online-schema-change command\n\n",
+        true
+      )
     end
 
-    it 'logs that the command\'s output' do
+    it 'logs the command\'s output' do
       runner.execute(command)
       expect(logger).to have_received(:write).with('command output')
     end
 
     context 'when the execution was succsessfull' do
-      it 'logs it as success' do
+      it 'prints a new line' do
         runner.execute(command)
-        expect(logger).to have_received(:say).with(/Done!/)
+        expect(logger).to have_received(:write).twice.with(/\n/)
       end
     end
 

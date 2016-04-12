@@ -82,12 +82,14 @@ module PerconaMigrator
     def execute(command)
       @command = command
       logging { run_command }
+      validate_status
       status
     end
 
     private
 
-    attr_reader :command, :logger, :status, :cli_generator, :mysql_adapter
+    attr_reader :command, :logger, :status, :error_message, :cli_generator,
+      :mysql_adapter
 
     # Checks whether the sql statement is an ALTER TABLE
     #
@@ -108,33 +110,35 @@ module PerconaMigrator
 
     # Logs when the execution started
     def log_started
-      logger.say("Running #{command}", true)
+      logger.write("\n")
+      logger.say("Running #{command}\n\n", true)
     end
 
-    # Executes the command outputing any errors
-    #
-    # @raise [NoStatusError] if the spawned process' status can't be retrieved
-    # @raise [SignalError] if the spawned process receives a signal
-    # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
+    # Executes the command and prints its output to the stdout
     def run_command
-      message = nil
       Open3.popen3(command) do |_stdin, stdout, stderr, waith_thr|
         @status = waith_thr.value
-        message = stderr.read
+        @error_message = stderr.read
         logger.write(stdout.read)
       end
+    end
 
+    # Validates the status of the execution
+    #
+    # @raise [NoStatusError] if the spawned process' status can't be retrieved
+    # @raise [SignalError] if the spawned process received a signal
+    # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
+    def validate_status
       raise NoStatusError if status.nil?
       raise SignalError.new(status) if status.signaled?
       raise CommandNotFoundError if status.exitstatus == COMMAND_NOT_FOUND
-
-      raise Error, message unless status.success?
+      raise Error, error_message unless status.success?
     end
 
-    # Logs the status of the execution once it's finished. At this point we
-    # know it's a success
+    # Prints a line break to keep the logs separate from the execution time
+    # print by the migration
     def log_finished
-      logger.say("Done!")
+      logger.write("\n")
     end
   end
 end
