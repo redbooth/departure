@@ -21,7 +21,8 @@ ActiveRecord::Base.establish_connection(
   host: 'localhost',
   username: db_config['username'],
   password: db_config['password'],
-  database: 'percona_migrator_test'
+  database: 'percona_migrator_test',
+  verbose: false
 )
 
 MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)

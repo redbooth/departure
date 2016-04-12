@@ -26,6 +26,24 @@ describe PerconaMigrator::Logger do
         logger.say(message, true)
       end
     end
+
+    context 'when verbose is true' do
+      let(:logger) { described_class.new(verbose: true) }
+
+      it 'enables the output to the stdout' do
+        expect(logger).to receive(:puts).with(/random message/)
+        logger.say('random message')
+      end
+    end
+
+    context 'when verbose is false' do
+      let(:logger) { described_class.new(verbose: false) }
+
+      it 'disables the output to the stdout' do
+        expect(logger).not_to receive(:puts).with(/random message/)
+        logger.say('random message')
+      end
+    end
   end
 
   describe '#write' do

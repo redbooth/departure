@@ -3,6 +3,9 @@ module PerconaMigrator
   # status. It's not possible to reuse the from ActiveRecord::Migration because
   # the migration's instance can't be seen from the connection adapter.
   class Logger
+    def initialize(verbose: true)
+      @verbose = verbose
+    end
 
     # Outputs the message through the stdout, following the
     # ActiveRecord::Migration log format
@@ -17,7 +20,11 @@ module PerconaMigrator
     #
     # @param text [String]
     def write(text = '')
-      puts(text)
+      puts(text) if verbose
     end
+
+    private
+
+    attr_reader :verbose
   end
 end
