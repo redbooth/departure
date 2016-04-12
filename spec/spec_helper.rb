@@ -13,6 +13,7 @@ require 'lhm'
 
 db_config = Configuration.new
 
+# Disables/enables the queries log you see in your rails server in dev mode
 fd = ENV['VERBOSE'] ? STDOUT : '/dev/null'
 ActiveRecord::Base.logger = Logger.new(fd)
 
