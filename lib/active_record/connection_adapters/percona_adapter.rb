@@ -11,8 +11,12 @@ module ActiveRecord
     def self.percona_connection(config)
       mysql2_connection = mysql2_connection(config)
 
-      # TODO: if don't want verbose, do not create any instance
-      percona_logger = PerconaMigrator::Logger.new(verbose: config[:verbose])
+      percona_logger = if config[:verbose]
+        PerconaMigrator::Logger.new
+      else
+        PerconaMigrator::NullLogger.new
+      end
+
       cli_generator = PerconaMigrator::CliGenerator.new(config)
       runner = PerconaMigrator::Runner.new(
         percona_logger,
