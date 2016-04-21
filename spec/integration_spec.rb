@@ -26,21 +26,33 @@ describe PerconaMigrator, integration: true do
     expect(PerconaMigrator::VERSION).not_to be nil
   end
 
-  context 'when the migration logging is enabled' do
-    before { ActiveRecord::Migration.verbose = true }
+  describe 'logging' do
+    context 'when the migration logging is enabled' do
+      around(:each) do |example|
+        original_verbose = ActiveRecord::Migration.verbose
+        ActiveRecord::Migration.verbose = true
+        example.run
+        ActiveRecord::Migration.verbose = original_verbose
+      end
 
-    it 'sends the output to the stdout' do
-      expect($stdout).to receive(:puts).at_least(:once)
-      ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      it 'sends the output to the stdout' do
+        expect($stdout).to receive(:puts).at_least(:once)
+        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      end
     end
-  end
 
-  context 'when the migration logging is disabled' do
-    before { ActiveRecord::Migration.verbose = false }
+    context 'when the migration logging is disabled' do
+      around(:each) do |example|
+        original_verbose = ActiveRecord::Migration.verbose
+        ActiveRecord::Migration.verbose = false
+        example.run
+        ActiveRecord::Migration.verbose = original_verbose
+      end
 
-    it 'sends the output to the stdout' do
-      expect($stdout).not_to receive(:puts)
-      ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      it 'sends the output to the stdout' do
+        expect($stdout).not_to receive(:puts)
+        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      end
     end
   end
 
