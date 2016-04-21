@@ -30,6 +30,8 @@ MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)
 test_database = TestDatabase.new(db_config)
 
 RSpec.configure do |config|
+  ActiveRecord::Migration.verbose = false
+
   config.around(:each) do |example|
 
     # Cleans up the database before each example, so the current example doesn't

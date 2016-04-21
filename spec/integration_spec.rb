@@ -22,8 +22,6 @@ describe PerconaMigrator, integration: true do
 
   let(:direction) { :up }
 
-  before { ActiveRecord::Migration.verbose = false }
-
   it 'has a version number' do
     expect(PerconaMigrator::VERSION).not_to be nil
   end
