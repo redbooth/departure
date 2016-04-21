@@ -22,10 +22,38 @@ describe PerconaMigrator, integration: true do
 
   let(:direction) { :up }
 
-  before { ActiveRecord::Migration.verbose = false }
-
   it 'has a version number' do
     expect(PerconaMigrator::VERSION).not_to be nil
+  end
+
+  describe 'logging' do
+    context 'when the migration logging is enabled' do
+      around(:each) do |example|
+        original_verbose = ActiveRecord::Migration.verbose
+        ActiveRecord::Migration.verbose = true
+        example.run
+        ActiveRecord::Migration.verbose = original_verbose
+      end
+
+      it 'sends the output to the stdout' do
+        expect($stdout).to receive(:puts).at_least(:once)
+        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      end
+    end
+
+    context 'when the migration logging is disabled' do
+      around(:each) do |example|
+        original_verbose = ActiveRecord::Migration.verbose
+        ActiveRecord::Migration.verbose = false
+        example.run
+        ActiveRecord::Migration.verbose = original_verbose
+      end
+
+      it 'sends the output to the stdout' do
+        expect($stdout).not_to receive(:puts)
+        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      end
+    end
   end
 
   context 'when ActiveRecord is loaded' do

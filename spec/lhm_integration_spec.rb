@@ -8,8 +8,6 @@ describe PerconaMigrator, integration: true do
   end
   let(:direction) { :up }
 
-  before { ActiveRecord::Migration.verbose = false }
-
   context 'creating/removing columns' do
     let(:version) { 1 }
 
