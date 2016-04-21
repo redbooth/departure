@@ -4,11 +4,9 @@ module PerconaMigrator
     # Returns the appropriate logger instance for the given configuration. Use
     # :verbose option to log to the stdout
     #
-    # @param config [Hash]
+    # @param verbose [Boolean]
     # @return [#say, #write]
-    def self.build(config)
-      verbose = config.fetch(:verbose, true)
-
+    def self.build(verbose: true)
       if verbose
         PerconaMigrator::Logger.new
       else

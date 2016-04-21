@@ -11,7 +11,8 @@ module ActiveRecord
     def self.percona_connection(config)
       mysql2_connection = mysql2_connection(config)
 
-      percona_logger = PerconaMigrator::LoggerFactory.build(config)
+      verbose = ActiveRecord::Migration.verbose
+      percona_logger = PerconaMigrator::LoggerFactory.build(verbose: verbose)
       cli_generator = PerconaMigrator::CliGenerator.new(config)
 
       runner = PerconaMigrator::Runner.new(

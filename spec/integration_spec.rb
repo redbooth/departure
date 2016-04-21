@@ -28,6 +28,24 @@ describe PerconaMigrator, integration: true do
     expect(PerconaMigrator::VERSION).not_to be nil
   end
 
+  context 'when the migration logging is enabled' do
+    before { ActiveRecord::Migration.verbose = true }
+
+    it 'sends the output to the stdout' do
+      expect($stdout).to receive(:puts).at_least(:once)
+      ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+    end
+  end
+
+  context 'when the migration logging is disabled' do
+    before { ActiveRecord::Migration.verbose = false }
+
+    it 'sends the output to the stdout' do
+      expect($stdout).not_to receive(:puts)
+      ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+    end
+  end
+
   context 'when ActiveRecord is loaded' do
     it 'reconnects to the database using PerconaAdapter' do
       ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate

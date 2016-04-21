@@ -2,20 +2,19 @@ require 'spec_helper'
 
 describe PerconaMigrator::LoggerFactory do
   describe '.build' do
-    subject { described_class.build(config) }
 
     context 'when :verbose is set as true' do
-      let(:config) { { verbose: true } }
+      subject { described_class.build(verbose: true) }
       it { is_expected.to be_a(PerconaMigrator::Logger) }
     end
 
     context 'when :verbose is set as false' do
-      let(:config) { { verbose: false } }
+      subject { described_class.build(verbose: false) }
       it { is_expected.to be_a(PerconaMigrator::NullLogger) }
     end
 
     context 'when :verbose is not specified' do
-      let(:config) { {} }
+      subject { described_class.build }
       it { is_expected.to be_a(PerconaMigrator::Logger) }
     end
   end
