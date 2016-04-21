@@ -6,6 +6,16 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+### Added
+
+- Toggle pt-online-schema-change's output as well when toggling the migration's
+    verbose option.
+
+### Changed
+
+- Enabled pt-online-schema-change's output while running the migration, that got
+  broken in v0.1.0.rc.2
+
 ## [0.1.0.rc.6] - 2016-04-07
 
 ### Added
