@@ -59,7 +59,7 @@ module ActiveRecord
       end
       alias :exec_update :exec_delete
 
-      def exec_insert(sql, name, binds)
+      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil)
         execute(to_sql(sql, binds), name)
       end
 
