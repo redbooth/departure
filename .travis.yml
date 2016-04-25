@@ -12,8 +12,3 @@ before_install:
 branches:
   only:
     - master
-
-# Appraisal's gemfiles
-gemfile:
-  - gemfiles/rails_3.gemfile
-  - gemfiles/rails_4.gemfile
