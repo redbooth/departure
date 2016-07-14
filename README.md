@@ -1,7 +1,7 @@
 # Percona Migrator [![Build Status](https://travis-ci.org/redbooth/percona_migrator.svg?branch=master)](https://travis-ci.org/redbooth/percona_migrator) [![Code Climate](https://codeclimate.com/github/redbooth/percona_migrator/badges/gpa.svg)](https://codeclimate.com/github/redbooth/percona_migrator)
 
 Percona Migrator is an **ActiveRecord connection adapter** that allows running
-**MySQL online and non-blocking DDL** `ActiveRecord::Migration` without needing
+**MySQL online and non-blocking DDL** through `ActiveRecord::Migration` without needing
     to use a different DSL other than Rails' migrations DSL.
 
 It uses `pt-online-schema-change` command-line tool of
