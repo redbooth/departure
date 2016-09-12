@@ -17,7 +17,7 @@ describe PerconaMigrator::LoggerFactory do
       subject { described_class.build(verbose: false) }
       it { is_expected.to be_a(PerconaMigrator::NullLogger) }
       it 'tells the user when PerconaMigrator is being used' do
-        expect(described_class).to receive(:puts).with(expected_info_message)
+        expect(described_class).not_to receive(:puts)
         subject
       end
     end
