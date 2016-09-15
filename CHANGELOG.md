@@ -6,6 +6,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [0.1.0.rc.7] - 2016-09-15
+
 ### Added
 
 - Toggle pt-online-schema-change's output as well when toggling the migration's
