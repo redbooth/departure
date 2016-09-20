@@ -62,9 +62,46 @@ describe PerconaMigrator, integration: true do
   end
 
   context 'when ActiveRecord is loaded' do
+    let(:db_config) { Configuration.new }
+
     it 'reconnects to the database using PerconaAdapter' do
       ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
       expect(ActiveRecord::Base.connection_pool.spec.config[:adapter]).to eq('percona')
+    end
+
+    context 'when a username is provided' do
+      before do
+        ActiveRecord::Base.establish_connection(
+          adapter: 'percona',
+          host: 'localhost',
+          username: 'root',
+          password: db_config['password'],
+          database: 'percona_migrator_test'
+        )
+      end
+
+      it 'uses the provided username' do
+        ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        expect(ActiveRecord::Base.connection_pool.spec.config[:username])
+          .to eq('root')
+      end
+    end
+
+    context 'when no username is provided' do
+      before do
+        ActiveRecord::Base.establish_connection(
+          adapter: 'percona',
+          host: 'localhost',
+          password: db_config['password'],
+          database: 'percona_migrator_test'
+        )
+      end
+
+      it 'uses root' do
+        ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        expect(ActiveRecord::Base.connection_pool.spec.config[:username])
+          .to eq('root')
+      end
     end
 
     # TODO: Use dummy app so that we actually go through the railtie's code

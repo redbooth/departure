@@ -11,6 +11,8 @@ module ActiveRecord
     def self.percona_connection(config)
       mysql2_connection = mysql2_connection(config)
 
+      config[:username] = 'root' if config[:username].nil?
+
       verbose = ActiveRecord::Migration.verbose
       percona_logger = PerconaMigrator::LoggerFactory.build(verbose: verbose)
       cli_generator = PerconaMigrator::CliGenerator.new(config)
