@@ -187,7 +187,7 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { "DATETIME DEFAULT '2016-02-24 13:21:00'" }
-        its([:default]) { is_expected.to eq(Time.parse('2016-02-24 13:21:00')) }
+        its([:default]) { is_expected.to eq(Time.parse('2016-02-24 13:21:00 UTC')) }
       end
 
       context 'with NOT NULL' do
@@ -208,7 +208,7 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { "TIMESTAMP DEFAULT '2016-02-24 13:21:00'" }
-        its([:default]) { is_expected.to eq(Time.parse('2016-02-24 13:21:00')) }
+        its([:default]) { is_expected.to eq(Time.parse('2016-02-24 13:21:00 UTC')) }
       end
 
       context 'with NOT NULL' do
