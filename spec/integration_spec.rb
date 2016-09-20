@@ -4,7 +4,10 @@ require 'spec_helper'
 describe PerconaMigrator, integration: true do
   class Comment < ActiveRecord::Base; end
 
-  let(:migration_fixtures) { MIGRATION_FIXTURES }
+  let(:migration_fixtures) do
+    ActiveRecord::Migrator.migrations(MIGRATION_FIXTURES)
+  end
+  let(:migration_path) { [MIGRATION_FIXTURES] }
 
   def indexes_from(table_name)
     ActiveRecord::Base.connection.indexes(:comments)
@@ -37,7 +40,7 @@ describe PerconaMigrator, integration: true do
 
       it 'sends the output to the stdout' do
         expect do
-          ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
         end.to output.to_stdout
       end
     end
@@ -52,7 +55,7 @@ describe PerconaMigrator, integration: true do
 
       it 'sends the output to the stdout' do
         expect do
-          ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
         end.to_not output.to_stdout
       end
     end
@@ -60,7 +63,7 @@ describe PerconaMigrator, integration: true do
 
   context 'when ActiveRecord is loaded' do
     it 'reconnects to the database using PerconaAdapter' do
-      ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+      ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
       expect(ActiveRecord::Base.connection_pool.spec.config[:adapter]).to eq('percona')
     end
 
@@ -68,14 +71,14 @@ describe PerconaMigrator, integration: true do
     context 'when there is LHM' do
       xit 'patches it to use regular Rails migration methods' do
         expect(PerconaMigrator::Lhm::Fake::Adapter).to receive(:new).and_return(true)
-        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+        ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
       end
     end
 
     context 'when there is no LHM' do
       xit 'does not patch it' do
         expect(PerconaMigrator::Lhm::Fake).not_to receive(:patching_lhm)
-        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+        ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
       end
     end
   end
@@ -89,7 +92,7 @@ describe PerconaMigrator, integration: true do
       it 'adds the column in the DB table' do
         ActiveRecord::Migrator.new(
           direction,
-          [migration_fixtures],
+          migration_fixtures,
           version
         ).migrate
 
@@ -100,7 +103,7 @@ describe PerconaMigrator, integration: true do
       it 'marks the migration as up' do
         ActiveRecord::Migrator.new(
           direction,
-          [migration_fixtures],
+          migration_fixtures,
           version
         ).migrate
 
@@ -112,17 +115,13 @@ describe PerconaMigrator, integration: true do
       let(:direction) { :down }
 
       before do
-        ActiveRecord::Migrator.new(
-          :up,
-          [migration_fixtures],
-          version
-        ).migrate
+        ActiveRecord::Migrator.new(:up, migration_fixtures, version).migrate
       end
 
       it 'drops the column from the DB table' do
         ActiveRecord::Migrator.new(
           direction,
-          [migration_fixtures],
+          migration_fixtures,
           version - 1
         ).migrate
 
@@ -133,7 +132,7 @@ describe PerconaMigrator, integration: true do
       it 'marks the migration as down' do
         ActiveRecord::Migrator.new(
           direction,
-          [migration_fixtures],
+          migration_fixtures,
           version - 1
         ).migrate
 
@@ -152,7 +151,7 @@ describe PerconaMigrator, integration: true do
       before do
         ActiveRecord::Migrator.new(
           direction,
-          [migration_fixtures],
+          migration_fixtures,
           1
         ).migrate
       end
@@ -160,7 +159,7 @@ describe PerconaMigrator, integration: true do
       it 'executes the percona command' do
         ActiveRecord::Migrator.new(
           direction,
-          [migration_fixtures],
+          migration_fixtures,
           version
         ).migrate
 
@@ -172,7 +171,7 @@ describe PerconaMigrator, integration: true do
       it 'marks the migration as up' do
         ActiveRecord::Migrator.new(
           direction,
-          [migration_fixtures],
+          migration_fixtures,
           version
         ).migrate
 
@@ -186,13 +185,13 @@ describe PerconaMigrator, integration: true do
       before do
         ActiveRecord::Migrator.new(
           :up,
-          [migration_fixtures],
+          migration_fixtures,
           1
         ).migrate
 
         ActiveRecord::Migrator.new(
           :up,
-          [migration_fixtures],
+          migration_fixtures,
           version
         ).migrate
       end
@@ -200,7 +199,7 @@ describe PerconaMigrator, integration: true do
       it 'executes the percona command' do
         ActiveRecord::Migrator.new(
           direction,
-          [migration_fixtures],
+          migration_fixtures,
           version - 1
         ).migrate
 
@@ -212,7 +211,7 @@ describe PerconaMigrator, integration: true do
       it 'marks the migration as down' do
         ActiveRecord::Migrator.new(
           direction,
-          [migration_fixtures],
+          migration_fixtures,
           version - 1
         ).migrate
 
@@ -228,11 +227,11 @@ describe PerconaMigrator, integration: true do
       let(:direction) { :up }
 
       before do
-        ActiveRecord::Migrator.new(:up, [migration_fixtures], 1).migrate
+        ActiveRecord::Migrator.new(:up, migration_fixtures, 1).migrate
       end
 
       it 'executes the percona command' do
-        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+        ActiveRecord::Migrator.run(direction, migration_path, version)
 
         expect(unique_indexes_from(:comments)).to(
           match_array(['index_comments_on_some_id_field'])
@@ -240,7 +239,7 @@ describe PerconaMigrator, integration: true do
       end
 
       it 'marks the migration as up' do
-        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+        ActiveRecord::Migrator.run(direction, migration_path, version)
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
@@ -249,12 +248,12 @@ describe PerconaMigrator, integration: true do
       let(:direction) { :down }
 
       before do
-        ActiveRecord::Migrator.run(:up, [migration_fixtures], 1)
-        ActiveRecord::Migrator.run(:up, [migration_fixtures], version)
+        ActiveRecord::Migrator.run(:up, migration_path, 1)
+        ActiveRecord::Migrator.run(:up, migration_path, version)
       end
 
       it 'executes the percona command' do
-        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+        ActiveRecord::Migrator.run(direction, migration_path, version)
 
         expect(unique_indexes_from(:comments)).not_to(
           match_array(['index_comments_on_some_id_field'])
@@ -262,7 +261,7 @@ describe PerconaMigrator, integration: true do
       end
 
       it 'marks the migration as down' do
-        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+        ActiveRecord::Migrator.run(direction, migration_path, version)
         expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
     end
@@ -272,12 +271,12 @@ describe PerconaMigrator, integration: true do
     let(:version) { 8 }
 
     it 'creates the table' do
-      ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+      ActiveRecord::Migrator.run(direction, migration_path, version)
       expect(tables).to include('things')
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+      ActiveRecord::Migrator.run(direction, migration_path, version)
       expect(ActiveRecord::Migrator.current_version).to eq(version)
     end
   end
@@ -287,12 +286,12 @@ describe PerconaMigrator, integration: true do
     let(:direction) { :down }
 
     it 'drops the table' do
-      ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+      ActiveRecord::Migrator.run(direction, migration_path, version)
       expect(tables).not_to include('things')
     end
 
     it 'updates the schema_migrations' do
-      ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+      ActiveRecord::Migrator.run(direction, migration_path, version)
       expect(ActiveRecord::Migrator.current_version).to eq(0)
     end
   end
@@ -305,7 +304,7 @@ describe PerconaMigrator, integration: true do
 
       it 'raises and halts the execution' do
         expect do
-          ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+          ActiveRecord::Migrator.run(direction, migration_fixtures, version)
         end.to raise_error do |exception|
           exception.cause == ActiveRecord::StatementInvalid
         end
@@ -325,7 +324,7 @@ describe PerconaMigrator, integration: true do
 
       it 'raises and halts the execution' do
         expect do
-          ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+          ActiveRecord::Migrator.run(direction, migration_fixtures, version)
         end.to raise_error do |exception|
           exception.cause == PerconaMigrator::SignalError
         end
@@ -345,7 +344,7 @@ describe PerconaMigrator, integration: true do
 
     it 'raises and halts the execution' do
       expect do
-        ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
+        ActiveRecord::Migrator.run(direction, migration_fixtures, version)
       end.to raise_error do |exception|
         exception.cause == PerconaMigrator::CommandNotFoundError
       end
