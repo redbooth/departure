@@ -304,9 +304,11 @@ describe PerconaMigrator, integration: true do
       before { ActiveRecord::Base.connection.create_table(:things) }
 
       it 'raises and halts the execution' do
-        expect {
+        expect do
           ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
-        }.to raise_error(ActiveRecord::StatementInvalid)
+        end.to raise_error do |exception|
+          exception.cause == ActiveRecord::StatementInvalid
+        end
       end
     end
 
@@ -322,9 +324,11 @@ describe PerconaMigrator, integration: true do
       end
 
       it 'raises and halts the execution' do
-        expect {
+        expect do
           ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
-        }.to raise_error(ActiveRecord::StatementInvalid)
+        end.to raise_error do |exception|
+          exception.cause == PerconaMigrator::SignalError
+        end
       end
     end
   end
@@ -340,9 +344,11 @@ describe PerconaMigrator, integration: true do
     end
 
     it 'raises and halts the execution' do
-      expect {
+      expect do
         ActiveRecord::Migrator.run(direction, [migration_fixtures], version)
-      }.to raise_error(ActiveRecord::StatementInvalid)
+      end.to raise_error do |exception|
+        exception.cause == PerconaMigrator::CommandNotFoundError
+      end
     end
   end
 end
