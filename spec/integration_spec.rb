@@ -182,6 +182,55 @@ describe PerconaMigrator, integration: true do
     end
   end
 
+  context 'creating references' do
+    context 'when no option is set' do
+      let(:version) { 16 }
+
+      it 'adds a reference column' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(columns(:comments).map(&:name)).to include('user_id')
+      end
+    end
+
+    context 'when polymorphic is set to true' do
+      let(:version) { 17 }
+
+      it 'adds a column for the id' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(columns(:comments).map(&:name)).to include('user_id')
+      end
+
+      it 'adds a column for the type' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(columns(:comments).map(&:name)).to include('user_type')
+      end
+
+      context 'and index is set to true' do
+        let(:version) { 19 }
+
+        it 'adds a coumpound index for both the id and type columns' do
+          ActiveRecord::Migrator.run(direction, migration_path, version)
+
+          expect(indexes_from(:comments).map(&:name)).to(
+            contain_exactly('index_comments_on_user_id_and_user_type')
+          )
+        end
+      end
+    end
+
+    context 'when index is set to true' do
+      let(:version) { 18 }
+
+      it 'adds an index for the reference column' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+
+        expect(indexes_from(:comments).map(&:name)).to(
+          contain_exactly('index_comments_on_user_id')
+        )
+      end
+    end
+  end
+
   context 'managing indexes' do
     let(:version) { 2 }
 
