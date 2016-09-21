@@ -231,6 +231,31 @@ describe PerconaMigrator, integration: true do
     end
   end
 
+  context 'removing references' do
+    let(:version) { 20 }
+
+    before { ActiveRecord::Migrator.run(direction, migration_path, 16) }
+
+    context 'when no option is set' do
+      it 'removes the reference column' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(columns(:comments).map(&:name)).not_to include('user_id')
+      end
+    end
+
+    context 'when polymorphic is set to true' do
+      it 'removes the reference id column' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(columns(:comments).map(&:name)).not_to include('user_id')
+      end
+
+      it 'removes the reference type column' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(columns(:comments).map(&:name)).not_to include('user_type')
+      end
+    end
+  end
+
   context 'managing indexes' do
     let(:version) { 2 }
 
