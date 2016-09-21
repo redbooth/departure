@@ -178,7 +178,7 @@ describe PerconaMigrator, integration: true do
     end
   end
 
-  context 'adding/removing indexes' do
+  context 'managing indexes' do
     let(:version) { 2 }
 
     context 'adding indexes' do
@@ -253,6 +253,27 @@ describe PerconaMigrator, integration: true do
         ).migrate
 
         expect(ActiveRecord::Migrator.current_version).to eq(1)
+      end
+    end
+
+    context 'renaming indexes' do
+      let(:direction) { :up }
+      let(:version) { 13 }
+
+      before do
+        ActiveRecord::Migrator.new(:up, migration_fixtures, 2).migrate
+      end
+
+      it 'executes the percona command' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(indexes_from(:comments).map(&:name)).to(
+          contain_exactly('new_index_comments_on_some_id_field')
+        )
+      end
+
+      it 'marks the migration as down' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
   end
