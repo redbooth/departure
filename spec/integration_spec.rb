@@ -23,6 +23,10 @@ describe PerconaMigrator, integration: true do
     tables.flat_map { |table| table.values }
   end
 
+  def columns(table_name)
+    ActiveRecord::Base.connection.columns(table_name)
+  end
+
   let(:direction) { :up }
 
   it 'has a version number' do
@@ -351,6 +355,45 @@ describe PerconaMigrator, integration: true do
     it 'updates the schema_migrations' do
       ActiveRecord::Migrator.run(direction, migration_path, version)
       expect(ActiveRecord::Migrator.current_version).to eq(0)
+    end
+  end
+
+  context 'when changing column null' do
+    let(:direction) { :up }
+    let(:column) do
+      columns(:comments).find { |column| column.name == 'some_id_field' }
+    end
+
+    before do
+      ActiveRecord::Migrator.new(:up, migration_fixtures, 1).migrate
+    end
+
+    context 'when null is true' do
+      let(:version) { 14 }
+
+      it 'sets the column to allow nulls' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(column.null).to be_truthy
+      end
+
+      it 'marks the migration as up' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(ActiveRecord::Migrator.current_version).to eq(version)
+      end
+    end
+
+    context 'when null is false' do
+      let(:version) { 15 }
+
+      it 'sets the column not to allow nulls' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(column.null).to be_falsey
+      end
+
+      it 'marks the migration as up' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(ActiveRecord::Migrator.current_version).to eq(version)
+      end
     end
   end
 
