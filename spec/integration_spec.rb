@@ -36,8 +36,9 @@ describe PerconaMigrator, integration: true do
       end
 
       it 'sends the output to the stdout' do
-        expect($stdout).to receive(:puts).at_least(:once)
-        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+        expect do
+          ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+        end.to output.to_stdout
       end
     end
 
@@ -50,8 +51,9 @@ describe PerconaMigrator, integration: true do
       end
 
       it 'sends the output to the stdout' do
-        expect($stdout).not_to receive(:puts)
-        ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+        expect do
+          ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
+        end.to_not output.to_stdout
       end
     end
   end

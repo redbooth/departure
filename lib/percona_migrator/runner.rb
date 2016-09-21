@@ -88,8 +88,7 @@ module PerconaMigrator
 
     private
 
-    attr_reader :command, :logger, :status, :error_message, :cli_generator,
-      :mysql_adapter
+    attr_reader :command, :logger, :status, :cli_generator, :mysql_adapter
 
     # Checks whether the sql statement is an ALTER TABLE
     #
@@ -116,10 +115,18 @@ module PerconaMigrator
 
     # Executes the command and prints its output to the stdout
     def run_command
-      Open3.popen3(command) do |_stdin, stdout, stderr, waith_thr|
-        @status = waith_thr.value
-        @error_message = stderr.read
-        logger.write(stdout.read)
+      Open3.popen3("#{command} 2> #{error_log_path}") do |_stdin, stdout, _stderr, waith_thr|
+        begin
+          loop do
+            IO.select([stdout])
+            data = stdout.read_nonblock(8)
+            logger.write data
+          end
+        rescue EOFError
+          # noop
+        ensure
+          @status = waith_thr.value
+        end
       end
     end
 
@@ -129,7 +136,6 @@ module PerconaMigrator
     # @raise [SignalError] if the spawned process received a signal
     # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
     def validate_status
-      raise NoStatusError if status.nil?
       raise SignalError.new(status) if status.signaled?
       raise CommandNotFoundError if status.exitstatus == COMMAND_NOT_FOUND
       raise Error, error_message unless status.success?
@@ -139,6 +145,20 @@ module PerconaMigrator
     # print by the migration
     def log_finished
       logger.write("\n")
+    end
+
+    # The path where the percona toolkit stderr will be written
+    #
+    # TODO: move to Rails tmp folder
+    #
+    # @return [String]
+    def error_log_path
+      'percona_migrator_error.log'
+    end
+
+    # @return [String]
+    def error_message
+      File.read(error_log_path)
     end
   end
 end
