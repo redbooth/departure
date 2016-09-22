@@ -13,6 +13,7 @@ require 'lhm'
 
 require 'support/matchers/have_column'
 require 'support/matchers/have_index'
+require 'support/table_methods'
 
 db_config = Configuration.new
 
@@ -33,6 +34,8 @@ MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)
 test_database = TestDatabase.new(db_config)
 
 RSpec.configure do |config|
+  config.include TableMethods
+
   ActiveRecord::Migration.verbose = false
 
   # Needs an empty block to initialize the config with the default values
@@ -54,22 +57,4 @@ RSpec.configure do |config|
   config.order = :random
 
   Kernel.srand config.seed
-end
-
-def columns(table_name)
-  ActiveRecord::Base.connection.columns(table_name)
-end
-
-def unique_indexes_from(table_name)
-  indexes = indexes_from(:comments)
-  indexes.select(&:unique).map(&:name)
-end
-
-def indexes_from(table_name)
-  ActiveRecord::Base.connection.indexes(:comments)
-end
-
-def tables
-  tables = ActiveRecord::Base.connection.select_all('SHOW TABLES')
-  tables.flat_map { |table| table.values }
 end
