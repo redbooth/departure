@@ -456,6 +456,24 @@ describe PerconaMigrator, integration: true do
     end
   end
 
+  context 'removing timestamps' do
+    let(:version) { 23 }
+
+    before do
+      ActiveRecord::Migrator.run(direction, migration_path, 22)
+    end
+
+    it 'removes the created_at column' do
+      ActiveRecord::Migrator.run(direction, migration_path, version)
+      expect(:comments).not_to have_column('created_at')
+    end
+
+    it 'removes the updated_at column' do
+      ActiveRecord::Migrator.run(direction, migration_path, version)
+      expect(:comments).not_to have_column('updated_at')
+    end
+  end
+
   context 'when the migration failed' do
     context 'and the migration is not an alter table statement' do
       let(:version) { 8 }
