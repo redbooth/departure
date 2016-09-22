@@ -11,6 +11,9 @@ require './test_database'
 require 'percona_migrator'
 require 'lhm'
 
+require 'support/matchers/have_column'
+require 'support/matchers/have_index'
+
 db_config = Configuration.new
 
 # Disables/enables the queries log you see in your rails server in dev mode
@@ -51,4 +54,22 @@ RSpec.configure do |config|
   config.order = :random
 
   Kernel.srand config.seed
+end
+
+def columns(table_name)
+  ActiveRecord::Base.connection.columns(table_name)
+end
+
+def unique_indexes_from(table_name)
+  indexes = indexes_from(:comments)
+  indexes.select(&:unique).map(&:name)
+end
+
+def indexes_from(table_name)
+  ActiveRecord::Base.connection.indexes(:comments)
+end
+
+def tables
+  tables = ActiveRecord::Base.connection.select_all('SHOW TABLES')
+  tables.flat_map { |table| table.values }
 end

@@ -9,24 +9,6 @@ describe PerconaMigrator, integration: true do
   end
   let(:migration_path) { [MIGRATION_FIXTURES] }
 
-  def indexes_from(table_name)
-    ActiveRecord::Base.connection.indexes(:comments)
-  end
-
-  def unique_indexes_from(table_name)
-    indexes = indexes_from(:comments)
-    indexes.select(&:unique).map(&:name)
-  end
-
-  def tables
-    tables = ActiveRecord::Base.connection.select_all('SHOW TABLES')
-    tables.flat_map { |table| table.values }
-  end
-
-  def columns(table_name)
-    ActiveRecord::Base.connection.columns(table_name)
-  end
-
   let(:direction) { :up }
 
   it 'has a version number' do
@@ -70,7 +52,8 @@ describe PerconaMigrator, integration: true do
 
     it 'reconnects to the database using PerconaAdapter' do
       ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
-      expect(ActiveRecord::Base.connection_pool.spec.config[:adapter]).to eq('percona')
+      expect(ActiveRecord::Base.connection_pool.spec.config[:adapter])
+        .to eq('percona')
     end
 
     context 'when a username is provided' do
@@ -111,7 +94,8 @@ describe PerconaMigrator, integration: true do
     # TODO: Use dummy app so that we actually go through the railtie's code
     context 'when there is LHM' do
       xit 'patches it to use regular Rails migration methods' do
-        expect(PerconaMigrator::Lhm::Fake::Adapter).to receive(:new).and_return(true)
+        expect(PerconaMigrator::Lhm::Fake::Adapter)
+          .to receive(:new).and_return(true)
         ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
       end
     end
@@ -137,8 +121,7 @@ describe PerconaMigrator, integration: true do
           version
         ).migrate
 
-        Comment.reset_column_information
-        expect(Comment.column_names).to include('some_id_field')
+        expect(:comments).to have_column('some_id_field')
       end
 
       it 'marks the migration as up' do
@@ -166,8 +149,7 @@ describe PerconaMigrator, integration: true do
           version - 1
         ).migrate
 
-        Comment.reset_column_information
-        expect(Comment.column_names).not_to include('some_id_field')
+        expect(:comments).not_to have_column('some_id_field')
       end
 
       it 'marks the migration as down' do
@@ -188,7 +170,7 @@ describe PerconaMigrator, integration: true do
 
       it 'adds a reference column' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
-        expect(columns(:comments).map(&:name)).to include('user_id')
+        expect(:comments).to have_column('user_id')
       end
     end
 
@@ -197,12 +179,12 @@ describe PerconaMigrator, integration: true do
 
       it 'adds a column for the id' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
-        expect(columns(:comments).map(&:name)).to include('user_id')
+        expect(:comments).to have_column('user_id')
       end
 
       it 'adds a column for the type' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
-        expect(columns(:comments).map(&:name)).to include('user_type')
+        expect(:comments).to have_column('user_type')
       end
 
       context 'and index is set to true' do
@@ -211,9 +193,8 @@ describe PerconaMigrator, integration: true do
         it 'adds a coumpound index for both the id and type columns' do
           ActiveRecord::Migrator.run(direction, migration_path, version)
 
-          expect(indexes_from(:comments).map(&:name)).to(
-            contain_exactly('index_comments_on_user_id_and_user_type')
-          )
+          expect(:comments)
+            .to have_index('index_comments_on_user_id_and_user_type')
         end
       end
     end
@@ -224,9 +205,7 @@ describe PerconaMigrator, integration: true do
       it 'adds an index for the reference column' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
 
-        expect(indexes_from(:comments).map(&:name)).to(
-          contain_exactly('index_comments_on_user_id')
-        )
+        expect(:comments).to have_index('index_comments_on_user_id')
       end
     end
   end
@@ -239,19 +218,19 @@ describe PerconaMigrator, integration: true do
     context 'when no option is set' do
       it 'removes the reference column' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
-        expect(columns(:comments).map(&:name)).not_to include('user_id')
+        expect(:comments).not_to have_column('user_id')
       end
     end
 
     context 'when polymorphic is set to true' do
       it 'removes the reference id column' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
-        expect(columns(:comments).map(&:name)).not_to include('user_id')
+        expect(:comments).not_to have_column('user_id')
       end
 
       it 'removes the reference type column' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
-        expect(columns(:comments).map(&:name)).not_to include('user_type')
+        expect(:comments).not_to have_column('user_type')
       end
     end
   end
@@ -278,9 +257,7 @@ describe PerconaMigrator, integration: true do
           version
         ).migrate
 
-        expect(indexes_from(:comments).map(&:name)).to(
-          contain_exactly('index_comments_on_some_id_field')
-        )
+        expect(:comments).to have_index('index_comments_on_some_id_field')
       end
 
       it 'marks the migration as up' do
@@ -318,9 +295,7 @@ describe PerconaMigrator, integration: true do
           version - 1
         ).migrate
 
-        expect(indexes_from(:comments).map(&:name)).not_to(
-          include('index_comments_on_some_id_field')
-        )
+        expect(:comments).not_to have_index('index_comments_on_some_id_field')
       end
 
       it 'marks the migration as down' do
@@ -344,9 +319,7 @@ describe PerconaMigrator, integration: true do
 
       it 'executes the percona command' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
-        expect(indexes_from(:comments).map(&:name)).to(
-          contain_exactly('new_index_comments_on_some_id_field')
-        )
+        expect(:comments).to have_index('new_index_comments_on_some_id_field')
       end
 
       it 'marks the migration as down' do
@@ -369,9 +342,8 @@ describe PerconaMigrator, integration: true do
       it 'executes the percona command' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
 
-        expect(unique_indexes_from(:comments)).to(
-          match_array(['index_comments_on_some_id_field'])
-        )
+        expect(unique_indexes_from(:comments))
+          .to match_array(['index_comments_on_some_id_field'])
       end
 
       it 'marks the migration as up' do
@@ -391,9 +363,8 @@ describe PerconaMigrator, integration: true do
       it 'executes the percona command' do
         ActiveRecord::Migrator.run(direction, migration_path, version)
 
-        expect(unique_indexes_from(:comments)).not_to(
-          match_array(['index_comments_on_some_id_field'])
-        )
+        expect(unique_indexes_from(:comments))
+          .not_to match_array(['index_comments_on_some_id_field'])
       end
 
       it 'marks the migration as down' do
@@ -476,12 +447,12 @@ describe PerconaMigrator, integration: true do
 
     it 'adds a created_at column' do
       ActiveRecord::Migrator.run(direction, migration_path, version)
-      expect(columns(:comments).map(&:name)).to include('created_at')
+      expect(:comments).to have_column('created_at')
     end
 
     it 'adds a updated_at column' do
       ActiveRecord::Migrator.run(direction, migration_path, version)
-      expect(columns(:comments).map(&:name)).to include('updated_at')
+      expect(:comments).to have_column('updated_at')
     end
   end
 
