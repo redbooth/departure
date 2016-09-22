@@ -9,10 +9,10 @@ RSpec::Matchers.define :have_index do |expected|
   end
 
   def index_names(table_name)
-    indexes_from(:comments).map(&:name)
+    indexes_from(table_name).map(&:name)
   end
 
   def indexes_from(table_name)
-    ActiveRecord::Base.connection.indexes(:comments)
+    ActiveRecord::Base.connection.indexes(table_name)
   end
 end

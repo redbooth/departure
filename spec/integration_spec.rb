@@ -477,6 +477,11 @@ describe PerconaMigrator, integration: true do
   context 'renaming a table' do
     let(:version) { 24 }
 
+    before do
+      ActiveRecord::Migrator.run(direction, migration_path, 1)
+      ActiveRecord::Migrator.run(direction, migration_path, 2)
+    end
+
     it 'changes the table name' do
       ActiveRecord::Migrator.run(direction, migration_path, version)
       expect(tables).to include('new_comments')
@@ -485,6 +490,11 @@ describe PerconaMigrator, integration: true do
     it 'does not keep the old name' do
       ActiveRecord::Migrator.run(direction, migration_path, version)
       expect(tables).not_to include('comments')
+    end
+
+    it 'changes the index names in the new table' do
+      ActiveRecord::Migrator.run(direction, migration_path, version)
+      expect(:new_comments).to have_index('index_new_comments_on_some_id_field')
     end
   end
 
