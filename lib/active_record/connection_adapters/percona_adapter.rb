@@ -5,10 +5,10 @@ require 'percona_migrator'
 require 'forwardable'
 
 module ActiveRecord
-  class Base
+  module ConnectionHandling
     # Establishes a connection to the database that's used by all Active
     # Record objects.
-    def self.percona_connection(config)
+    def percona_connection(config)
       mysql2_connection = mysql2_connection(config)
 
       config[:username] = 'root' if config[:username].nil?
