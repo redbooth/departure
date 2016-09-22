@@ -471,6 +471,20 @@ describe PerconaMigrator, integration: true do
     end
   end
 
+  context 'adding timestamps' do
+    let(:version) { 22 }
+
+    it 'adds a created_at column' do
+      ActiveRecord::Migrator.run(direction, migration_path, version)
+      expect(columns(:comments).map(&:name)).to include('created_at')
+    end
+
+    it 'adds a updated_at column' do
+      ActiveRecord::Migrator.run(direction, migration_path, version)
+      expect(columns(:comments).map(&:name)).to include('updated_at')
+    end
+  end
+
   context 'when the migration failed' do
     context 'and the migration is not an alter table statement' do
       let(:version) { 8 }
