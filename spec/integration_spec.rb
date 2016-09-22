@@ -108,7 +108,7 @@ describe PerconaMigrator, integration: true do
     end
   end
 
-  context 'creating/removing columns' do
+  context 'managing columns' do
     let(:version) { 1 }
 
     context 'creating column' do
@@ -160,6 +160,25 @@ describe PerconaMigrator, integration: true do
         ).migrate
 
         expect(ActiveRecord::Migrator.current_version).to eq(version - 1)
+      end
+    end
+
+    context 'renaming column' do
+      let(:version) { 25 }
+
+      before do
+        ActiveRecord::Migrator.run(direction, migration_path, 1)
+        ActiveRecord::Migrator.run(direction, migration_path, 2)
+      end
+
+      it 'changes the column name' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(:comments).to have_column('new_id_field')
+      end
+
+      it 'does not keep the old column' do
+        ActiveRecord::Migrator.run(direction, migration_path, version)
+        expect(:comments).not_to have_column('some_id_field')
       end
     end
   end

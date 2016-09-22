@@ -114,6 +114,7 @@ describe PerconaMigrator::CliGenerator do
       it { is_expected.not_to include('ALTER TABLE') }
       it { is_expected.to include('--execute') }
       it { is_expected.to include('--alter-foreign-keys-method=auto') }
+      it { is_expected.to include('--no-check-alter') }
 
       it { is_expected.to include("t=#{table_name}") }
       it { is_expected.to include("D=#{connection_data[:database]}") }
