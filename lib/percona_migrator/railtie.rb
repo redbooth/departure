@@ -51,5 +51,11 @@ module PerconaMigrator
         end
       end
     end
+
+    initializer 'percona_migrator.configure' do |app|
+      PerconaMigrator.configure do |config|
+        config.tmp_path = app.paths['tmp'].first
+      end
+    end
   end
 end

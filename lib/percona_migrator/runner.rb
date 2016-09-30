@@ -46,7 +46,7 @@ module PerconaMigrator
     # @param cli_generator [CliGenerator]
     # @param mysql_adapter [ActiveRecord::ConnectionAdapter] it must implement
     #   #execute and #raw_connection
-    def initialize(logger, cli_generator, mysql_adapter, config = PerconaMigrator.config)
+    def initialize(logger, cli_generator, mysql_adapter, config = PerconaMigrator.configuration)
       @logger = logger
       @cli_generator = cli_generator
       @mysql_adapter = mysql_adapter

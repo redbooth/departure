@@ -1,8 +1,11 @@
 require 'spec_helper'
 
 describe PerconaMigrator do
-  describe '.config' do
-    subject { described_class.config }
-    it { is_expected.to be_a(PerconaMigrator::Configuration) }
+  describe '.configure' do
+    it 'yields the configuration object' do
+      expect do |b|
+        described_class.configure(&b)
+      end.to yield_with_args(kind_of(PerconaMigrator::Configuration))
+    end
   end
 end
