@@ -46,11 +46,12 @@ module PerconaMigrator
     # @param cli_generator [CliGenerator]
     # @param mysql_adapter [ActiveRecord::ConnectionAdapter] it must implement
     #   #execute and #raw_connection
-    def initialize(logger, cli_generator, mysql_adapter)
+    def initialize(logger, cli_generator, mysql_adapter, config = PerconaMigrator.config)
       @logger = logger
       @cli_generator = cli_generator
       @mysql_adapter = mysql_adapter
       @status = nil
+      @config = config
     end
 
     # Executes the passed sql statement using pt-online-schema-change for ALTER
@@ -88,7 +89,7 @@ module PerconaMigrator
 
     private
 
-    attr_reader :command, :logger, :status, :cli_generator, :mysql_adapter
+    attr_reader :command, :logger, :status, :cli_generator, :mysql_adapter, :config
 
     # Checks whether the sql statement is an ALTER TABLE
     #
@@ -149,11 +150,9 @@ module PerconaMigrator
 
     # The path where the percona toolkit stderr will be written
     #
-    # TODO: move to Rails tmp folder
-    #
     # @return [String]
     def error_log_path
-      'percona_migrator_error.log'
+      config.tmp_path
     end
 
     # @return [String]

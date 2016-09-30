@@ -107,9 +107,8 @@ describe PerconaMigrator::Runner do
         let(:command) { 'sh -c \'echo ROTO >/dev/stderr && false\'' }
 
         it 'raises a PerconaMigrator::Error' do
-          expect { runner.execute(command) }.to(
-            raise_exception(PerconaMigrator::Error, "ROTO\n")
-          )
+          expect { runner.execute(command) }
+            .to raise_exception(PerconaMigrator::Error, "ROTO\n")
         end
       end
 
@@ -117,9 +116,8 @@ describe PerconaMigrator::Runner do
         let(:command) { 'kill -9 $$' }
 
         it 'raises a SignalError specifying the status' do
-          expect { runner.execute(command) }.to(
-            raise_exception(PerconaMigrator::SignalError)
-          )
+          expect { runner.execute(command) }
+            .to raise_exception(PerconaMigrator::SignalError)
         end
       end
 
@@ -127,12 +125,11 @@ describe PerconaMigrator::Runner do
         let(:command) { 'whatevarrr666' }
 
         it 'raises a detailed CommandNotFoundError' do
-          expect { runner.execute(command) }.to(
-            raise_exception(
+          expect { runner.execute(command) }
+            .to raise_exception(
               PerconaMigrator::CommandNotFoundError,
               /Please install pt-online-schema-change/
             )
-          )
         end
       end
     end
