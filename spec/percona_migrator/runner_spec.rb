@@ -4,7 +4,12 @@ require 'tempfile'
 describe PerconaMigrator::Runner do
   let(:command) { 'pt-online-schema-change command' }
   let(:logger) do
-    instance_double(ActiveRecord::Migration, write: true, say: true)
+    instance_double(
+      PerconaMigrator::Logger,
+      write: true,
+      write_no_newline: true,
+      say: true
+    )
   end
   let(:cli_generator) { instance_double(PerconaMigrator::CliGenerator) }
   let(:mysql_adapter) do
@@ -85,9 +90,9 @@ describe PerconaMigrator::Runner do
       runner.execute(command)
 
       expect(logger).to have_received(:write).with("\n").twice
-      expect(logger).to have_received(:write).with("hello wo")
-      expect(logger).to have_received(:write).with("rld\\ntod")
-      expect(logger).to have_received(:write).with("o roto")
+      expect(logger).to have_received(:write_no_newline).with("hello wo")
+      expect(logger).to have_received(:write_no_newline).with("rld\\ntod")
+      expect(logger).to have_received(:write_no_newline).with("o roto")
     end
 
     context 'when the execution was succsessfull' do

@@ -12,6 +12,9 @@ require 'percona_migrator/errors'
 
 require 'percona_migrator/railtie' if defined?(Rails)
 
+# We need the OS not to buffer the IO to see pt-osc's output while migrating
+$stdout.sync = true
+
 module PerconaMigrator
   class << self
     attr_accessor :configuration

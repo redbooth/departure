@@ -88,7 +88,7 @@ module PerconaMigrator
           loop do
             IO.select([stdout])
             data = stdout.read_nonblock(8)
-            logger.write data
+            logger.write_no_newline(data)
           end
         rescue EOFError
           # noop
