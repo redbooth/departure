@@ -32,6 +32,10 @@ test_database = TestDatabase.new(db_config)
 RSpec.configure do |config|
   ActiveRecord::Migration.verbose = false
 
+  # Needs an empty block to initialize the config with the default values
+  PerconaMigrator.configure do |config|
+  end
+
   config.around(:each) do |example|
 
     # Cleans up the database before each example, so the current example doesn't

@@ -7,5 +7,9 @@ module PerconaMigrator
     def write(_text)
       # noop
     end
+
+    def write_no_newline(_text)
+      # noop
+    end
   end
 end

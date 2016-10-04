@@ -1,39 +1,6 @@
 require 'open3'
 
 module PerconaMigrator
-  class Error < StandardError; end
-
-  # Used when for whatever reason we couldn't get the spawned process'
-  # status.
-  class NoStatusError < Error
-    def message
-      'Status could not be retrieved'.freeze
-    end
-  end
-
-  # Used when the spawned process failed by receiving a signal.
-  # pt-online-schema-change returns "SIGSEGV (signal 11)" on failures.
-  class SignalError < Error
-    attr_reader :status
-
-    # Constructor
-    #
-    # @param status [Process::Status]
-    def initialize(status)
-      super
-      @status = status
-    end
-
-    def message
-      status.to_s
-    end
-  end
-
-  class CommandNotFoundError < Error
-    def message
-      'Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit for further details'
-    end
-  end
 
   # It executes pt-online-schema-change commands in a new process and gets its
   # output and status
@@ -46,11 +13,12 @@ module PerconaMigrator
     # @param cli_generator [CliGenerator]
     # @param mysql_adapter [ActiveRecord::ConnectionAdapter] it must implement
     #   #execute and #raw_connection
-    def initialize(logger, cli_generator, mysql_adapter)
+    def initialize(logger, cli_generator, mysql_adapter, config = PerconaMigrator.configuration)
       @logger = logger
       @cli_generator = cli_generator
       @mysql_adapter = mysql_adapter
       @status = nil
+      @config = config
     end
 
     # Executes the passed sql statement using pt-online-schema-change for ALTER
@@ -88,8 +56,7 @@ module PerconaMigrator
 
     private
 
-    attr_reader :command, :logger, :status, :error_message, :cli_generator,
-      :mysql_adapter
+    attr_reader :command, :logger, :status, :cli_generator, :mysql_adapter, :config
 
     # Checks whether the sql statement is an ALTER TABLE
     #
@@ -116,10 +83,18 @@ module PerconaMigrator
 
     # Executes the command and prints its output to the stdout
     def run_command
-      Open3.popen3(command) do |_stdin, stdout, stderr, waith_thr|
-        @status = waith_thr.value
-        @error_message = stderr.read
-        logger.write(stdout.read)
+      Open3.popen3("#{command} 2> #{error_log_path}") do |_stdin, stdout, _stderr, waith_thr|
+        begin
+          loop do
+            IO.select([stdout])
+            data = stdout.read_nonblock(8)
+            logger.write_no_newline(data)
+          end
+        rescue EOFError
+          # noop
+        ensure
+          @status = waith_thr.value
+        end
       end
     end
 
@@ -129,7 +104,6 @@ module PerconaMigrator
     # @raise [SignalError] if the spawned process received a signal
     # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
     def validate_status
-      raise NoStatusError if status.nil?
       raise SignalError.new(status) if status.signaled?
       raise CommandNotFoundError if status.exitstatus == COMMAND_NOT_FOUND
       raise Error, error_message unless status.success?
@@ -139,6 +113,18 @@ module PerconaMigrator
     # print by the migration
     def log_finished
       logger.write("\n")
+    end
+
+    # The path where the percona toolkit stderr will be written
+    #
+    # @return [String]
+    def error_log_path
+      config.error_log_path
+    end
+
+    # @return [String]
+    def error_message
+      File.read(error_log_path)
     end
   end
 end
