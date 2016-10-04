@@ -68,6 +68,19 @@ statements also go through `pt-online-schema-change` as well.
 You can keep your Lhm migrations and start using Rails migration's DSL back
 again in your next migration.
 
+## Configuration
+
+You can override any of the default values from an initializer:
+
+```ruby
+PerconaMigrator.configure do |config|
+  config.tmp_path = '/tmp/example'
+end
+```
+
+It's strongly recommended to name it after this gems name, such as
+`config/initializers/percona_migrator.rb`
+
 ## How it works
 
 When booting your Rails app, Percona Migrator extends the
