@@ -209,7 +209,7 @@ describe PerconaMigrator, integration: true do
       context 'and index is set to true' do
         let(:version) { 19 }
 
-        it 'adds a coumpound index for both the id and type columns' do
+        it 'adds a compound index for both the id and type columns' do
           ActiveRecord::Migrator.run(direction, migration_path, version)
 
           expect(:comments)
