@@ -74,7 +74,7 @@ You can override any of the default values from an initializer:
 
 ```ruby
 PerconaMigrator.configure do |config|
-  config.tmp_path = '/tmp/example'
+  config.tmp_path = '/tmp/'
 end
 ```
 

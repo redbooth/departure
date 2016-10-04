@@ -12,7 +12,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
     of at then and all at once.
 - Store pt-online-schema-change's stderr to percona_migrator_error.log in the
     default Rails tmp folder.
-- Allow configuring the tmp path with the `tmp_path` configuration setting.
+- Allow configuring the tmp directory where the error log gets written into,
+    with the `tmp_path` configuration setting.
 
 ## [0.1.0.rc.7] - 2016-09-15
 

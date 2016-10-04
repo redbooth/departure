@@ -10,7 +10,12 @@ describe PerconaMigrator::Runner do
   let(:mysql_adapter) do
     instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
   end
-  let(:config) { instance_double(PerconaMigrator::Configuration, tmp_path: 'percona_migrator_error.log') }
+  let(:config) do
+    instance_double(
+      PerconaMigrator::Configuration,
+      error_log_path: 'percona_migrator_error.log'
+    )
+  end
 
   let(:runner) { described_class.new(logger, cli_generator, mysql_adapter, config) }
 
@@ -48,7 +53,7 @@ describe PerconaMigrator::Runner do
     end
     let(:stdout) { temp_file.open }
     let(:wait_thread) { instance_double(Thread, value: status) }
-    let(:expected_command) { "#{command} 2> #{config.tmp_path}" }
+    let(:expected_command) { "#{command} 2> #{config.error_log_path}" }
 
     before do
       allow(Open3).to(
@@ -93,7 +98,7 @@ describe PerconaMigrator::Runner do
     end
 
     context 'on failure' do
-      let(:expected_command) { "#{command} 2> #{config.tmp_path}" }
+      let(:expected_command) { "#{command} 2> #{config.error_log_path}" }
 
       before do
         allow(Open3).to(

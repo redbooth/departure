@@ -152,7 +152,7 @@ module PerconaMigrator
     #
     # @return [String]
     def error_log_path
-      config.tmp_path
+      config.error_log_path
     end
 
     # @return [String]
