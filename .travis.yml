@@ -2,7 +2,7 @@ language: ruby
 rvm:
   - 2.1.2
 before_install:
-  - gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A && gpg -a --export CD2EFD2A | sudo apt-key add -
+  - sudo apt-key adv --keyserver keys.gnupg.net --recv-keys 8507EFA5
   - echo "deb http://repo.percona.com/apt `lsb_release -cs` main" | sudo tee -a /etc/apt/sources.list
   - sudo apt-get update -qq
   - sudo apt-get install percona-toolkit
