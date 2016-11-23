@@ -8,6 +8,8 @@ before_install:
   - sudo apt-get install percona-toolkit
   - gem update bundler
   - bin/setup
+after_success:
+  - codeclimate-test-reporter
 
 branches:
   only:
