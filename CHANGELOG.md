@@ -14,6 +14,10 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
     default Rails tmp folder.
 - Allow configuring the tmp directory where the error log gets written into,
     with the `tmp_path` configuration setting.
+- Support for ActiveRecord 4.0. Adds the following migration methods:
+  - #rename_index, #change_column_null, #add_reference, #remove_reference,
+    #set_field_encoding, #add_timestamps, #remove_timestamps, #rename_table,
+    #rename_column
 
 ## [0.1.0.rc.7] - 2016-09-15
 
