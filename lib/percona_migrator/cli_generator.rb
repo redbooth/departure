@@ -28,6 +28,10 @@ module PerconaMigrator
 
   # Generates the equivalent Percona's pt-online-schema-change command to the
   # given SQL statement
+  #
+  # --no-check-alter is used to allow running CHANGE COLUMN statements. For
+  #   more details, check: www.percona.com/doc/percona-toolkit/2.2/pt-online-schema-change.html#cmdoption-pt-online-schema-change--[no]check-alter
+  #
   class CliGenerator # Command
     BASE_COMMAND = 'pt-online-schema-change'
     BASE_OPTIONS = %w(
@@ -35,6 +39,7 @@ module PerconaMigrator
       --statistics
       --recursion-method=none
       --alter-foreign-keys-method=auto
+      --no-check-alter
     )
 
     # Constructor

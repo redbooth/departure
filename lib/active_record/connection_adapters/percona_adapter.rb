@@ -5,11 +5,13 @@ require 'percona_migrator'
 require 'forwardable'
 
 module ActiveRecord
-  class Base
+  module ConnectionHandling
     # Establishes a connection to the database that's used by all Active
     # Record objects.
-    def self.percona_connection(config)
+    def percona_connection(config)
       mysql2_connection = mysql2_connection(config)
+
+      config[:username] = 'root' if config[:username].nil?
 
       verbose = ActiveRecord::Migration.verbose
       percona_logger = PerconaMigrator::LoggerFactory.build(verbose: verbose)
@@ -45,7 +47,7 @@ module ActiveRecord
 
       ADAPTER_NAME = 'Percona'.freeze
 
-      def_delegators :mysql_adapter, :last_inserted_id, :each_hash
+      def_delegators :mysql_adapter, :last_inserted_id, :each_hash, :set_field_encoding
 
       def initialize(connection, _logger, connection_options, _config)
         super
@@ -59,7 +61,7 @@ module ActiveRecord
       end
       alias :exec_update :exec_delete
 
-      def exec_insert(sql, name, binds)
+      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil)
         execute(to_sql(sql, binds), name)
       end
 
@@ -77,7 +79,7 @@ module ActiveRecord
       # Executes a SELECT query and returns an array of record hashes with the
       # column names as keys and column values as values.
       def select(sql, name = nil, binds = [])
-        exec_query(sql, name, binds).to_a
+        exec_query(sql, name, binds)
       end
 
       # Returns true, as this adapter supports migrations
@@ -85,8 +87,8 @@ module ActiveRecord
         true
       end
 
-      def new_column(field, default, type, null, collation)
-        Column.new(field, default, type, null, collation)
+      def new_column(field, default, type, null, collation, extra = "")
+        Column.new(field, default, type, null, collation, extra)
       end
 
       # Adds a new index to the table

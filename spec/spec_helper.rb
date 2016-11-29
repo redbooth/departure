@@ -11,6 +11,10 @@ require './test_database'
 require 'percona_migrator'
 require 'lhm'
 
+require 'support/matchers/have_column'
+require 'support/matchers/have_index'
+require 'support/table_methods'
+
 db_config = Configuration.new
 
 # Disables/enables the queries log you see in your rails server in dev mode
@@ -30,6 +34,8 @@ MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)
 test_database = TestDatabase.new(db_config)
 
 RSpec.configure do |config|
+  config.include TableMethods
+
   ActiveRecord::Migration.verbose = false
 
   # Needs an empty block to initialize the config with the default values
