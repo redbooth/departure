@@ -1,3 +1,3 @@
 module PerconaMigrator
-  VERSION = '0.1.0.rc.7'.freeze
+  VERSION = '1.0.0'.freeze
 end

@@ -6,6 +6,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [1.0.0] - 2016-11-30
+
 ### Added
 
 - Show pt-online-schema-change's stdout while the migration is running instead
