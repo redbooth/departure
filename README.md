@@ -121,7 +121,8 @@ git commits and tags, and push the `.gem` file to
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/redbooth/percona_migrator.
+https://github.com/redbooth/percona_migrator. They need to be opened against
+`master` or `v3.2` only if the changes fix a bug in Rails 3.2 apps.
 
 Please note that this project is released with a Contributor Code of Conduct. By
 participating in this project you agree to abide by its terms.
