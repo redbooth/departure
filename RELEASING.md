@@ -1,8 +1,7 @@
 # Releasing Percona Migrator
 
-All releases come from the master branch. Only those releases that add a fix for
-the Rails 3.2 support will come from the branch v3.2. Keep in mind though that
-said branch is not actively maintained.
+All releases come from the master branch. All other branches won't be maintained
+and will receive bug fix releases only.
 
 In order to give support to a new major Rails version, we'll branch off of
 master, name it following the Rails repo convention, such as `v4.2`, and
