@@ -9,6 +9,7 @@ require 'percona_migrator/null_logger'
 require 'percona_migrator/logger_factory'
 require 'percona_migrator/configuration'
 require 'percona_migrator/errors'
+require 'percona_migrator/command'
 
 require 'percona_migrator/railtie' if defined?(Rails)
 

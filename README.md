@@ -59,6 +59,23 @@ All the `ALTER TABLE` statements will be executed with
 `pt-online-schema-change`, which will provide additional output to the
 migration.
 
+### pt-online-schema-change arguments
+
+You can specify any `pt-online-schema-change` arguments when running the
+migration. All what you pass in the PT_ARGS env var, will be bypassed to the
+binary, overwriting any default values. Note the format is the same as in
+`pt-online-schema-change`.
+
+```ruby
+$ PT_ARGS='--chunk-time=1' bundle exec rake db:migrate:up VERSION=xxx
+```
+
+or even mulitple arguments
+
+```ruby
+$ PT_ARGS='--chunk-time=1 --critical-load=55' bundle exec rake db:migrate:up VERSION=xxx
+```
+
 ### LHM support
 
 If you moved to Soundcloud's [Lhm](https://github.com/soundcloud/lhm) already,
