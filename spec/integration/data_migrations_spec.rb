@@ -3,7 +3,7 @@ require 'spec_helper'
 describe PerconaMigrator, integration: true do
   class Comment < ActiveRecord::Base; end
 
-  let(:migration_fixtures) { MIGRATION_FIXTURES }
+  let(:migration_fixtures) { [MIGRATION_FIXTURES] }
   let(:direction) { :up }
 
   before do
@@ -27,7 +27,7 @@ describe PerconaMigrator, integration: true do
     it 'updates all the required data' do
       ActiveRecord::Migrator.run(
         direction,
-        [migration_fixtures],
+        migration_fixtures,
         version
       )
 
@@ -37,7 +37,7 @@ describe PerconaMigrator, integration: true do
     it 'marks the migration as up' do
       ActiveRecord::Migrator.run(
         direction,
-        [migration_fixtures],
+        migration_fixtures,
         version
       )
 
@@ -51,7 +51,7 @@ describe PerconaMigrator, integration: true do
     it 'updates all the required data' do
       ActiveRecord::Migrator.run(
         direction,
-        [migration_fixtures],
+        migration_fixtures,
         version
       )
 
@@ -61,7 +61,7 @@ describe PerconaMigrator, integration: true do
     it 'marks the migration as up' do
       ActiveRecord::Migrator.run(
         direction,
-        [migration_fixtures],
+        migration_fixtures,
         version
       )
 
@@ -75,7 +75,7 @@ describe PerconaMigrator, integration: true do
     it 'updates all the required data' do
       ActiveRecord::Migrator.run(
         direction,
-        [migration_fixtures],
+        migration_fixtures,
         version
       )
 
@@ -85,7 +85,7 @@ describe PerconaMigrator, integration: true do
     it 'marks the migration as up' do
       ActiveRecord::Migrator.run(
         direction,
-        [migration_fixtures],
+        migration_fixtures,
         version
       )
 
@@ -99,7 +99,7 @@ describe PerconaMigrator, integration: true do
     it 'updates all the required data' do
       ActiveRecord::Migrator.run(
         direction,
-        [migration_fixtures],
+        migration_fixtures,
         version
       )
 
@@ -109,7 +109,7 @@ describe PerconaMigrator, integration: true do
     it 'marks the migration as up' do
       ActiveRecord::Migrator.run(
         direction,
-        [migration_fixtures],
+        migration_fixtures,
         version
       )
 
