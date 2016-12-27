@@ -127,11 +127,8 @@ describe PerconaMigrator, integration: true do
       let(:version) { 1 }
 
       before do
-        ActiveRecord::Base.connection.add_column(
-          :comments,
-          :some_id_field,
-          :integer
-        )
+        ActiveRecord::Base.connection
+          .add_column(:comments, :some_id_field, :integer)
       end
 
       it 'raises and halts the execution' do

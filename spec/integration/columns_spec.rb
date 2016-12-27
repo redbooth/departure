@@ -69,8 +69,12 @@ describe PerconaMigrator, integration: true do
       let(:version) { 25 }
 
       before do
-        ActiveRecord::Migrator.run(direction, migration_path, 1)
-        ActiveRecord::Migrator.run(direction, migration_path, 2)
+        ActiveRecord::Base.connection.add_column(
+          :comments,
+          :some_id_field,
+          :integer,
+          { limit: 11, default: nil }
+        )
       end
 
       it 'changes the column name' do
@@ -142,7 +146,7 @@ describe PerconaMigrator, integration: true do
     let(:version) { 23 }
 
     before do
-      ActiveRecord::Migrator.run(direction, migration_path, 22)
+      ActiveRecord::Base.connection.add_timestamps(:comments)
     end
 
     it 'removes the created_at column' do
