@@ -32,4 +32,8 @@ module PerconaMigrator
       'Please install pt-online-schema-change. Check: https://www.percona.com/doc/percona-toolkit for further details'
     end
   end
+
+  # Used to prevent running the db:migrate rake task when providing arguments
+  # through PT_ARGS env var
+  class ArgumentsNotSupported < Error; end
 end

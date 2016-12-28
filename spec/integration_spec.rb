@@ -199,5 +199,19 @@ describe PerconaMigrator, integration: true do
         end
       end
     end
+
+    context 'and the db:migrate rake task is executed' do
+      let(:migrations_paths) { [MIGRATION_FIXTURES] }
+
+      it 'does not allow to migrate' do
+        expect do
+          ClimateControl.modify PT_ARGS: '--arg=foo' do
+            PerconaMigrator.load
+            ActiveRecord::Migrator.migrate(migrations_paths, 1)
+          end
+        end
+          .to raise_error(PerconaMigrator::ArgumentsNotSupported)
+      end
+    end
   end
 end
