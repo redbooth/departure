@@ -16,8 +16,7 @@ module PerconaMigrator
       @logger = logger
       @cli_generator = cli_generator
       @mysql_adapter = mysql_adapter
-      @status = nil
-      @config = config
+      @error_log_path = config.error_log_path
     end
 
     # Executes the passed sql statement using pt-online-schema-change for ALTER
@@ -26,8 +25,8 @@ module PerconaMigrator
     # @param sql [String]
     def query(sql)
       if alter_statement?(sql)
-        command = cli_generator.parse_statement(sql)
-        execute(command)
+        command_line = cli_generator.parse_statement(sql)
+        execute(command_line)
       else
         mysql_adapter.execute(sql)
       end
@@ -44,17 +43,18 @@ module PerconaMigrator
     # TODO: rename it so we don't confuse it with AR's #execute
     # Runs and logs the given command
     #
-    # @param command [String]
+    # @param command_line [String]
     # @return [Boolean]
-    def execute(command)
-      @command = command
-      logging { run_command }
-      status
+    def execute(command_line)
+      @command_line = command_line
+      logging do
+        Command.new(command_line, error_log_path, logger).run
+      end
     end
 
     private
 
-    attr_reader :command, :logger, :status, :cli_generator, :mysql_adapter, :config
+    attr_reader :command_line, :logger, :cli_generator, :mysql_adapter, :error_log_path
 
     # Checks whether the sql statement is an ALTER TABLE
     #
@@ -69,19 +69,15 @@ module PerconaMigrator
     # @yield
     def logging
       log_started
-      yield
+      result = yield
       log_finished
+      result
     end
 
     # Logs when the execution started
     def log_started
       logger.write("\n")
-      logger.say("Running #{command}\n\n", true)
-    end
-
-    # Executes the command and prints its output to the stdout
-    def run_command
-      @status = Command.new(command, config, logger).run
+      logger.say("Running #{command_line}\n\n", true)
     end
 
     # Prints a line break to keep the logs separate from the execution time

@@ -6,11 +6,11 @@ module PerconaMigrator
     # Constructor
     #
     # @param command [String]
-    # @param config [#error_log_path]
+    # @param error_log_path [String]
     # @param logger [#write_no_newline]
-    def initialize(command, config, logger)
+    def initialize(command, error_log_path, logger)
       @command = command
-      @config = config
+      @error_log_path = error_log_path
       @logger = logger
     end
 
@@ -38,7 +38,7 @@ module PerconaMigrator
 
     private
 
-    attr_reader :command, :config, :logger, :status
+    attr_reader :command, :error_log_path, :logger, :status
 
     # Validates the status of the execution
     #
@@ -54,13 +54,6 @@ module PerconaMigrator
     # @return [String]
     def error_message
       File.read(error_log_path)
-    end
-
-    # The path where the percona toolkit stderr will be written
-    #
-    # @return [String]
-    def error_log_path
-      config.error_log_path
     end
   end
 end

@@ -165,7 +165,7 @@ describe PerconaMigrator, integration: true do
       it 'runs pt-online-schema-change with the specified arguments' do
         expect(PerconaMigrator::Command)
           .to receive(:new)
-          .with(/--chunk-time=1/, kind_of(PerconaMigrator::Configuration), anything)
+          .with(/--chunk-time=1/, anything, anything)
           .and_return(command)
 
         ClimateControl.modify PT_ARGS: '--chunk-time=1' do
@@ -178,7 +178,7 @@ describe PerconaMigrator, integration: true do
       it 'runs pt-online-schema-change with the specified arguments' do
         expect(PerconaMigrator::Command)
           .to receive(:new)
-          .with(/--chunk-time=1 --max-lag=2/, kind_of(PerconaMigrator::Configuration), anything)
+          .with(/--chunk-time=1 --max-lag=2/, anything, anything)
           .and_return(command)
 
         ClimateControl.modify PT_ARGS: '--chunk-time=1 --max-lag=2' do
@@ -191,7 +191,7 @@ describe PerconaMigrator, integration: true do
       it 'runs pt-online-schema-change with the user specified value' do
         expect(PerconaMigrator::Command)
           .to receive(:new)
-          .with(/--alter-foreign-keys-method=drop_swap/, kind_of(PerconaMigrator::Configuration), anything)
+          .with(/--alter-foreign-keys-method=drop_swap/, anything, anything)
           .and_return(command)
 
         ClimateControl.modify PT_ARGS: '--alter-foreign-keys-method=drop_swap' do

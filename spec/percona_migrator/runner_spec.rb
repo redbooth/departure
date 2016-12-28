@@ -14,7 +14,12 @@ describe PerconaMigrator::Runner do
   let(:mysql_adapter) do
     instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
   end
-  let(:config) { instance_double(PerconaMigrator::Configuration) }
+  let(:config) do
+    instance_double(
+      PerconaMigrator::Configuration,
+      error_log_path: 'percona_migrator_error.log'
+    )
+  end
 
   let(:runner) { described_class.new(logger, cli_generator, mysql_adapter, config) }
 
@@ -40,7 +45,7 @@ describe PerconaMigrator::Runner do
 
     before do
       allow(PerconaMigrator::Command)
-        .to receive(:new).with(command, config, logger).and_return(cmd)
+        .to receive(:new).with(command, kind_of(String), logger).and_return(cmd)
     end
 
     it 'executes the pt-online-schema-change command' do

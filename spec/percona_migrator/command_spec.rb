@@ -3,19 +3,14 @@ require 'spec_helper'
 describe PerconaMigrator::Command do
   describe '#run' do
     let(:command) { 'pt-online-schema-change command' }
-    let(:config) do
-      instance_double(
-        PerconaMigrator::Configuration,
-        error_log_path: 'percona_migrator_error.log'
-      )
-    end
+    let(:error_log_path) { 'percona_migrator_error.log' }
     let(:logger) { instance_double(PerconaMigrator::Logger) }
 
     before do
       allow(logger).to receive(:write_no_newline).with(anything).and_return(true)
     end
 
-    let(:runner) { described_class.new(command, config, logger) }
+    let(:runner) { described_class.new(command, error_log_path, logger) }
 
     let(:temp_file) do
       file = Tempfile.new('faked_stdout')
@@ -34,7 +29,7 @@ describe PerconaMigrator::Command do
     end
     let(:stdout) { temp_file.open }
     let(:wait_thread) { instance_double(Thread, value: status) }
-    let(:expected_command) { "#{command} 2> #{config.error_log_path}" }
+    let(:expected_command) { "#{command} 2> #{error_log_path}" }
 
     before do
       allow(Open3).to(
