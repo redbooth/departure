@@ -5,7 +5,6 @@ module PerconaMigrator
   # It executes pt-online-schema-change commands in a new process and gets its
   # output and status
   class Runner
-    COMMAND_NOT_FOUND = 127
 
     # Constructor
     #
@@ -50,7 +49,6 @@ module PerconaMigrator
     def execute(command)
       @command = command
       logging { run_command }
-      validate_status
       status
     end
 
@@ -86,26 +84,10 @@ module PerconaMigrator
       @status = Command.new(command, config, logger).run
     end
 
-    # Validates the status of the execution
-    #
-    # @raise [NoStatusError] if the spawned process' status can't be retrieved
-    # @raise [SignalError] if the spawned process received a signal
-    # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
-    def validate_status
-      raise SignalError.new(status) if status.signaled?
-      raise CommandNotFoundError if status.exitstatus == COMMAND_NOT_FOUND
-      raise Error, error_message unless status.success?
-    end
-
     # Prints a line break to keep the logs separate from the execution time
     # print by the migration
     def log_finished
       logger.write("\n")
-    end
-
-    # @return [String]
-    def error_message
-      File.read(config.error_log_path)
     end
   end
 end

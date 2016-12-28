@@ -1,6 +1,7 @@
 module PerconaMigrator
   # Executes the given command returning it's status and errors
   class Command
+    COMMAND_NOT_FOUND = 127
 
     # Constructor
     #
@@ -31,12 +32,29 @@ module PerconaMigrator
           @status = waith_thr.value
         end
       end
-      @status
+      validate_status!
+      status
     end
 
     private
 
-    attr_reader :command, :config, :logger
+    attr_reader :command, :config, :logger, :status
+
+    # Validates the status of the execution
+    #
+    # @raise [NoStatusError] if the spawned process' status can't be retrieved
+    # @raise [SignalError] if the spawned process received a signal
+    # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
+    def validate_status!
+      raise SignalError.new(status) if status.signaled?
+      raise CommandNotFoundError if status.exitstatus == COMMAND_NOT_FOUND
+      raise Error, error_message unless status.success?
+    end
+
+    # @return [String]
+    def error_message
+      File.read(error_log_path)
+    end
 
     # The path where the percona toolkit stderr will be written
     #
