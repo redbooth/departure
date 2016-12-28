@@ -2,14 +2,8 @@ require 'spec_helper'
 require 'tempfile'
 
 describe PerconaMigrator::Runner do
-  let(:command) { 'pt-online-schema-change command' }
-  let(:logger) do
-    instance_double(
-      PerconaMigrator::Logger,
-      write: true,
-      say: true
-    )
-  end
+  let(:command_line) { 'pt-online-schema-change command' }
+  let(:logger) { instance_double(PerconaMigrator::Logger) }
   let(:cli_generator) { instance_double(PerconaMigrator::CliGenerator) }
   let(:mysql_adapter) do
     instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
@@ -45,24 +39,17 @@ describe PerconaMigrator::Runner do
 
     before do
       allow(PerconaMigrator::Command)
-        .to receive(:new).with(command, kind_of(String), logger).and_return(cmd)
+        .to receive(:new).with(command_line, config.error_log_path, logger)
+        .and_return(cmd)
     end
 
     it 'executes the pt-online-schema-change command' do
-      runner.execute(command)
+      runner.execute(command_line)
       expect(cmd).to have_received(:run)
     end
 
     it 'returns the command status' do
-      expect(runner.execute(command)).to eq(status)
-    end
-
-    it 'logs that the execution started' do
-      runner.execute(command)
-      expect(logger).to have_received(:say).with(
-        "Running pt-online-schema-change command\n\n",
-        true
-      )
+      expect(runner.execute(command_line)).to eq(status)
     end
   end
 end

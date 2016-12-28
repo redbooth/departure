@@ -46,15 +46,12 @@ module PerconaMigrator
     # @param command_line [String]
     # @return [Boolean]
     def execute(command_line)
-      @command_line = command_line
-      logging do
-        Command.new(command_line, error_log_path, logger).run
-      end
+      Command.new(command_line, error_log_path, logger).run
     end
 
     private
 
-    attr_reader :command_line, :logger, :cli_generator, :mysql_adapter, :error_log_path
+    attr_reader :logger, :cli_generator, :mysql_adapter, :error_log_path
 
     # Checks whether the sql statement is an ALTER TABLE
     #
@@ -62,28 +59,6 @@ module PerconaMigrator
     # @return [Boolean]
     def alter_statement?(sql)
       sql =~ /\Aalter table/i
-    end
-
-    # Logs the start and end of the execution
-    #
-    # @yield
-    def logging
-      log_started
-      result = yield
-      log_finished
-      result
-    end
-
-    # Logs when the execution started
-    def log_started
-      logger.write("\n")
-      logger.say("Running #{command_line}\n\n", true)
-    end
-
-    # Prints a line break to keep the logs separate from the execution time
-    # print by the migration
-    def log_finished
-      logger.write("\n")
     end
   end
 end

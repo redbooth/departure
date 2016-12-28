@@ -4,10 +4,10 @@ describe PerconaMigrator::Command do
   describe '#run' do
     let(:command) { 'pt-online-schema-change command' }
     let(:error_log_path) { 'percona_migrator_error.log' }
-    let(:logger) { instance_double(PerconaMigrator::Logger) }
-
-    before do
-      allow(logger).to receive(:write_no_newline).with(anything).and_return(true)
+    let(:logger) do
+      instance_double(
+        PerconaMigrator::Logger, write: true, say: true, write_no_newline: true
+      )
     end
 
     let(:runner) { described_class.new(command, error_log_path, logger) }
@@ -46,6 +46,14 @@ describe PerconaMigrator::Command do
 
     it 'returns the command status' do
       expect(runner.run).to eq(status)
+    end
+
+    it 'logs that the execution started' do
+      runner.run
+      expect(logger).to have_received(:say).with(
+        "Running pt-online-schema-change command\n\n",
+        true
+      )
     end
 
     it 'logs the command\'s output' do
