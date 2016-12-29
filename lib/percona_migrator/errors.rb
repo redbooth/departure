@@ -34,6 +34,6 @@ module PerconaMigrator
   end
 
   # Used to prevent running the db:migrate rake task when providing arguments
-  # through PT_ARGS env var
+  # through PERCONA_ARGS env var
   class ArgumentsNotSupported < Error; end
 end

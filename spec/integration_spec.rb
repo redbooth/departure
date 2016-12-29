@@ -155,7 +155,7 @@ describe PerconaMigrator, integration: true do
     end
   end
 
-  context 'when PT_ARGS is specified' do
+  context 'when PERCONA_ARGS is specified' do
     let(:command) { instance_double(PerconaMigrator::Command, run: status) }
     let(:status) do
       instance_double(Process::Status, signaled?: false, exitstatus: 1, success?: true)
@@ -168,7 +168,7 @@ describe PerconaMigrator, integration: true do
           .with(/--chunk-time=1/, anything, anything)
           .and_return(command)
 
-        ClimateControl.modify PT_ARGS: '--chunk-time=1' do
+        ClimateControl.modify PERCONA_ARGS: '--chunk-time=1' do
           ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
         end
       end
@@ -181,7 +181,7 @@ describe PerconaMigrator, integration: true do
           .with(/--chunk-time=1 --max-lag=2/, anything, anything)
           .and_return(command)
 
-        ClimateControl.modify PT_ARGS: '--chunk-time=1 --max-lag=2' do
+        ClimateControl.modify PERCONA_ARGS: '--chunk-time=1 --max-lag=2' do
           ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
         end
       end
@@ -194,7 +194,7 @@ describe PerconaMigrator, integration: true do
           .with(/--alter-foreign-keys-method=drop_swap/, anything, anything)
           .and_return(command)
 
-        ClimateControl.modify PT_ARGS: '--alter-foreign-keys-method=drop_swap' do
+        ClimateControl.modify PERCONA_ARGS: '--alter-foreign-keys-method=drop_swap' do
           ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
         end
       end
@@ -205,7 +205,7 @@ describe PerconaMigrator, integration: true do
 
       it 'does not allow to migrate' do
         expect do
-          ClimateControl.modify PT_ARGS: '--arg=foo' do
+          ClimateControl.modify PERCONA_ARGS: '--arg=foo' do
             PerconaMigrator.load
             ActiveRecord::Migrator.migrate(migrations_paths, 1)
           end

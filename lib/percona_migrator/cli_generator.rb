@@ -26,7 +26,7 @@ module PerconaMigrator
     # TODO: Better doc.
     #
     # Constructor. Specify any arguments to pass to pt-online-schema-change
-    # passing the PT_ARGS env var when executing the migration
+    # passing the PERCONA_ARGS env var when executing the migration
     #
     # @param connection_data [Hash]
     def initialize(connection_details)
@@ -79,7 +79,7 @@ module PerconaMigrator
 
     # Adds any user specified arguments to execute pt-online-schema-change with
     def user_options
-      arguments = ENV['PT_ARGS']
+      arguments = ENV['PERCONA_ARGS']
       user_options = if arguments
                        arguments.split(' ').map do |argument|
                          Option.from_string(argument)

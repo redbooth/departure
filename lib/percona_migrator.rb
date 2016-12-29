@@ -34,12 +34,12 @@ module PerconaMigrator
         alias_method(:original_migrate, :migrate)
       end
 
-      # Checks whether arguments are being passed through PT_ARGS when running
+      # Checks whether arguments are being passed through PERCONA_ARGS when running
       # the db:migrate rake task
       #
-      # @raise [ArgumentsNotSupported] if PT_ARGS has any value
+      # @raise [ArgumentsNotSupported] if PERCONA_ARGS has any value
       def migrate(migrations_paths, target_version = nil, &block)
-        raise ArgumentsNotSupported if ENV['PT_ARGS'].present?
+        raise ArgumentsNotSupported if ENV['PERCONA_ARGS'].present?
         original_migrate(migrations_paths, target_version, &block)
       end
     end

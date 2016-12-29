@@ -33,19 +33,19 @@ describe PerconaMigrator::CliGenerator do
     end
 
     context 'when options are provided' do
-      let(:env_var) { { PT_ARGS: '--chunk-time=1' } }
+      let(:env_var) { { PERCONA_ARGS: '--chunk-time=1' } }
       it { is_expected.to include('--chunk-time=1') }
     end
 
     context 'when the option has a default' do
-      let(:env_var) { { PT_ARGS: '--alter-foreign-keys-method=drop_swap' } }
+      let(:env_var) { { PERCONA_ARGS: '--alter-foreign-keys-method=drop_swap' } }
 
       it { is_expected.to include('--alter-foreign-keys-method=drop_swap') }
       it { is_expected.not_to include('--alter-foreign-keys-method=auto') }
     end
 
     context 'when multiple options are provided' do
-      let(:env_var) { { PT_ARGS: '--chunk-time=1 --max-lag=2' } }
+      let(:env_var) { { PERCONA_ARGS: '--chunk-time=1 --max-lag=2' } }
       it { is_expected.to include('--chunk-time=1 --max-lag=2') }
     end
   end

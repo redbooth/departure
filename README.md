@@ -62,18 +62,18 @@ migration.
 ### pt-online-schema-change arguments
 
 You can specify any `pt-online-schema-change` arguments when running the
-migration. All what you pass in the PT_ARGS env var, will be bypassed to the
+migration. All what you pass in the PERCONA_ARGS env var, will be bypassed to the
 binary, overwriting any default values. Note the format is the same as in
 `pt-online-schema-change`.
 
 ```ruby
-$ PT_ARGS='--chunk-time=1' bundle exec rake db:migrate:up VERSION=xxx
+$ PERCONA_ARGS='--chunk-time=1' bundle exec rake db:migrate:up VERSION=xxx
 ```
 
 or even mulitple arguments
 
 ```ruby
-$ PT_ARGS='--chunk-time=1 --critical-load=55' bundle exec rake db:migrate:up VERSION=xxx
+$ PERCONA_ARGS='--chunk-time=1 --critical-load=55' bundle exec rake db:migrate:up VERSION=xxx
 ```
 
 This however, only works for `db:migrate:up` or `db:migrate:down` rake tasks and
