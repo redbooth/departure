@@ -2,6 +2,7 @@ require 'percona_migrator/dsn'
 require 'percona_migrator/option'
 require 'percona_migrator/alter_argument'
 require 'percona_migrator/connection_details'
+require 'percona_migrator/user_options'
 
 module PerconaMigrator
 
@@ -13,7 +14,7 @@ module PerconaMigrator
   #
   class CliGenerator
     BASE_COMMAND = 'pt-online-schema-change'
-    BASE_OPTIONS = Set.new(
+    DEFAULT_OPTIONS = Set.new(
       [
         Option.new('execute'),
         Option.new('statistics'),
@@ -32,7 +33,6 @@ module PerconaMigrator
     def initialize(connection_details)
       @connection_details = connection_details
       @command = [BASE_COMMAND, connection_details.to_s]
-      @options = BASE_OPTIONS
     end
 
     # Generates the percona command. Fills all the connection credentials from
@@ -68,7 +68,7 @@ module PerconaMigrator
 
     private
 
-    attr_reader :connection_details, :options, :command
+    attr_reader :connection_details, :command
 
     # Returns the command as a string that can be executed in a shell
     #
@@ -77,22 +77,12 @@ module PerconaMigrator
       "#{command.join(' ')} #{all_options.join(' ')}"
     end
 
-    # Adds any user specified arguments to execute pt-online-schema-change with
-    def user_options
-      arguments = ENV['PERCONA_ARGS']
-      user_options = if arguments
-                       arguments.split(' ').map do |argument|
-                         Option.from_string(argument)
-                       end
-                     else
-                       []
-                     end
-      Set.new(user_options)
-    end
-
+    # Returns all the arguments to execute pt-online-schema-change with
+    #
+    # @return [Array]
     def all_options
-      user_options_copy = user_options.dup
-      user_options_copy.merge(options).to_a
+      user_options = UserOptions.new
+      user_options.merge(DEFAULT_OPTIONS).to_a
     end
   end
 end
