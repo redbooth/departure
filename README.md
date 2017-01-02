@@ -64,7 +64,8 @@ migration.
 You can specify any `pt-online-schema-change` arguments when running the
 migration. All what you pass in the PERCONA_ARGS env var, will be bypassed to the
 binary, overwriting any default values. Note the format is the same as in
-`pt-online-schema-change`.
+`pt-online-schema-change`. Check the full list in [Percona Toolkit
+documentation](https://www.percona.com/doc/percona-toolkit/2.2/pt-online-schema-change.html#options)
 
 ```ruby
 $ PERCONA_ARGS='--chunk-time=1' bundle exec rake db:migrate:up VERSION=xxx
