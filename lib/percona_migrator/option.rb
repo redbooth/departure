@@ -3,7 +3,7 @@ module PerconaMigrator
     attr_reader :name, :value
 
     # Builds an instance by parsing its name and value out of the given string.
-    # Note the string must be conform to "--<arg>=<value>" format.
+    # Note the string must conform to "--<arg>=<value>" format.
     #
     # @param string [String]
     # @return [Option]
