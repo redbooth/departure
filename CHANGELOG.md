@@ -9,8 +9,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ### Added
 
 - Allow passing any `pt-online-schema-change`'s arguments through the
-   `PERCON_ARGS` env var when executing a migration with `rake db:migrate:up` or
-   `db:migrate:down`.
+   `PERCONA_ARGS` env var when executing a migration with `rake db:migrate:up`
+   or `db:migrate:down`.
 
 ## [1.0.0] - 2016-11-30
 
