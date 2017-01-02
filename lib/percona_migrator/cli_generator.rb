@@ -13,7 +13,7 @@ module PerconaMigrator
   #   more details, check: www.percona.com/doc/percona-toolkit/2.2/pt-online-schema-change.html#cmdoption-pt-online-schema-change--[no]check-alter
   #
   class CliGenerator
-    BASE_COMMAND = 'pt-online-schema-change'
+    COMMAND_NAME = 'pt-online-schema-change'.freeze
     DEFAULT_OPTIONS = Set.new(
       [
         Option.new('execute'),
@@ -32,7 +32,6 @@ module PerconaMigrator
     # @param connection_data [Hash]
     def initialize(connection_details)
       @connection_details = connection_details
-      @command = [BASE_COMMAND, connection_details.to_s]
     end
 
     # Generates the percona command. Fills all the connection credentials from
@@ -48,7 +47,7 @@ module PerconaMigrator
       alter_argument = AlterArgument.new(statement)
       dsn = DSN.new(connection_details.database, table_name)
 
-      "#{self} #{dsn} #{alter_argument}"
+      "#{command} #{all_options} #{dsn} #{alter_argument}"
     end
 
     # Generates the percona command for a raw MySQL statement. Fills all the
@@ -63,26 +62,24 @@ module PerconaMigrator
       alter_argument = AlterArgument.new(statement)
       dsn = DSN.new(connection_details.database, alter_argument.table_name)
 
-      "#{self} #{dsn} #{alter_argument}"
+      "#{command} #{all_options} #{dsn} #{alter_argument}"
     end
 
     private
 
-    attr_reader :connection_details, :command
+    attr_reader :connection_details
 
-    # Returns the command as a string that can be executed in a shell
-    #
-    # @return [String]
-    def to_s
-      "#{command.join(' ')} #{all_options.join(' ')}"
+    def command
+      "#{COMMAND_NAME} #{connection_details}"
     end
 
     # Returns all the arguments to execute pt-online-schema-change with
     #
-    # @return [Array]
+    # @return [String]
     def all_options
       user_options = UserOptions.new
-      user_options.merge(DEFAULT_OPTIONS).to_a
+      options = user_options.merge(DEFAULT_OPTIONS).to_a
+      options.join(' ')
     end
   end
 end
