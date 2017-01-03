@@ -18,8 +18,8 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'rails', '>= 4.2.0'
-  spec.add_runtime_dependency 'mysql2', '~> 0.4'
+  spec.add_runtime_dependency 'rails', '~> 4.2.0'
+  spec.add_runtime_dependency 'mysql2', '~> 0.4.0'
 
   spec.add_development_dependency 'bundler', '~> 1.10'
   spec.add_development_dependency 'rake', '~> 10.0'
