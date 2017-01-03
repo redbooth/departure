@@ -6,6 +6,11 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+### Added
+
+- Support for ActiveRecord 4.2.x
+- Support for Mysql2 4.x
+
 ## [1.0.0] - 2016-11-30
 
 ### Added
