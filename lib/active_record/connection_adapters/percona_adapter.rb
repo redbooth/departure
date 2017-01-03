@@ -116,7 +116,7 @@ module ActiveRecord
       end
 
       def full_version
-        @mysql_adapter.raw_connection.server_info[:version]
+        mysql_adapter.raw_connection.server_info[:version]
       end
 
       private

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Lhm::ColumnWithSql do
   let(:name) { :some_field_name }
-  let!(:connection) { ActiveRecord::Base.connection }
+  let(:connection) { ActiveRecord::Base.connection }
   let(:column) { described_class.new(name, definition, connection) }
 
   describe '#attributes' do
