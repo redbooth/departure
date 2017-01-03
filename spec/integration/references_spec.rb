@@ -34,9 +34,8 @@ describe PerconaMigrator, integration: true do
 
         it 'adds a compound index for both the id and type columns' do
           ActiveRecord::Migrator.run(direction, migration_path, version)
-
           expect(:comments)
-            .to have_index('index_comments_on_user_id_and_user_type')
+            .to have_index('index_comments_on_user_type_and_user_id')
         end
       end
     end

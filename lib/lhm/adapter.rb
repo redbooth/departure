@@ -97,7 +97,7 @@ module Lhm
       @column ||= if definition.is_a?(Symbol)
                     ColumnWithType.new(name, definition)
                   else
-                    ColumnWithSql.new(name, definition)
+                    ColumnWithSql.new(name, definition, ActiveRecord::Base.connection)
                   end
     end
 

@@ -51,7 +51,7 @@ module ActiveRecord
 
       def initialize(connection, _logger, connection_options, _config)
         super
-        @visitor = BindSubstitution.new(self)
+        @prepared_statements = false
         @mysql_adapter = connection_options[:mysql_adapter]
       end
 
@@ -87,8 +87,8 @@ module ActiveRecord
         true
       end
 
-      def new_column(field, default, type, null, collation, extra = "")
-        Column.new(field, default, type, null, collation, extra)
+      def new_column(field, default, cast_type, sql_type = nil, null = true, collation = '', extra = '')
+        Column.new(field, default, cast_type, sql_type, null, collation, strict_mode?, extra)
       end
 
       # Adds a new index to the table
@@ -113,6 +113,10 @@ module ActiveRecord
       # Returns the MySQL error number from the exception. The
       # AbstractMysqlAdapter requires it to be implemented
       def error_number(_exception)
+      end
+
+      def full_version
+        @mysql_adapter.raw_connection.server_info[:version]
       end
 
       private

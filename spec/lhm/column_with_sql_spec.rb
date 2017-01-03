@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe Lhm::ColumnWithSql do
   let(:name) { :some_field_name }
-  let(:column) { described_class.new(name, definition) }
+  let!(:connection) { ActiveRecord::Base.connection }
+  let(:column) { described_class.new(name, definition, connection) }
 
   describe '#attributes' do
     subject { column.attributes }
@@ -45,7 +46,7 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'MEDIUMINT DEFAULT 0' }
-        its([:default]) { is_expected.to eq(0)  }
+        its([:default]) { is_expected.to eq('0')  }
       end
 
       context 'with NOT NULL' do
@@ -73,7 +74,7 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'TINYINT default 0' }
-        its([:default]) { is_expected.to eq(0)  }
+        its([:default]) { is_expected.to eq('0')  }
       end
 
       context 'with NOT NULL' do
@@ -97,13 +98,13 @@ describe Lhm::ColumnWithSql do
       let(:definition) { 'FLOAT' }
 
       its([0]) { is_expected.to eq(:float) }
-      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
+      its([1]) { is_expected.to eq(limit: 24, default: nil, null: true) }
 
       context 'with DEFAULT' do
         subject { column.attributes[1] }
 
         let(:definition) { 'FLOAT DEFAULT 0' }
-        its([:default]) { is_expected.to eq(0.0)  }
+        its([:default]) { is_expected.to eq('0')  }
       end
 
       context 'with NOT NULL' do
@@ -146,7 +147,7 @@ describe Lhm::ColumnWithSql do
       let(:definition) { 'TEXT' }
 
       its([0]) { is_expected.to eq(:text) }
-      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
+      its([1]) { is_expected.to eq(limit: 65535, default: nil, null: true) }
 
       context 'with NOT NULL' do
         subject { column.attributes[1] }
@@ -187,7 +188,7 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { "DATETIME DEFAULT '2016-02-24 13:21:00'" }
-        its([:default]) { is_expected.to eq(Time.parse('2016-02-24 13:21:00 UTC')) }
+        its([:default]) { is_expected.to eq('2016-02-24 13:21:00') }
       end
 
       context 'with NOT NULL' do
@@ -201,14 +202,14 @@ describe Lhm::ColumnWithSql do
     context 'when defining TIMESTAMP' do
       let(:definition) { 'TIMESTAMP' }
 
-      its([0]) { is_expected.to eq(:timestamp) }
+      its([0]) { is_expected.to eq(:datetime) }
       its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
 
       context 'with DEFAULT' do
         subject { column.attributes[1] }
 
         let(:definition) { "TIMESTAMP DEFAULT '2016-02-24 13:21:00'" }
-        its([:default]) { is_expected.to eq(Time.parse('2016-02-24 13:21:00 UTC')) }
+        its([:default]) { is_expected.to eq('2016-02-24 13:21:00') }
       end
 
       context 'with NOT NULL' do
@@ -257,7 +258,7 @@ describe Lhm::ColumnWithSql do
         subject { column.attributes[1] }
 
         let(:definition) { 'BOOLEAN DEFAULT FALSE' }
-        its([:default]) { is_expected.to eq(false)  }
+        its([:default]) { is_expected.to eq('FALSE')  }
       end
 
       context 'with NOT NULL' do

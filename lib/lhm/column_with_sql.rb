@@ -18,9 +18,10 @@ module Lhm
     #
     # @param name [String, Symbol]
     # @param definition [String]
-    def initialize(name, definition)
+    def initialize(name, definition, connection)
       @name = name
       @definition = definition
+      @connection = connection
     end
 
     # Returns the column data as an Array to be used with the splat operator.
@@ -53,9 +54,11 @@ module Lhm
     #
     # @return [column_factory]
     def column
+      cast_type = @connection.lookup_cast_type(definition)
       @column ||= self.class.column_factory.new(
         name,
         default_value,
+        cast_type,
         definition,
         null_value
       )
