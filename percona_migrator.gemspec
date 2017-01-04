@@ -26,4 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.4', '>= 3.4.0'
   spec.add_development_dependency 'rspec-its', '~> 1.2'
   spec.add_development_dependency 'byebug', '~> 8.2', '>= 8.2.1'
+  spec.add_development_dependency 'climate_control', '~> 0.0.3'
 end

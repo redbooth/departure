@@ -42,16 +42,11 @@ RSpec.configure do |config|
   PerconaMigrator.configure do |config|
   end
 
-  config.around(:each) do |example|
+  config.before(:each) do |example|
 
     # Cleans up the database before each example, so the current example doesn't
     # see the state of the previous one
-    if example.metadata[:integration]
-      test_database.setup
-      example.run
-    else
-      example.run
-    end
+    test_database.setup if example.metadata[:integration]
   end
 
   config.order = :random
