@@ -4,12 +4,13 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
   describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter::Column do
     let(:field) { double(:field) }
     let(:default) { double(:default) }
+    let(:cast_type) { ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::MysqlString.new }
     let(:type) { 'VARCHAR' }
     let(:null) { double(:null) }
     let(:collation) { double(:collation) }
 
     let(:column) do
-      described_class.new(field, default, type, null, collation)
+      described_class.new(field, default, cast_type, type, null, collation)
     end
 
     describe '#adapter' do

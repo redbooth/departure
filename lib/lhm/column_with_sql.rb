@@ -53,9 +53,11 @@ module Lhm
     #
     # @return [column_factory]
     def column
+      cast_type = ActiveRecord::Base.connection.lookup_cast_type(definition)
       @column ||= self.class.column_factory.new(
         name,
         default_value,
+        cast_type,
         definition,
         null_value
       )
