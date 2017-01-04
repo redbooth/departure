@@ -15,7 +15,8 @@ module ActiveRecord
 
       verbose = ActiveRecord::Migration.verbose
       percona_logger = PerconaMigrator::LoggerFactory.build(verbose: verbose)
-      cli_generator = PerconaMigrator::CliGenerator.new(config)
+      connection_details = PerconaMigrator::ConnectionDetails.new(config)
+      cli_generator = PerconaMigrator::CliGenerator.new(connection_details)
 
       runner = PerconaMigrator::Runner.new(
         percona_logger,

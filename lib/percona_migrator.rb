@@ -9,6 +9,7 @@ require 'percona_migrator/null_logger'
 require 'percona_migrator/logger_factory'
 require 'percona_migrator/configuration'
 require 'percona_migrator/errors'
+require 'percona_migrator/command'
 
 require 'percona_migrator/railtie' if defined?(Rails)
 
@@ -28,6 +29,21 @@ module PerconaMigrator
   # Hooks Percona Migrator into Rails migrations by replacing the configured
   # database adapter
   def self.load
+    ActiveRecord::Migrator.instance_eval do
+      class << self
+        alias_method(:original_migrate, :migrate)
+      end
+
+      # Checks whether arguments are being passed through PERCONA_ARGS when running
+      # the db:migrate rake task
+      #
+      # @raise [ArgumentsNotSupported] if PERCONA_ARGS has any value
+      def migrate(migrations_paths, target_version = nil, &block)
+        raise ArgumentsNotSupported if ENV['PERCONA_ARGS'].present?
+        original_migrate(migrations_paths, target_version, &block)
+      end
+    end
+
     ActiveRecord::Migration.class_eval do
       alias_method :original_migrate, :migrate
 
@@ -55,10 +71,9 @@ module PerconaMigrator
       # Make all connections in the connection pool to use PerconaAdapter
       # instead of the current adapter.
       def reconnect_with_percona
-        connection_config = ActiveRecord::Base.connection_config
-        ActiveRecord::Base.establish_connection(
-          connection_config.merge(adapter: 'percona')
-        )
+        connection_config = ActiveRecord::Base
+          .connection_config.merge(adapter: 'percona')
+        ActiveRecord::Base.establish_connection(connection_config)
       end
     end
   end

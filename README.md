@@ -59,6 +59,28 @@ All the `ALTER TABLE` statements will be executed with
 `pt-online-schema-change`, which will provide additional output to the
 migration.
 
+### pt-online-schema-change arguments
+
+You can specify any `pt-online-schema-change` arguments when running the
+migration. All what you pass in the PERCONA_ARGS env var, will be bypassed to the
+binary, overwriting any default values. Note the format is the same as in
+`pt-online-schema-change`. Check the full list in [Percona Toolkit
+documentation](https://www.percona.com/doc/percona-toolkit/2.2/pt-online-schema-change.html#options)
+
+```ruby
+$ PERCONA_ARGS='--chunk-time=1' bundle exec rake db:migrate:up VERSION=xxx
+```
+
+or even mulitple arguments
+
+```ruby
+$ PERCONA_ARGS='--chunk-time=1 --critical-load=55' bundle exec rake db:migrate:up VERSION=xxx
+```
+
+This however, only works for `db:migrate:up` or `db:migrate:down` rake tasks and
+not with `db:migrate`. The settings you provide can't be generalized as these
+vary depending on the database table and the kind of changes you apply.
+
 ### LHM support
 
 If you moved to Soundcloud's [Lhm](https://github.com/soundcloud/lhm) already,

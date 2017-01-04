@@ -144,18 +144,73 @@ describe PerconaMigrator, integration: true do
   context 'when pt-online-schema-change is not installed' do
     let(:version) { 1 }
 
-    around do |example|
-      original_path = ENV['PATH']
-      ENV['PATH'] = ''
-      example.run
-      ENV['PATH'] = original_path
-    end
-
     it 'raises and halts the execution' do
       expect do
-        ActiveRecord::Migrator.run(direction, migration_fixtures, version)
+        ClimateControl.modify PATH: '' do
+          ActiveRecord::Migrator.run(direction, migration_fixtures, version)
+        end
       end.to raise_error do |exception|
         exception.cause == PerconaMigrator::CommandNotFoundError
+      end
+    end
+  end
+
+  context 'when PERCONA_ARGS is specified' do
+    let(:command) { instance_double(PerconaMigrator::Command, run: status) }
+    let(:status) do
+      instance_double(Process::Status, signaled?: false, exitstatus: 1, success?: true)
+    end
+
+    context 'and only argument is provided' do
+      it 'runs pt-online-schema-change with the specified arguments' do
+        expect(PerconaMigrator::Command)
+          .to receive(:new)
+          .with(/--chunk-time=1/, anything, anything)
+          .and_return(command)
+
+        ClimateControl.modify PERCONA_ARGS: '--chunk-time=1' do
+          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        end
+      end
+    end
+
+    context 'and multiple arguments are provided' do
+      it 'runs pt-online-schema-change with the specified arguments' do
+        expect(PerconaMigrator::Command)
+          .to receive(:new)
+          .with(/--chunk-time=1 --max-lag=2/, anything, anything)
+          .and_return(command)
+
+        ClimateControl.modify PERCONA_ARGS: '--chunk-time=1 --max-lag=2' do
+          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        end
+      end
+    end
+
+    context 'and there is a default value for the argument' do
+      it 'runs pt-online-schema-change with the user specified value' do
+        expect(PerconaMigrator::Command)
+          .to receive(:new)
+          .with(/--alter-foreign-keys-method=drop_swap/, anything, anything)
+          .and_return(command)
+
+        ClimateControl.modify PERCONA_ARGS: '--alter-foreign-keys-method=drop_swap' do
+          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        end
+      end
+    end
+
+    context 'and the db:migrate rake task is executed' do
+      let(:migrations_paths) { [MIGRATION_FIXTURES] }
+
+      it 'does not allow to migrate' do
+        expect do
+          ClimateControl.modify PERCONA_ARGS: '--arg=foo' do
+            PerconaMigrator.load
+            ActiveRecord::Migrator.migrate(migrations_paths, 1)
+          end
+        end
+          .to raise_error(PerconaMigrator::ArgumentsNotSupported)
       end
     end
   end
