@@ -14,6 +14,13 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
    `PERCONA_ARGS` env var when executing a migration with `rake db:migrate:up`
    or `db:migrate:down`.
 
+### Changed
+
+- Enable default pt-online-schema-change replicas discovering mechanism.
+    So far, this was purposely set to `none`. To keep this same behaviour
+    provide the `PERCONA_ARGS=--recursion-method=none` env var when running the
+    migration.
+
 ## [1.0.0] - 2016-11-30
 
 ### Added
