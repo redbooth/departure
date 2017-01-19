@@ -18,7 +18,6 @@ module PerconaMigrator
       [
         Option.new('execute'),
         Option.new('statistics'),
-        Option.new('recursion-method', 'none'),
         Option.new('alter-foreign-keys-method', 'auto'),
         Option.new('no-check-alter')
       ]
