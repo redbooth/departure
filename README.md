@@ -18,6 +18,21 @@ Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change
 
 `brew install percona-toolkit`
 
+If when running a migration you see an error like:
+
+```
+PerconaMigrator::Error: Cannot connect to MySQL: Cannot connect to MySQL because
+the Perl DBI module is not installed or not found.
+```
+
+You also need to install the DBI and DBD::MySQL modules from `cpan`.
+
+```
+$ sudo cpan
+cpan> install DBI
+cpan> install DBD::mysql
+```
+
 ### Linux
 
 #### Ubuntu/Debian based
