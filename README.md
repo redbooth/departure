@@ -1,6 +1,6 @@
-# Percona Migrator [![Build Status](https://travis-ci.org/redbooth/percona_migrator.svg?branch=master)](https://travis-ci.org/redbooth/percona_migrator) [![Code Climate](https://codeclimate.com/github/redbooth/percona_migrator/badges/gpa.svg)](https://codeclimate.com/github/redbooth/percona_migrator)
+# Departure [![Build Status](https://travis-ci.org/redbooth/departure.svg?branch=master)](https://travis-ci.org/redbooth/percona_migrator) [![Code Climate](https://codeclimate.com/github/redbooth/percona_migrator/badges/gpa.svg)](https://codeclimate.com/github/redbooth/percona_migrator)
 
-Percona Migrator is an **ActiveRecord connection adapter** that allows running
+Departure is an **ActiveRecord connection adapter** that allows running
 **MySQL online and non-blocking DDL** through `ActiveRecord::Migration` without needing
     to use a different DSL other than Rails' migrations DSL.
 
@@ -9,9 +9,17 @@ It uses `pt-online-schema-change` command-line tool of
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
 which runs MySQL alter table statements without downtime.
 
+## Rename from "Percona Migrator"
+
+This project was formerly known as "Percona Migrator", but this incurs in an
+infringement of Percona's trade mark policy and thus has to be renamed. Said
+name is likely to cause confusion as to the source of the wrapper.
+
+The next major versions will use "Departure" as gem name.
+
 ## Installation
 
-Percona Migrator relies on `pt-online-schema-change` from [Percona
+Departure relies on `pt-online-schema-change` from [Percona
 Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html)
 
 ### Mac
@@ -99,7 +107,7 @@ vary depending on the database table and the kind of changes you apply.
 ### LHM support
 
 If you moved to Soundcloud's [Lhm](https://github.com/soundcloud/lhm) already,
-we got you covered. Percona Migrator overrides Lhm's DSL so that all the alter
+we got you covered. Departure overrides Lhm's DSL so that all the alter
 statements also go through `pt-online-schema-change` as well.
 
 You can keep your Lhm migrations and start using Rails migration's DSL back
@@ -120,7 +128,7 @@ It's strongly recommended to name it after this gems name, such as
 
 ## How it works
 
-When booting your Rails app, Percona Migrator extends the
+When booting your Rails app, Departure extends the
 `ActiveRecord::Migration#migrate` method to reset the connection and reestablish
 it using the `PerconaAdapter` instead of the one you defined in your
 `config/database.yml`.
