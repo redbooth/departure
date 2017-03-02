@@ -1,4 +1,4 @@
-require 'percona_migrator'
+require 'departure'
 require 'lhm' # It's our own Lhm adapter, not the gem
 require 'rails'
 

@@ -61,9 +61,9 @@ describe PerconaMigrator, integration: true do
         ActiveRecord::Base.establish_connection(
           adapter: 'percona',
           host: 'localhost',
-          username: 'root',
+          username: db_config['username'],
           password: db_config['password'],
-          database: 'percona_migrator_test'
+          database: db_config['database']
         )
       end
 
@@ -80,7 +80,7 @@ describe PerconaMigrator, integration: true do
           adapter: 'percona',
           host: 'localhost',
           password: db_config['password'],
-          database: 'percona_migrator_test'
+          database: db_config['database']
         )
       end
 
