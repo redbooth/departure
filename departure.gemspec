@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com', 'fran.casas@redbooth.com', 'jorge.morante@redbooth.com', 'enrico@redbooth.com']
 
   spec.summary       = %q{pt-online-schema-change runner for ActiveRecord migrations}
-  spec.description   = %q{Execute your ActiveRecord migrations with Percona's pt-online-schema-change}
+  spec.description   = %q{Execute your ActiveRecord migrations with Percona's pt-online-schema-change. Formerly known as Percona Migrator.}
   spec.homepage      = 'http://github.com/redbooth/departure'
   spec.license       = 'MIT'
 
