@@ -16,7 +16,7 @@ require 'departure/railtie' if defined?(Rails)
 # We need the OS not to buffer the IO to see pt-osc's output while migrating
 $stdout.sync = true
 
-module PerconaMigrator
+module Departure
   class << self
     attr_accessor :configuration
   end
@@ -60,10 +60,10 @@ module PerconaMigrator
       end
 
       # Includes the Foreigner's Mysql2Adapter implemention in
-      # PerconaMigratorAdapter to support foreign keys
+      # DepartureAdapter to support foreign keys
       def include_foreigner
         Foreigner::Adapter.safe_include(
-          :PerconaMigratorAdapter,
+          :DepartureAdapter,
           Foreigner::ConnectionAdapters::Mysql2Adapter
         )
       end

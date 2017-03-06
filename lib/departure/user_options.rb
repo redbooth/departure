@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   # Encapsulates the pt-online-schema-change options defined by the user
   class UserOptions
     delegate :merge, to: :to_set
