@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 # TODO: Handle #change_table syntax
-describe PerconaMigrator, integration: true do
+describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) do
@@ -12,7 +12,7 @@ describe PerconaMigrator, integration: true do
   let(:direction) { :up }
 
   it 'has a version number' do
-    expect(PerconaMigrator::VERSION).not_to be nil
+    expect(Departure::VERSION).not_to be nil
   end
 
   describe 'logging' do
@@ -61,9 +61,9 @@ describe PerconaMigrator, integration: true do
         ActiveRecord::Base.establish_connection(
           adapter: 'percona',
           host: 'localhost',
-          username: 'root',
+          username: db_config['username'],
           password: db_config['password'],
-          database: 'percona_migrator_test'
+          database: db_config['database']
         )
       end
 
@@ -80,7 +80,7 @@ describe PerconaMigrator, integration: true do
           adapter: 'percona',
           host: 'localhost',
           password: db_config['password'],
-          database: 'percona_migrator_test'
+          database: db_config['database']
         )
       end
 
@@ -94,7 +94,7 @@ describe PerconaMigrator, integration: true do
     # TODO: Use dummy app so that we actually go through the railtie's code
     context 'when there is LHM' do
       xit 'patches it to use regular Rails migration methods' do
-        expect(PerconaMigrator::Lhm::Fake::Adapter)
+        expect(Departure::Lhm::Fake::Adapter)
           .to receive(:new).and_return(true)
         ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
       end
@@ -102,7 +102,7 @@ describe PerconaMigrator, integration: true do
 
     context 'when there is no LHM' do
       xit 'does not patch it' do
-        expect(PerconaMigrator::Lhm::Fake).not_to receive(:patching_lhm)
+        expect(Departure::Lhm::Fake).not_to receive(:patching_lhm)
         ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
       end
     end
@@ -135,7 +135,7 @@ describe PerconaMigrator, integration: true do
         expect do
           ActiveRecord::Migrator.run(direction, migration_fixtures, version)
         end.to raise_error do |exception|
-          exception.cause == PerconaMigrator::SignalError
+          exception.cause == Departure::SignalError
         end
       end
     end
@@ -150,20 +150,20 @@ describe PerconaMigrator, integration: true do
           ActiveRecord::Migrator.run(direction, migration_fixtures, version)
         end
       end.to raise_error do |exception|
-        exception.cause == PerconaMigrator::CommandNotFoundError
+        exception.cause == Departure::CommandNotFoundError
       end
     end
   end
 
   context 'when PERCONA_ARGS is specified' do
-    let(:command) { instance_double(PerconaMigrator::Command, run: status) }
+    let(:command) { instance_double(Departure::Command, run: status) }
     let(:status) do
       instance_double(Process::Status, signaled?: false, exitstatus: 1, success?: true)
     end
 
     context 'and only argument is provided' do
       it 'runs pt-online-schema-change with the specified arguments' do
-        expect(PerconaMigrator::Command)
+        expect(Departure::Command)
           .to receive(:new)
           .with(/--chunk-time=1/, anything, anything)
           .and_return(command)
@@ -176,7 +176,7 @@ describe PerconaMigrator, integration: true do
 
     context 'and multiple arguments are provided' do
       it 'runs pt-online-schema-change with the specified arguments' do
-        expect(PerconaMigrator::Command)
+        expect(Departure::Command)
           .to receive(:new)
           .with(/--chunk-time=1 --max-lag=2/, anything, anything)
           .and_return(command)
@@ -189,7 +189,7 @@ describe PerconaMigrator, integration: true do
 
     context 'and there is a default value for the argument' do
       it 'runs pt-online-schema-change with the user specified value' do
-        expect(PerconaMigrator::Command)
+        expect(Departure::Command)
           .to receive(:new)
           .with(/--alter-foreign-keys-method=drop_swap/, anything, anything)
           .and_return(command)
@@ -206,11 +206,11 @@ describe PerconaMigrator, integration: true do
       it 'does not allow to migrate' do
         expect do
           ClimateControl.modify PERCONA_ARGS: '--arg=foo' do
-            PerconaMigrator.load
+            Departure.load
             ActiveRecord::Migrator.migrate(migrations_paths, 1)
           end
         end
-          .to raise_error(PerconaMigrator::ArgumentsNotSupported)
+          .to raise_error(Departure::ArgumentsNotSupported)
       end
     end
   end

@@ -1,10 +1,10 @@
-require 'percona_migrator/dsn'
-require 'percona_migrator/option'
-require 'percona_migrator/alter_argument'
-require 'percona_migrator/connection_details'
-require 'percona_migrator/user_options'
+require 'departure/dsn'
+require 'departure/option'
+require 'departure/alter_argument'
+require 'departure/connection_details'
+require 'departure/user_options'
 
-module PerconaMigrator
+module Departure
 
   # Generates the equivalent Percona's pt-online-schema-change command to the
   # given SQL statement

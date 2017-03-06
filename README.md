@@ -29,7 +29,7 @@ Toolkit](https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change
 If when running a migration you see an error like:
 
 ```
-PerconaMigrator::Error: Cannot connect to MySQL: Cannot connect to MySQL because
+Departure::Error: Cannot connect to MySQL: Cannot connect to MySQL because
 the Perl DBI module is not installed or not found.
 ```
 
@@ -118,7 +118,7 @@ again in your next migration.
 You can override any of the default values from an initializer:
 
 ```ruby
-PerconaMigrator.configure do |config|
+Departure.configure do |config|
   config.tmp_path = '/tmp/'
 end
 ```
@@ -138,12 +138,12 @@ executed, they all go to the
 [PerconaAdapter](https://github.com/redbooth/percona_migrator/blob/master/lib/active_record/connection_adapters/percona_adapter.rb).
 There, the methods that require `ALTER TABLE` SQL statements, like `add_column`,
 are overriden to get executed with
-[PerconaMigrator::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb),
+[Departure::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb),
 which deals with the `pt-online-schema-change` binary. All the others, like
 `create_table`, are delegated to the ActiveRecord's built in Mysql2Adapter and
 so they follow the regular path.
 
-[PerconaMigrator::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb)
+[Departure::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb)
 spawns a new process that runs the `pt-online-schema-change` binary present in
 the system, with the apropriate arguments for the generated SQL.
 

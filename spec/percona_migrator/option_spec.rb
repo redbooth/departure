@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::Option do
+describe Departure::Option do
   describe '.from_string' do
     it 'gets the name and value' do
       expect(described_class).to receive(:new).with('arg', 'value')

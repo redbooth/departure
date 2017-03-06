@@ -1,4 +1,4 @@
-# Releasing Percona Migrator
+# Releasing Departure
 
 All releases come from the master branch. All other branches won't be maintained
 and will receive bug fix releases only.

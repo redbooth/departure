@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   # Holds the parameters of the DB connection and formats them to string
   class ConnectionDetails
 

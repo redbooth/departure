@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::Configuration do
+describe Departure::Configuration do
   describe '#initialize' do
     its(:tmp_path) { is_expected.to eq('.') }
     its(:error_log_filename) { is_expected.to eq('percona_migrator_error.log') }

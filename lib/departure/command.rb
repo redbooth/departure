@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   # Executes the given command returning it's status and errors
   class Command
     COMMAND_NOT_FOUND = 127

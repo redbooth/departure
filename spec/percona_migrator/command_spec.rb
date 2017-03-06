@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe PerconaMigrator::Command do
+describe Departure::Command do
   describe '#run' do
     let(:command) { 'pt-online-schema-change command' }
     let(:error_log_path) { 'percona_migrator_error.log' }
     let(:logger) do
       instance_double(
-        PerconaMigrator::Logger, write: true, say: true, write_no_newline: true
+        Departure::Logger, write: true, say: true, write_no_newline: true
       )
     end
 
@@ -76,9 +76,9 @@ describe PerconaMigrator::Command do
       context 'when the execution failed' do
         let(:command) { 'sh -c \'echo ROTO >/dev/stderr && false\'' }
 
-        it 'raises a PerconaMigrator::Error' do
+        it 'raises a Departure::Error' do
           expect { runner.run }
-            .to raise_exception(PerconaMigrator::Error, "ROTO\n")
+            .to raise_exception(Departure::Error, "ROTO\n")
         end
       end
 
@@ -87,7 +87,7 @@ describe PerconaMigrator::Command do
 
         it 'raises a SignalError specifying the status' do
           expect { runner.run }
-            .to raise_exception(PerconaMigrator::SignalError)
+            .to raise_exception(Departure::SignalError)
         end
       end
 
@@ -96,7 +96,7 @@ describe PerconaMigrator::Command do
 
         it 'raises a detailed CommandNotFoundError' do
           expect { runner.run }.to raise_exception(
-            PerconaMigrator::CommandNotFoundError,
+            Departure::CommandNotFoundError,
             /Please install pt-online-schema-change/
           )
         end

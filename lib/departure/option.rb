@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   class Option
     attr_reader :name, :value
 

@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   class Error < StandardError; end
 
   # Used when for whatever reason we couldn't get the spawned process'

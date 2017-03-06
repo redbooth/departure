@@ -1,16 +1,16 @@
 require 'spec_helper'
 require 'tempfile'
 
-describe PerconaMigrator::Runner do
+describe Departure::Runner do
   let(:command_line) { 'pt-online-schema-change command' }
-  let(:logger) { instance_double(PerconaMigrator::Logger) }
-  let(:cli_generator) { instance_double(PerconaMigrator::CliGenerator) }
+  let(:logger) { instance_double(Departure::Logger) }
+  let(:cli_generator) { instance_double(Departure::CliGenerator) }
   let(:mysql_adapter) do
     instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
   end
   let(:config) do
     instance_double(
-      PerconaMigrator::Configuration,
+      Departure::Configuration,
       error_log_path: 'percona_migrator_error.log'
     )
   end
@@ -35,10 +35,10 @@ describe PerconaMigrator::Runner do
 
   describe '#execute' do
     let(:status) { instance_double(Process::Status) }
-    let(:cmd) { instance_double(PerconaMigrator::Command, run: status) }
+    let(:cmd) { instance_double(Departure::Command, run: status) }
 
     before do
-      allow(PerconaMigrator::Command)
+      allow(Departure::Command)
         .to receive(:new).with(command_line, config.error_log_path, logger)
         .and_return(cmd)
     end

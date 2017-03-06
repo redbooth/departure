@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::ConnectionDetails do
+describe Departure::ConnectionDetails do
   let(:connection_details) { described_class.new(connection_data) }
 
     around do |example|

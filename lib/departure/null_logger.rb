@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   class NullLogger
     def say(_message, _subitem = false)
       # noop

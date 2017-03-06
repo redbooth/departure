@@ -1,22 +1,22 @@
 require 'active_record'
 require 'active_support/all'
 
-require 'percona_migrator/version'
-require 'percona_migrator/runner'
-require 'percona_migrator/cli_generator'
-require 'percona_migrator/logger'
-require 'percona_migrator/null_logger'
-require 'percona_migrator/logger_factory'
-require 'percona_migrator/configuration'
-require 'percona_migrator/errors'
-require 'percona_migrator/command'
+require 'departure/version'
+require 'departure/runner'
+require 'departure/cli_generator'
+require 'departure/logger'
+require 'departure/null_logger'
+require 'departure/logger_factory'
+require 'departure/configuration'
+require 'departure/errors'
+require 'departure/command'
 
-require 'percona_migrator/railtie' if defined?(Rails)
+require 'departure/railtie' if defined?(Rails)
 
 # We need the OS not to buffer the IO to see pt-osc's output while migrating
 $stdout.sync = true
 
-module PerconaMigrator
+module Departure
   class << self
     attr_accessor :configuration
   end
@@ -60,10 +60,10 @@ module PerconaMigrator
       end
 
       # Includes the Foreigner's Mysql2Adapter implemention in
-      # PerconaMigratorAdapter to support foreign keys
+      # DepartureAdapter to support foreign keys
       def include_foreigner
         Foreigner::Adapter.safe_include(
-          :PerconaMigratorAdapter,
+          :DepartureAdapter,
           Foreigner::ConnectionAdapters::Mysql2Adapter
         )
       end
