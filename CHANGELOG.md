@@ -7,14 +7,29 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ## [Unreleased]
 
 ### Added
+### Changed
+### Removed
+### Fixed
 
-- Show pt-online-schema-change's stdout while the migration is running instead
-    of at then and all at once.
+## [0.1.1] - 2017-03-10
+
+### Added
+
 - Store pt-online-schema-change's stderr to percona_migrator_error.log in the
     default Rails tmp folder.
-- Allow configuring the tmp directory where the error log gets written into,
-- No longer a hard dependency on mysql2 0.3.20.  Will accept 0.3.20 or any
+- Allow configuring the tmp directory where the error log gets written into.
+- Output a deprecation warning when installing and running the gem. It will be
+    replaced by Departure soon.
+
+### Changed
+
+- No longer a hard dependency on mysql2 0.3.20. Will accept 0.3.20 or any
     higher patch revisions.
+
+### Fixed
+
+- Output pt-online-schema-change's stdout while the migration is running instead
+    of all of it at the end.
 
 ## [0.1.0.rc.7] - 2016-09-15
 
