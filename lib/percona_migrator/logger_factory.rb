@@ -8,6 +8,7 @@ module PerconaMigrator
     # @return [#say, #write]
     def self.build(verbose: true)
       if verbose
+        puts("Migrations will execute with PerconaMigrator\nfor more information visit https://github.com/redbooth/percona_migrator")
         PerconaMigrator::Logger.new
       else
         PerconaMigrator::NullLogger.new
