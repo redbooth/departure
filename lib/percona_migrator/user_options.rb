@@ -1,8 +1,6 @@
 module PerconaMigrator
   # Encapsulates the pt-online-schema-change options defined by the user
   class UserOptions
-    # include Enumerable
-
     delegate :each, :merge, to: :to_set
 
     # Constructor
