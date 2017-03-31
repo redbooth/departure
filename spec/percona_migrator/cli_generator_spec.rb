@@ -14,15 +14,28 @@ describe PerconaMigrator::CliGenerator do
   let(:statement) { 'ALTER TABLE `tasks` ADD foo INT' }
 
   describe '#generate' do
+    let(:global_percona_args) { nil }
+    let(:env_var) { {} }
+
     subject do
       ClimateControl.modify(env_var) do
         cli_generator.generate(table_name, statement)
       end
     end
 
-    context 'when no options are provided' do
-      let(:env_var) { {} }
+    before do
+      PerconaMigrator.configure do |config|
+        config.global_percona_args = global_percona_args
+      end
+    end
 
+    after do
+      PerconaMigrator.configure do |config|
+        config.global_percona_args = nil
+      end
+    end
+
+    context 'when no options are provided' do
       it { is_expected.to include('pt-online-schema-change') }
       it { is_expected.not_to include('ALTER TABLE') }
       it { is_expected.to include('--execute') }
@@ -32,21 +45,47 @@ describe PerconaMigrator::CliGenerator do
       it { is_expected.to include("D=#{connection_details.database}") }
     end
 
-    context 'when options are provided' do
+    context 'when env options are provided' do
       let(:env_var) { { PERCONA_ARGS: '--chunk-time=1' } }
       it { is_expected.to include('--chunk-time=1') }
+
+      context 'when the option has a default' do
+        let(:env_var) { { PERCONA_ARGS: '--alter-foreign-keys-method=drop_swap' } }
+
+        it { is_expected.to include('--alter-foreign-keys-method=drop_swap') }
+        it { is_expected.not_to include('--alter-foreign-keys-method=auto') }
+      end
+
+      context 'when the option has global configuration' do
+        let(:env_var) { { PERCONA_ARGS: '--alter-foreign-keys-method=drop_swap' } }
+        let(:global_percona_args) { '--alter-foreign-keys-method=rebuild_constraints' }
+
+        it { is_expected.to include('--alter-foreign-keys-method=drop_swap') }
+        it { is_expected.not_to include('--alter-foreign-keys-method=rebuild_constraints') }
+      end
+
+      context 'when multiple options are provided' do
+        let(:env_var) { { PERCONA_ARGS: '--chunk-time=1 --max-lag=2' } }
+        it { is_expected.to include('--chunk-time=1 --max-lag=2') }
+      end
     end
 
-    context 'when the option has a default' do
-      let(:env_var) { { PERCONA_ARGS: '--alter-foreign-keys-method=drop_swap' } }
+    context 'when global configuration options are provided' do
+      let(:global_percona_args) { '--chunk-time=1'}
 
-      it { is_expected.to include('--alter-foreign-keys-method=drop_swap') }
-      it { is_expected.not_to include('--alter-foreign-keys-method=auto') }
-    end
+      it { is_expected.to include('--chunk-time=1') }
 
-    context 'when multiple options are provided' do
-      let(:env_var) { { PERCONA_ARGS: '--chunk-time=1 --max-lag=2' } }
-      it { is_expected.to include('--chunk-time=1 --max-lag=2') }
+      context 'when the option has a default' do
+        let(:global_percona_args) { '--alter-foreign-keys-method=drop_swap' }
+
+        it { is_expected.to include('--alter-foreign-keys-method=drop_swap') }
+        it { is_expected.not_to include('--alter-foreign-keys-method=auto') }
+      end
+
+      context 'when multiple options are provided' do
+        let(:global_percona_args) { '--chunk-time=1 --max-lag=2' }
+        it { is_expected.to include('--chunk-time=1 --max-lag=2') }
+      end
     end
   end
 
