@@ -13,9 +13,12 @@ module ActiveRecord
 
       config[:username] = 'root' if config[:username].nil?
 
-      verbose = ActiveRecord::Migration.verbose
-      percona_logger = PerconaMigrator::LoggerFactory.build(verbose: verbose)
       connection_details = PerconaMigrator::ConnectionDetails.new(config)
+      verbose = ActiveRecord::Migration.verbose
+      sanitizers = [
+        PerconaMigrator::LogSanitizers::ConnectionDetailsSanitizer.new(connection_details)
+      ]
+      percona_logger = PerconaMigrator::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
       cli_generator = PerconaMigrator::CliGenerator.new(connection_details)
 
       runner = PerconaMigrator::Runner.new(

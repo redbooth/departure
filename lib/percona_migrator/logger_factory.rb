@@ -6,9 +6,9 @@ module PerconaMigrator
     #
     # @param verbose [Boolean]
     # @return [#say, #write]
-    def self.build(verbose: true)
+    def self.build(sanitizers: [], verbose: true)
       if verbose
-        PerconaMigrator::Logger.new
+        PerconaMigrator::Logger.new(sanitizers)
       else
         PerconaMigrator::NullLogger.new
       end

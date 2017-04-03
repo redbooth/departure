@@ -28,10 +28,6 @@ module PerconaMigrator
       ENV.fetch('PERCONA_DB_NAME', connection_data[:database])
     end
 
-    private
-
-    attr_reader :connection_data
-
     # Returns the password fragment of the details string if a password is passed
     #
     # @return [String]
@@ -66,5 +62,9 @@ module PerconaMigrator
     def password
       ENV.fetch('PERCONA_DB_PASSWORD', connection_data[:password])
     end
+
+    private
+
+    attr_reader :connection_data
   end
 end
