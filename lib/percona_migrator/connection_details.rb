@@ -39,6 +39,10 @@ module PerconaMigrator
       end
     end
 
+    private
+
+    attr_reader :connection_data
+
     # Returns the database host name, defaulting to localhost. If PERCONA_DB_HOST
     # is passed its value will be used instead
     #
@@ -62,9 +66,5 @@ module PerconaMigrator
     def password
       ENV.fetch('PERCONA_DB_PASSWORD', connection_data[:password])
     end
-
-    private
-
-    attr_reader :connection_data
   end
 end
