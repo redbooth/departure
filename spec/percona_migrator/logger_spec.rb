@@ -47,7 +47,7 @@ describe PerconaMigrator::Logger do
       let(:sanitizer) { double(:sanitizer, execute: sanitized_text) }
       let(:sanitizers) { [sanitizer] }
 
-      it 'class execute on passed sanitizers' do
+      it 'calls execute on passed sanitizers' do
         expect(sanitizer).to receive(:execute)
         logger.write(text)
       end
