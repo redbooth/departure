@@ -10,7 +10,7 @@ describe PerconaMigrator::LogSanitizers::ConnectionDetailsSanitizer do
     let(:text) { "pt-online-tools #{password_argument} execute alter table" }
 
     it 'filters out password' do
-      expect(subject.execute(text)).to include('[filtered_password]')
+      expect(subject.execute(text)).to include(described_class::PASSWORD_REPLACEMENT)
       expect(subject.execute(text)).to_not include(password_argument)
     end
 
