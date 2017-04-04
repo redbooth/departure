@@ -1,6 +1,7 @@
 module PerconaMigrator
   module LogSanitizers
     class ConnectionDetailsSanitizer
+      PASSWORD_REPLACEMENT = '[filtered_password]'
 
       delegate :password_argument, to: :connection_details
 
@@ -9,7 +10,8 @@ module PerconaMigrator
       end
 
       def execute(log_statement)
-        password_argument.blank? ? log_statement : log_statement.gsub(connection_details.password_argument, '[filtered_password]')
+        return log_statement if password_argument.blank?
+        log_statement.gsub(password_argument, PASSWORD_REPLACEMENT)
       end
 
       private
