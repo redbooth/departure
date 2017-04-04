@@ -1,6 +1,6 @@
 module PerconaMigrator
   module LogSanitizers
-    class ConnectionDetailsSanitizer
+    class PasswordSanitizer
       PASSWORD_REPLACEMENT = '[filtered_password]'
 
       delegate :password_argument, to: :connection_details

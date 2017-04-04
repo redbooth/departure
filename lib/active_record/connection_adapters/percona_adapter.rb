@@ -16,7 +16,7 @@ module ActiveRecord
       connection_details = PerconaMigrator::ConnectionDetails.new(config)
       verbose = ActiveRecord::Migration.verbose
       sanitizers = [
-        PerconaMigrator::LogSanitizers::ConnectionDetailsSanitizer.new(connection_details)
+        PerconaMigrator::LogSanitizers::PasswordSanitizer.new(connection_details)
       ]
       percona_logger = PerconaMigrator::LoggerFactory.build(sanitizers: sanitizers, verbose: verbose)
       cli_generator = PerconaMigrator::CliGenerator.new(connection_details)
