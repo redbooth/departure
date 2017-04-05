@@ -28,10 +28,6 @@ module PerconaMigrator
       ENV.fetch('PERCONA_DB_NAME', connection_data[:database])
     end
 
-    private
-
-    attr_reader :connection_data
-
     # Returns the password fragment of the details string if a password is passed
     #
     # @return [String]
@@ -42,6 +38,10 @@ module PerconaMigrator
         ''
       end
     end
+
+    private
+
+    attr_reader :connection_data
 
     # Returns the database host name, defaulting to localhost. If PERCONA_DB_HOST
     # is passed its value will be used instead
