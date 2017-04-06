@@ -13,7 +13,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 - Allow passing any `pt-online-schema-change`'s arguments through the
    `PERCONA_ARGS` env var when executing a migration with `rake db:migrate:up`
    or `db:migrate:down`.
-- Filter MySQL's password from logs    
+- Allow setting global percona arguments via gem configuration
+- Filter MySQL's password from logs
 
 ### Changed
 
