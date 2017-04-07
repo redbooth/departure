@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
+## [3.0.0] - 2016-04-07
 
 ### Added
 
