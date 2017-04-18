@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::CliGenerator do
+describe Departure::CliGenerator do
   let(:cli_generator) { described_class.new(connection_data) }
   let(:connection_data) do
     {
@@ -79,22 +79,22 @@ describe PerconaMigrator::CliGenerator do
     let(:table_name) { 'comments' }
     let(:dsn) do
       instance_double(
-        PerconaMigrator::DSN,
+        Departure::DSN,
         to_s: "D=#{connection_data[:database]},
         t=#{table_name}"
       )
     end
     let(:alter_argument) do
       instance_double(
-        PerconaMigrator::AlterArgument,
+        Departure::AlterArgument,
         to_s: 'CHANGE `some_id` `some_id` INT(11) DEFAULT NULL',
         table_name: table_name
       )
     end
 
     before do
-      allow(PerconaMigrator::DSN).to receive(:new).and_return(dsn)
-      allow(PerconaMigrator::AlterArgument).to(
+      allow(Departure::DSN).to receive(:new).and_return(dsn)
+      allow(Departure::AlterArgument).to(
         receive(:new).and_return(alter_argument)
       )
     end
@@ -120,7 +120,7 @@ describe PerconaMigrator::CliGenerator do
     end
   end
 
-  describe PerconaMigrator::DSN do
+  describe Departure::DSN do
     let(:database) { 'development' }
     let(:table_name) { 'comments' }
 

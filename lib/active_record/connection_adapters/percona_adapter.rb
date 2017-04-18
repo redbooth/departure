@@ -12,10 +12,10 @@ module ActiveRecord
       mysql2_connection = mysql2_connection(config)
 
       verbose = ActiveRecord::Migration.verbose
-      percona_logger = PerconaMigrator::LoggerFactory.build(verbose: verbose)
-      cli_generator = PerconaMigrator::CliGenerator.new(config)
+      percona_logger = Departure::LoggerFactory.build(verbose: verbose)
+      cli_generator = Departure::CliGenerator.new(config)
 
-      runner = PerconaMigrator::Runner.new(
+      runner = Departure::Runner.new(
         percona_logger,
         cli_generator,
         mysql2_connection
@@ -23,7 +23,7 @@ module ActiveRecord
 
       connection_options = { mysql_adapter: mysql2_connection }
 
-      ConnectionAdapters::PerconaMigratorAdapter.new(
+      ConnectionAdapters::DepartureAdapter.new(
         runner,
         logger,
         connection_options,
@@ -33,11 +33,11 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PerconaMigratorAdapter < AbstractMysqlAdapter
+    class DepartureAdapter < AbstractMysqlAdapter
 
       class Column < AbstractMysqlAdapter::Column
         def adapter
-          PerconaMigratorAdapter
+          DepartureAdapter
         end
       end
 

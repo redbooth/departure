@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 # TODO: Handle #change_table syntax
-describe PerconaMigrator, integration: true do
+describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) { MIGRATION_FIXTURES }
@@ -23,7 +23,7 @@ describe PerconaMigrator, integration: true do
   let(:direction) { :up }
 
   it 'has a version number' do
-    expect(PerconaMigrator::VERSION).not_to be nil
+    expect(Departure::VERSION).not_to be nil
   end
 
   describe 'logging' do
@@ -67,14 +67,14 @@ describe PerconaMigrator, integration: true do
     # TODO: Use dummy app so that we actually go through the railtie's code
     context 'when there is LHM' do
       xit 'patches it to use regular Rails migration methods' do
-        expect(PerconaMigrator::Lhm::Fake::Adapter).to receive(:new).and_return(true)
+        expect(Departure::Lhm::Fake::Adapter).to receive(:new).and_return(true)
         ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
       end
     end
 
     context 'when there is no LHM' do
       xit 'does not patch it' do
-        expect(PerconaMigrator::Lhm::Fake).not_to receive(:patching_lhm)
+        expect(Departure::Lhm::Fake).not_to receive(:patching_lhm)
         ActiveRecord::Migrator.new(direction, [migration_fixtures], 1).migrate
       end
     end

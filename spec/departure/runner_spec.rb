@@ -1,23 +1,23 @@
 require 'spec_helper'
 require 'tempfile'
 
-describe PerconaMigrator::Runner do
+describe Departure::Runner do
   let(:command) { 'pt-online-schema-change command' }
   let(:logger) do
     instance_double(
-      PerconaMigrator::Logger,
+      Departure::Logger,
       write: true,
       write_no_newline: true,
       say: true
     )
   end
-  let(:cli_generator) { instance_double(PerconaMigrator::CliGenerator) }
+  let(:cli_generator) { instance_double(Departure::CliGenerator) }
   let(:mysql_adapter) do
     instance_double(ActiveRecord::ConnectionAdapters::Mysql2Adapter)
   end
   let(:config) do
     instance_double(
-      PerconaMigrator::Configuration,
+      Departure::Configuration,
       error_log_path: 'departure_error.log'
     )
   end
@@ -89,7 +89,7 @@ describe PerconaMigrator::Runner do
     it 'logs the command\'s output' do
       runner.execute(command)
 
-      expect(logger).to have_received(:write).with("\n").twice
+      expect(logger).to have_received(:write).with("\n").exactly(3).times
       expect(logger).to have_received(:write_no_newline).with("hello wo")
       expect(logger).to have_received(:write_no_newline).with("rld\\ntod")
       expect(logger).to have_received(:write_no_newline).with("o roto")
@@ -98,7 +98,7 @@ describe PerconaMigrator::Runner do
     context 'when the execution was successful' do
       it 'prints a new line' do
         runner.execute(command)
-        expect(logger).to have_received(:write).twice.with(/\n/)
+        expect(logger).to have_received(:write).exactly(3).times.with(/\n/)
       end
     end
 
@@ -116,9 +116,9 @@ describe PerconaMigrator::Runner do
       context 'when the execution failed' do
         let(:command) { 'sh -c \'echo ROTO >/dev/stderr && false\'' }
 
-        it 'raises a PerconaMigrator::Error' do
+        it 'raises a Departure::Error' do
           expect { runner.execute(command) }
-            .to raise_exception(PerconaMigrator::Error, "ROTO\n")
+            .to raise_exception(Departure::Error, "ROTO\n")
         end
       end
 
@@ -127,7 +127,7 @@ describe PerconaMigrator::Runner do
 
         it 'raises a SignalError specifying the status' do
           expect { runner.execute(command) }
-            .to raise_exception(PerconaMigrator::SignalError)
+            .to raise_exception(Departure::SignalError)
         end
       end
 
@@ -137,7 +137,7 @@ describe PerconaMigrator::Runner do
         it 'raises a detailed CommandNotFoundError' do
           expect { runner.execute(command) }
             .to raise_exception(
-              PerconaMigrator::CommandNotFoundError,
+              Departure::CommandNotFoundError,
               /Please install pt-online-schema-change/
             )
         end

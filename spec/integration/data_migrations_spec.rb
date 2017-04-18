@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator, integration: true do
+describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) { MIGRATION_FIXTURES }

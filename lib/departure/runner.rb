@@ -1,6 +1,6 @@
 require 'open3'
 
-module PerconaMigrator
+module Departure
 
   # It executes pt-online-schema-change commands in a new process and gets its
   # output and status
@@ -13,7 +13,7 @@ module PerconaMigrator
     # @param cli_generator [CliGenerator]
     # @param mysql_adapter [ActiveRecord::ConnectionAdapter] it must implement
     #   #execute and #raw_connection
-    def initialize(logger, cli_generator, mysql_adapter, config = PerconaMigrator.configuration)
+    def initialize(logger, cli_generator, mysql_adapter, config = Departure.configuration)
       @logger = logger
       @cli_generator = cli_generator
       @mysql_adapter = mysql_adapter
