@@ -4,7 +4,7 @@ module PerconaMigrator
 
     def initialize
       @tmp_path = '.'.freeze
-      @error_log_filename = 'percona_migrator_error.log'.freeze
+      @error_log_filename = 'departure_error.log'.freeze
     end
 
     def error_log_path

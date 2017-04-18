@@ -1,7 +1,7 @@
 require 'active_record/connection_adapters/abstract_mysql_adapter'
 require 'active_record/connection_adapters/statement_pool'
 require 'active_record/connection_adapters/mysql2_adapter'
-require 'percona_migrator'
+require 'departure'
 require 'forwardable'
 
 module ActiveRecord

@@ -1,4 +1,4 @@
-require 'percona_migrator/alter_argument'
+require 'departure/alter_argument'
 
 module PerconaMigrator
 

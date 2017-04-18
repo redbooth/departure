@@ -18,7 +18,7 @@ describe PerconaMigrator::Runner do
   let(:config) do
     instance_double(
       PerconaMigrator::Configuration,
-      error_log_path: 'percona_migrator_error.log'
+      error_log_path: 'departure_error.log'
     )
   end
 
@@ -95,7 +95,7 @@ describe PerconaMigrator::Runner do
       expect(logger).to have_received(:write_no_newline).with("o roto")
     end
 
-    context 'when the execution was succsessfull' do
+    context 'when the execution was successful' do
       it 'prints a new line' do
         runner.execute(command)
         expect(logger).to have_received(:write).twice.with(/\n/)

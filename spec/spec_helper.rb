@@ -8,7 +8,7 @@ Bundler.require(:default, :development)
 require './configuration'
 require './test_database'
 
-require 'percona_migrator'
+require 'departure'
 require 'lhm'
 
 db_config = Configuration.new
@@ -22,7 +22,7 @@ ActiveRecord::Base.establish_connection(
   host: 'localhost',
   username: db_config['username'],
   password: db_config['password'],
-  database: 'percona_migrator_test'
+  database: db_config['database']
 )
 
 MIGRATION_FIXTURES = File.expand_path('../fixtures/migrate/', __FILE__)
