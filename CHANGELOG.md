@@ -4,10 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
-## [Unreleased]
+## [1.0.0]
 
 ### Added
 ### Changed
+
+- Renamed gem to Departure
+
 ### Removed
 ### Fixed
 
