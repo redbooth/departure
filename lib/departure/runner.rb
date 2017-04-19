@@ -70,15 +70,9 @@ module Departure
     #
     # @yield
     def logging
-      log_deprecations
       log_started
       yield
       log_finished
-    end
-
-    def log_deprecations
-      logger.write("\n")
-      logger.write("[DEPRECATION] This gem has been renamed to Departure and will no longer be supported. Please switch to Departure as soon as possible.")
     end
 
     # Logs when the execution started

@@ -89,7 +89,7 @@ describe Departure::Runner do
     it 'logs the command\'s output' do
       runner.execute(command)
 
-      expect(logger).to have_received(:write).with("\n").exactly(3).times
+      expect(logger).to have_received(:write).with("\n").twice.times
       expect(logger).to have_received(:write_no_newline).with("hello wo")
       expect(logger).to have_received(:write_no_newline).with("rld\\ntod")
       expect(logger).to have_received(:write_no_newline).with("o roto")
@@ -98,7 +98,7 @@ describe Departure::Runner do
     context 'when the execution was successful' do
       it 'prints a new line' do
         runner.execute(command)
-        expect(logger).to have_received(:write).exactly(3).times.with(/\n/)
+        expect(logger).to have_received(:write).twice.times.with(/\n/)
       end
     end
 
