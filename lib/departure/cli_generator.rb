@@ -1,6 +1,6 @@
-require 'percona_migrator/alter_argument'
+require 'departure/alter_argument'
 
-module PerconaMigrator
+module Departure
 
   # Represents the 'DSN' argument of Percona's pt-online-schema-change
   # See https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html#dsn-options

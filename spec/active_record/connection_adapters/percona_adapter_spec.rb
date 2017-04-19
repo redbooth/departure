@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
-  describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter::Column do
+describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
+  describe ActiveRecord::ConnectionAdapters::DepartureAdapter::Column do
     let(:field) { double(:field) }
     let(:default) { double(:default) }
     let(:type) { 'VARCHAR' }
@@ -16,7 +16,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
       subject { column.adapter }
       it do
         is_expected.to eq(
-          ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter
+          ActiveRecord::ConnectionAdapters::DepartureAdapter
         )
       end
     end
@@ -29,10 +29,10 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
   let(:logger) { double(:logger, puts: true) }
   let(:connection_options) { { mysql_adapter: mysql_adapter } }
 
-  let(:runner) { instance_double(PerconaMigrator::Runner) }
+  let(:runner) { instance_double(Departure::Runner) }
   let(:cli_generator) do
     instance_double(
-      PerconaMigrator::CliGenerator,
+      Departure::CliGenerator,
       generate: 'percona command'
     )
   end
@@ -47,10 +47,10 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     allow(runner).to(
       receive(:execute).with('percona command').and_return(true)
     )
-    allow(PerconaMigrator::CliGenerator).to(
+    allow(Departure::CliGenerator).to(
       receive(:new).and_return(cli_generator)
     )
-    allow(PerconaMigrator::Runner).to(
+    allow(Departure::Runner).to(
       receive(:new).with(logger)
     ).and_return(runner)
   end
@@ -68,7 +68,7 @@ describe ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter do
     let(:collation) { double(:collation) }
 
     it do
-      expect(ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter::Column).to receive(:new)
+      expect(ActiveRecord::ConnectionAdapters::DepartureAdapter::Column).to receive(:new)
       adapter.new_column(field, default, type, null, collation)
     end
   end
