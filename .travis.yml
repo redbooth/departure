@@ -10,7 +10,3 @@ before_install:
   - bin/setup
 after_success:
   - codeclimate-test-reporter
-
-branches:
-  only:
-    - master
