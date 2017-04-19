@@ -9,12 +9,19 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ### Added
 ### Changed
 ### Removed
+### Fixed
+
+## [1.0.1] - 2017-04-19
+
+### Added
+### Changed
+### Removed
 
 - Percona_migrator's deprecation warnings when installing and running the gem.
 
 ### Fixed
 
-## [1.0.0]
+## [1.0.0] - 2017-04-19
 
 ### Added
 ### Changed
