@@ -8,6 +8,13 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ### Added
 ### Changed
+### Removed
+### Fixed
+
+## [2.0.0 - 2017-04-20]
+
+### Added
+### Changed
 
 - Rename the gem from percona_migrator to departure
 
