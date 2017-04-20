@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   module LoggerFactory
 
     # Returns the appropriate logger instance for the given configuration. Use
@@ -8,9 +8,9 @@ module PerconaMigrator
     # @return [#say, #write]
     def self.build(sanitizers: [], verbose: true)
       if verbose
-        PerconaMigrator::Logger.new(sanitizers)
+        Departure::Logger.new(sanitizers)
       else
-        PerconaMigrator::NullLogger.new
+        Departure::NullLogger.new
       end
     end
   end
