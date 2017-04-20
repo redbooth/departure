@@ -23,7 +23,6 @@ module Departure
     #
     # @return [Process::Status]
     def run
-      log_deprecations
       log_started
 
       run_in_process
@@ -92,11 +91,6 @@ module Departure
     # print by the migration
     def log_finished
       logger.write("\n")
-    end
-
-    def log_deprecations
-      logger.write("\n")
-      logger.write("[DEPRECATION] This gem has been renamed to Departure and will no longer be supported. Please switch to Departure as soon as possible.")
     end
   end
 end
