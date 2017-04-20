@@ -1,4 +1,4 @@
-# Departure [![Build Status](https://travis-ci.org/redbooth/departure.svg?branch=master)](https://travis-ci.org/redbooth/percona_migrator) [![Code Climate](https://codeclimate.com/github/redbooth/percona_migrator/badges/gpa.svg)](https://codeclimate.com/github/redbooth/percona_migrator)
+# Departure [![Build Status](https://travis-ci.org/redbooth/departure.svg?branch=master)](https://travis-ci.org/redbooth/departure) [![Code Climate](https://codeclimate.com/github/redbooth/departure/badges/gpa.svg)](https://codeclimate.com/github/redbooth/departure)
 
 Departure is an **ActiveRecord connection adapter** that allows running
 **MySQL online and non-blocking DDL** through `ActiveRecord::Migration` without needing
@@ -47,7 +47,7 @@ You can also get it from [Percona's apt repository](https://www.percona.com/doc/
 Once installed, add this line to your application's Gemfile:
 
 ```ruby
-gem 'percona_migrator'
+gem 'departure'
 ```
 
 And then execute:
@@ -56,7 +56,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install percona_migrator
+    $ gem install departure
 
 ## Usage
 
@@ -129,7 +129,7 @@ end
 ```
 
 It's strongly recommended to name it after this gems name, such as
-`config/initializers/percona_migrator.rb`
+`config/initializers/departure.rb`
 
 ## How it works
 
@@ -140,15 +140,15 @@ it using the `PerconaAdapter` instead of the one you defined in your
 
 Then, when any migration DSL methods such as `add_column` or `create_table` are
 executed, they all go to the
-[PerconaAdapter](https://github.com/redbooth/percona_migrator/blob/master/lib/active_record/connection_adapters/percona_adapter.rb).
+[PerconaAdapter](https://github.com/redbooth/departure/blob/master/lib/active_record/connection_adapters/percona_adapter.rb).
 There, the methods that require `ALTER TABLE` SQL statements, like `add_column`,
 are overriden to get executed with
-[PerconaMigrator::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb),
+[PerconaMigrator::Runner](https://github.com/redbooth/departure/blob/master/lib/departure/runner.rb),
 which deals with the `pt-online-schema-change` binary. All the others, like
 `create_table`, are delegated to the ActiveRecord's built in Mysql2Adapter and
 so they follow the regular path.
 
-[PerconaMigrator::Runner](https://github.com/redbooth/percona_migrator/blob/master/lib/percona_migrator/runner.rb)
+[PerconaMigrator::Runner](https://github.com/redbooth/departure/blob/master/lib/departure/runner.rb)
 spawns a new process that runs the `pt-online-schema-change` binary present in
 the system, with the apropriate arguments for the generated SQL.
 
@@ -171,7 +171,7 @@ git commits and tags, and push the `.gem` file to
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/redbooth/percona_migrator. They need to be opened against
+https://github.com/redbooth/departure. They need to be opened against
 `master` or `v3.2` only if the changes fix a bug in Rails 3.2 apps.
 
 Please note that this project is released with a Contributor Code of Conduct. By
