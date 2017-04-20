@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   # Copies the ActiveRecord::Migration #say and #write plus a new
   # #write_no_newline to log the migration's status. It's not possible to reuse
   # the from ActiveRecord::Migration because the migration's instance can't be

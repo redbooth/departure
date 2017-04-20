@@ -39,7 +39,7 @@ RSpec.configure do |config|
   ActiveRecord::Migration.verbose = false
 
   # Needs an empty block to initialize the config with the default values
-  PerconaMigrator.configure do |_config|
+  Departure.configure do |_config|
   end
 
   # Cleans up the database before each example, so the current example doesn't

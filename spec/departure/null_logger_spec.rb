@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::NullLogger do
+describe Departure::NullLogger do
   let(:null_logger) { described_class.new }
   let(:message) { 'a message' }
 
