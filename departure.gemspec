@@ -6,7 +6,7 @@ require 'departure/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'departure'
-  spec.version       = PerconaMigrator::VERSION
+  spec.version       = Departure::VERSION
   spec.authors       = ['Ilya Zayats', 'Pau Pérez', 'Fran Casas', 'Jorge Morante', 'Adrian Serafin']
   spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com', 'fran.casas@redbooth.com', 'jorge.morante@redbooth.com', 'adrian@softmad.pl']
 

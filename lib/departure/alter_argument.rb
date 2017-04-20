@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   class InvalidAlterStatement < StandardError; end
 
   # Represents the '--alter' argument of Percona's pt-online-schema-change

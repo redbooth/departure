@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::LogSanitizers::PasswordSanitizer do
+describe Departure::LogSanitizers::PasswordSanitizer do
   subject(:password_sanitizer) { described_class.new(connection_details) }
 
   let(:password_argument) { '-p secret_password' }
