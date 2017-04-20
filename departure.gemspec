@@ -11,15 +11,9 @@ Gem::Specification.new do |spec|
   spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com', 'fran.casas@redbooth.com', 'jorge.morante@redbooth.com', 'adrian@softmad.pl']
 
   spec.summary       = %q{pt-online-schema-change runner for ActiveRecord migrations}
-  spec.description   = %q{Execute your ActiveRecord migrations with Percona's pt-online-schema-change}
+  spec.description   = %q{Execute your ActiveRecord migrations with Percona's pt-online-schema-change. Formerly known as Percona Migrator.}
   spec.homepage      = 'http://github.com/redbooth/departure'
   spec.license       = 'MIT'
-
-  spec.post_install_message = <<-MESSAGE
-  !    The Percona_migrator gem has been deprecated and has been replaced by Departure.
-  !    See: https://rubygems.org/gems/departure
-  !    And: https://github.com/redbooth/departure
-  MESSAGE
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ['lib']
