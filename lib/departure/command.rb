@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   # Executes the given command returning it's status and errors
   class Command
     COMMAND_NOT_FOUND = 127
@@ -23,7 +23,6 @@ module PerconaMigrator
     #
     # @return [Process::Status]
     def run
-      log_deprecations
       log_started
 
       run_in_process
@@ -92,11 +91,6 @@ module PerconaMigrator
     # print by the migration
     def log_finished
       logger.write("\n")
-    end
-
-    def log_deprecations
-      logger.write("\n")
-      logger.write("[DEPRECATION] This gem has been renamed to Departure and will no longer be supported. Please switch to Departure as soon as possible.")
     end
   end
 end

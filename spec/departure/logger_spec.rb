@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::Logger do
+describe Departure::Logger do
   let(:logger) { described_class.new(sanitizers) }
   let(:sanitizers) { [] }
 

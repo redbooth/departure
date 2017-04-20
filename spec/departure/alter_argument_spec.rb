@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::AlterArgument do
+describe Departure::AlterArgument do
   let(:alter_argument) { described_class.new(statement) }
 
   describe '#initialize' do
@@ -11,7 +11,7 @@ describe PerconaMigrator::AlterArgument do
 
       it 'raises a InvalidAlterStatement' do
         expect { described_class.new(statement) }.to(
-          raise_error(PerconaMigrator::InvalidAlterStatement)
+          raise_error(Departure::InvalidAlterStatement)
         )
       end
     end

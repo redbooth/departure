@@ -39,13 +39,12 @@ RSpec.configure do |config|
   ActiveRecord::Migration.verbose = false
 
   # Needs an empty block to initialize the config with the default values
-  PerconaMigrator.configure do |config|
+  Departure.configure do |_config|
   end
 
+  # Cleans up the database before each example, so the current example doesn't
+  # see the state of the previous one
   config.before(:each) do |example|
-
-    # Cleans up the database before each example, so the current example doesn't
-    # see the state of the previous one
     test_database.setup if example.metadata[:integration]
   end
 

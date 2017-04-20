@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   module LogSanitizers
     class PasswordSanitizer
       PASSWORD_REPLACEMENT = '[filtered_password]'

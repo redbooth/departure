@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PerconaMigrator::DSN do
+describe Departure::DSN do
   let(:database) { 'development' }
   let(:table_name) { 'comments' }
 

@@ -1,4 +1,4 @@
-module PerconaMigrator
+module Departure
   class Configuration
     attr_accessor :tmp_path, :global_percona_args
 

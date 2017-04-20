@@ -4,7 +4,7 @@ require 'departure/alter_argument'
 require 'departure/connection_details'
 require 'departure/user_options'
 
-module PerconaMigrator
+module Departure
 
   # Generates the equivalent Percona's pt-online-schema-change command to the
   # given SQL statement
@@ -77,7 +77,7 @@ module PerconaMigrator
     # @return [String]
     def all_options
       env_variable_options = UserOptions.new
-      global_configuration_options = UserOptions.new(PerconaMigrator.configuration.global_percona_args)
+      global_configuration_options = UserOptions.new(Departure.configuration.global_percona_args)
       options = env_variable_options.merge(global_configuration_options).merge(DEFAULT_OPTIONS)
       options.to_a.join(' ')
     end
