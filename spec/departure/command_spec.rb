@@ -3,7 +3,7 @@ require 'spec_helper'
 describe PerconaMigrator::Command do
   describe '#run' do
     let(:command) { 'pt-online-schema-change command' }
-    let(:error_log_path) { 'percona_migrator_error.log' }
+    let(:error_log_path) { 'departure_error.log' }
     let(:logger) do
       instance_double(
         PerconaMigrator::Logger, write: true, say: true, write_no_newline: true

@@ -63,7 +63,7 @@ describe PerconaMigrator, integration: true do
           host: 'localhost',
           username: 'root',
           password: db_config['password'],
-          database: 'percona_migrator_test'
+          database: 'departure_test'
         )
       end
 
@@ -80,7 +80,7 @@ describe PerconaMigrator, integration: true do
           adapter: 'percona',
           host: 'localhost',
           password: db_config['password'],
-          database: 'percona_migrator_test'
+          database: 'departure_test'
         )
       end
 
