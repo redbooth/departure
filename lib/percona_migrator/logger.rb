@@ -5,6 +5,10 @@ module PerconaMigrator
   # seen from the connection adapter.
   class Logger
 
+    def initialize(sanitizers)
+      @sanitizers = sanitizers
+    end
+
     # Outputs the message through the stdout, following the
     # ActiveRecord::Migration log format
     #
@@ -18,14 +22,22 @@ module PerconaMigrator
     #
     # @param text [String]
     def write(text = '')
-      puts(text)
+      puts(sanitize(text))
     end
 
     # Outputs the text through the stdout without adding a new line at the end
     #
     # @param text [String]
     def write_no_newline(text)
-      print(text)
+      print(sanitize(text))
+    end
+
+    private
+
+    attr_accessor :sanitizers
+
+    def sanitize(text)
+      sanitizers.inject(text) { |memo, sanitizer| sanitizer.execute(memo) }
     end
   end
 end
