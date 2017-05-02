@@ -77,9 +77,10 @@ module PerconaMigrator
     #
     # @return [String]
     def all_options
-      user_options = UserOptions.new
-      options = user_options.merge(DEFAULT_OPTIONS).to_a
-      options.join(' ')
+      env_variable_options = UserOptions.new
+      global_configuration_options = UserOptions.new(PerconaMigrator.configuration.global_percona_args)
+      options = env_variable_options.merge(global_configuration_options).merge(DEFAULT_OPTIONS)
+      options.to_a.join(' ')
     end
   end
 end

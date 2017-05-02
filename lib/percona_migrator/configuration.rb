@@ -1,10 +1,11 @@
 module PerconaMigrator
   class Configuration
-    attr_accessor :tmp_path
+    attr_accessor :tmp_path, :global_percona_args
 
     def initialize
       @tmp_path = '.'.freeze
       @error_log_filename = 'percona_migrator_error.log'.freeze
+      @global_percona_args = nil
     end
 
     def error_log_path

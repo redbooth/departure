@@ -69,6 +69,8 @@ migration.
 
 ### pt-online-schema-change arguments
 
+#### with environment variable
+
 You can specify any `pt-online-schema-change` arguments when running the
 migration. All what you pass in the PERCONA_ARGS env var, will be bypassed to the
 binary, overwriting any default values. Note the format is the same as in
@@ -88,6 +90,24 @@ $ PERCONA_ARGS='--chunk-time=1 --critical-load=55' bundle exec rake db:migrate:u
 This however, only works for `db:migrate:up` or `db:migrate:down` rake tasks and
 not with `db:migrate`. The settings you provide can't be generalized as these
 vary depending on the database table and the kind of changes you apply.
+
+#### with global configuration
+
+You can specify any `pt-online-schema-change` arguments in global gem configuration
+using `global_percona_args` option.
+
+```ruby
+PerconaMigrator.configure do |config|
+  config.global_percona_args = '--chunk-time=1 --critical-load=55'
+end
+```
+
+Unlike using `PERCONA_ARGS`, options provided with global configuration will be applied 
+every time sql command is executed via `pt-online-schema-change`.
+ 
+Arguments provided in global configuration can be overwritten with `PERCONA_ARGS` env variable. 
+
+We recommend using this option with caution and only when you understand the consequences.
 
 ### LHM support
 
