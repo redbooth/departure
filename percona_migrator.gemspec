@@ -7,7 +7,7 @@ require 'percona_migrator/version'
 Gem::Specification.new do |spec|
   spec.name          = 'percona_migrator'
   spec.version       = PerconaMigrator::VERSION
-  spec.authors       = ['Ilya Zayats', 'Pau Pérez', 'Fran Casas', 'Jorge Morante', 'Adrian Serafin']
+  spec.authors       = ['Ilya Zayats', 'Pau Pérez', 'Fran Casas', 'Jorge Morante', 'Enrico Stano', 'Adrian Serafin']
   spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com', 'fran.casas@redbooth.com', 'jorge.morante@redbooth.com', 'adrian@softmad.pl']
 
   spec.summary       = %q{pt-online-schema-change runner for ActiveRecord migrations}
