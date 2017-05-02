@@ -11,7 +11,7 @@ module Lhm
     #
     # @return [Constant]
     def self.column_factory
-      ::ActiveRecord::ConnectionAdapters::PerconaMigratorAdapter::Column
+      ::ActiveRecord::ConnectionAdapters::DepartureAdapter::Column
     end
 
     # Constructor

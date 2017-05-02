@@ -20,6 +20,13 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
     So far, this was purposely set to `none`. To keep this same behaviour
     provide the `PERCONA_ARGS=--recursion-method=none` env var when running the
     migration.
+- Rename the gem from percona_migrator to departure.
+
+### Removed
+
+- Percona_migrator's deprecation warnings when installing and running the gem.
+
+### Fixed
 
 ## [1.0.0] - 2016-11-30
 
