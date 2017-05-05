@@ -19,6 +19,26 @@ describe PerconaMigrator::ConnectionDetails do
         }
       end
 
+      context 'when the port is not specified' do
+        let(:env_var) { {} }
+        let(:connection_data) { { user: 'root', database: 'dummy_test' } }
+        it { is_expected.not_to include('-P') }
+      end
+
+      context 'when the port is specified in the connection data' do
+        let(:env_var) { {} }
+        let(:connection_data) { { user: 'root', database: 'dummy_test', port: 213 } }
+
+        it { is_expected.to include('-P 213') }
+      end
+
+      context 'when specifying PERCONA_DB_PORT' do
+        let(:env_var) { { PERCONA_DB_PORT: '3306' } }
+        let(:connection_data) { { user: 'root', database: 'dummy_test', port: 213 } }
+
+        it { is_expected.to include('-P 3306') }
+      end
+
       context 'when the host is not specified' do
         let(:env_var) { {} }
         let(:connection_data) { { user: 'root', database: 'dummy_test' } }
@@ -48,7 +68,7 @@ describe PerconaMigrator::ConnectionDetails do
 
       context 'when specifying PERCONA_DB_PASSWORD' do
         let(:env_var) { { PERCONA_DB_PASSWORD: 'password' } }
-        it { is_expected.to include('-p password') }
+        it { is_expected.to include('--password "password"') }
       end
     end
 

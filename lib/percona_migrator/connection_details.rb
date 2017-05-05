@@ -14,7 +14,15 @@ module PerconaMigrator
     #
     # @return [String]
     def to_s
-      @to_s ||= "-h #{host} -u #{user} #{password_argument}"
+      return @to_s if defined?(@to_s)
+
+      @to_s = "-h #{host} -u #{user} #{password_argument}"
+
+      if port
+        @to_s = "#{@to_s} -P #{port}"
+      end
+
+      @to_s
     end
 
     # TODO: Doesn't the abstract adapter already handle this somehow?
@@ -33,7 +41,7 @@ module PerconaMigrator
     # @return [String]
     def password_argument
       if password.present?
-        "-p #{password}"
+        %Q[--password "#{password}" ]
       else
         ''
       end
@@ -65,6 +73,14 @@ module PerconaMigrator
     # @return [String]
     def password
       ENV.fetch('PERCONA_DB_PASSWORD', connection_data[:password])
+    end
+
+    # Returns the database's port. If PERCONA_DB_PORT is passed its
+    # value will be used instead
+    #
+    # @return [String]
+    def port
+      ENV.fetch('PERCONA_DB_PORT', connection_data[:port])
     end
   end
 end
