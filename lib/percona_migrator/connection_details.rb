@@ -2,6 +2,7 @@ module PerconaMigrator
   # Holds the parameters of the DB connection and formats them to string
   class ConnectionDetails
 
+    DEFAULT_PORT = 3306
     # Constructor
     #
     # @param [Hash] connection parametes as used in #establish_conneciton
@@ -14,15 +15,7 @@ module PerconaMigrator
     #
     # @return [String]
     def to_s
-      return @to_s if defined?(@to_s)
-
-      @to_s = "-h #{host} -u #{user} #{password_argument}"
-
-      if port
-        @to_s = "#{@to_s} -P #{port}"
-      end
-
-      @to_s
+      @to_s ||= "-h #{host} -P #{port} -u #{user} #{password_argument}"
     end
 
     # TODO: Doesn't the abstract adapter already handle this somehow?
@@ -75,12 +68,11 @@ module PerconaMigrator
       ENV.fetch('PERCONA_DB_PASSWORD', connection_data[:password])
     end
 
-    # Returns the database's port. If PERCONA_DB_PORT is passed its
-    # value will be used instead
+    # Returns the database's port.
     #
     # @return [String]
     def port
-      ENV.fetch('PERCONA_DB_PORT', connection_data[:port])
+      connection_data.fetch(:port, DEFAULT_PORT)
     end
   end
 end
