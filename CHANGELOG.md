@@ -7,6 +7,14 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ## [Unreleased]
 
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+
+## [3.0.1] - 2017-05-11
+
+### Added
 
 - Allow running on other than default MySQL port
 
@@ -16,6 +24,7 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ### Fixed
 
 - Handle special characters in connection's password
+- `rename_table` and `rename_index` migration methods
 
 ## [3.0.0] - 2017-05-02
 
