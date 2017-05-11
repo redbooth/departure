@@ -2,8 +2,8 @@ require 'forwardable'
 
 module Lhm
 
-  # Abstracts the details of a table column definition when specified with a MySQL
-  # column definition string
+  # Abstracts the details of a table column definition when specified with a
+  # MySQL column definition string
   class ColumnWithSql
     extend Forwardable
 
