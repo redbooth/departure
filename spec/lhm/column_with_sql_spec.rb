@@ -97,7 +97,7 @@ describe Lhm::ColumnWithSql do
       let(:definition) { 'FLOAT' }
 
       its([0]) { is_expected.to eq(:float) }
-      its([1]) { is_expected.to eq(limit: nil, default: nil, null: true) }
+      its([1]) { is_expected.to eq(limit: 24, default: nil, null: true) }
 
       context 'with DEFAULT' do
         subject { column.attributes[1] }
