@@ -7,6 +7,14 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ## [Unreleased]
 
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+
+## [2.0.1 - 2017-05-11]
+
+### Added
 
 - Allow running on other than default MySQL port
 
