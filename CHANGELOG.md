@@ -7,9 +7,14 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ## [Unreleased]
 
 ### Added
+
+- Allow running on other than default MySQL port
+
 ### Changed
 ### Removed
 ### Fixed
+
+- Handle special characters in connection's password
 
 ## [2.0.0 - 2017-04-20]
 
