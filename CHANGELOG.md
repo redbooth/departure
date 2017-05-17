@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
+
+### Added
+### Changed
+
+- Rename the gem from percona_migrator to departure.
+
+### Deprecated
+### Removed
+
+- Percona_migrator's deprecation warnings when installing and running the gem.
+
+### Fixed
+
 ## [3.0.0] - 2016-04-07
 
 ### Added
