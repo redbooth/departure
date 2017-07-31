@@ -3,15 +3,11 @@ module Departure
     attr_reader :name, :value
 
     # Builds an instance by parsing its name and value out of the given string.
-    # Note the string must conform to "--<arg>=<value>" format.
     #
     # @param string [String]
     # @return [Option]
     def self.from_string(string)
-      pair = string.split('=')
-      name = pair[0][2..-1]
-      value = pair[1]
-
+      name, value = string.split(/\s|=/, 2)
       new(name, value)
     end
 
@@ -20,7 +16,7 @@ module Departure
     # @param name [String]
     # @param optional value [String]
     def initialize(name, value = nil)
-      @name = name
+      @name = normalize_option(name)
       @value = value
     end
 
@@ -40,14 +36,28 @@ module Departure
       name.hash
     end
 
-    # Returns the option as string following the "--<name>=<value>" format
+    # Returns the option as string following the "--<name>=<value>" format or
+    # the short "-n=value" format
     #
     # @return [String]
     def to_s
-      "--#{name}#{value_as_string}"
+      "#{name}#{value_as_string}"
     end
 
     private
+
+    # Returns the option name in "long" format, e.g., "--name"
+    #
+    # @return [String]
+    def normalize_option(name)
+      if name.start_with?('-')
+        name
+      elsif name.length == 1
+        "-#{name}"
+      else
+        "--#{name}"
+      end
+    end
 
     # Returns the value fragment of the option string if any value is specified
     #
@@ -55,6 +65,8 @@ module Departure
     def value_as_string
       if value.nil?
         ''
+      elsif value.include?("=")
+        " #{value}"
       else
         "=#{value}"
       end
