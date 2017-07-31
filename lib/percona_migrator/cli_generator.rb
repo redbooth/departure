@@ -19,7 +19,9 @@ module PerconaMigrator
         Option.new('execute'),
         Option.new('statistics'),
         Option.new('alter-foreign-keys-method', 'auto'),
-        Option.new('no-check-alter')
+        Option.new('no-check-alter'),
+        Option.new('critical-load', 'Threads_running=10000000000'),
+        Option.new('max-load', 'Threads_running=20')
       ]
     ).freeze
 
