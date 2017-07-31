@@ -49,6 +49,11 @@ describe Departure::CliGenerator do
       let(:env_var) { { PERCONA_ARGS: '--chunk-time=1' } }
       it { is_expected.to include('--chunk-time=1') }
 
+      context 'when the option includes an array argument' do
+        let(:env_var) { { PERCONA_ARGS: '--max-load Threads_running=30' } }
+        it { is_expected.to include('--max-load Threads_running=30') }
+      end
+
       context 'when the option has a default' do
         let(:env_var) { { PERCONA_ARGS: '--alter-foreign-keys-method=drop_swap' } }
 
@@ -74,6 +79,11 @@ describe Departure::CliGenerator do
       let(:global_percona_args) { '--chunk-time=1'}
 
       it { is_expected.to include('--chunk-time=1') }
+
+      context 'when the option includes an array argument' do
+        let(:global_percona_args) { '--max-load Threads_running=30' }
+        it { is_expected.to include('--max-load Threads_running=30') }
+      end
 
       context 'when the option has a default' do
         let(:global_percona_args) { '--alter-foreign-keys-method=drop_swap' }

@@ -36,7 +36,7 @@ module Departure
     #
     # @return [Array<Option>]
     def build_options
-      arguments.split(' ').map do |argument|
+      arguments.split(/\s(?=-)/).map do |argument|
         Option.from_string(argument)
       end
     end
