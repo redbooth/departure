@@ -12,6 +12,18 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ### Removed
 ### Fixed
 
+## [4.0.1] - 2017-08-01
+
+### Added
+
+- Support for all pt-osc command-line options, including short forms and array
+    arguments
+
+### Changed
+### Deprecated
+### Removed
+### Fixed
+
 ## [4.0.0] - 2017-06-12
 
 ### Added
