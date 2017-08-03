@@ -22,7 +22,7 @@ describe Departure::ConnectionDetails do
       context 'when the port is not specified' do
         let(:env_var) { {} }
         let(:connection_data) { { user: 'root', database: 'dummy_test' } }
-        it { is_expected.to include("-P #{PerconaMigrator::ConnectionDetails::DEFAULT_PORT}") }
+        it { is_expected.to include("-P #{Departure::ConnectionDetails::DEFAULT_PORT}") }
       end
 
       context 'when the port is specified in the connection data' do
