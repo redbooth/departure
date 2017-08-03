@@ -7,15 +7,36 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ## [Unreleased]
 
 ### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
 
-- Allow running on other than default MySQL port
+## [4.0.1] - 2017-08-01
+
+### Added
+
+- Support for all pt-osc command-line options, including short forms and array
+    arguments
 
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
 
-- Handle special characters in connection's password
+## [4.0.0] - 2017-06-12
+
+### Added
+### Changed
+
+- Rename the gem from percona_migrator to departure.
+
+### Deprecated
+### Removed
+
+- Percona_migrator's deprecation warnings when installing and running the gem.
+
+### Fixed
 
 ## [3.0.0] - 2016-04-07
 
