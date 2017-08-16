@@ -95,7 +95,7 @@ describe Lhm::ColumnWithSql do
         # But until that changes, this test will return nil for a limit instead
         # of 1, as it did previously.
         let(:definition) { 'TINYINT(1)' }
-        its([:limit]) { is_expected.to eq(nil) }
+        its([:limit]) { is_expected.to eq(nil)  }
       end
     end
 
