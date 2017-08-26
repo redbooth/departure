@@ -47,7 +47,7 @@ module Departure
             data = stdout.read_nonblock(8)
             logger.write_no_newline(data)
           end
-        rescue EOFError
+        rescue EOFError # rubocop:disable Lint/HandleExceptions
           # noop
         ensure
           @status = waith_thr.value

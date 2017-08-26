@@ -11,7 +11,7 @@ module Lhm
   # @param table_name [String]
   # @param _options [Hash]
   # @param block [Block]
-  def self.change_table(table_name, _options = {}, &block)
+  def self.change_table(table_name, _options = {}, &block) # rubocop:disable Lint/UnusedMethodArgument
     yield Adapter.new(@migration, table_name)
   end
 

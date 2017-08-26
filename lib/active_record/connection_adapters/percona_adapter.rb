@@ -65,7 +65,7 @@ module ActiveRecord
       end
       alias :exec_update :exec_delete
 
-      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil)
+      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil) # rubocop:disable Lint/UnusedMethodArgument
         execute(to_sql(sql, binds), name)
       end
 
@@ -91,7 +91,7 @@ module ActiveRecord
         true
       end
 
-      def new_column(field, default, cast_type, sql_type = nil, null = true, collation = '', extra = '')
+      def new_column(field, default, cast_type, sql_type = nil, null = true, collation = '', extra = '') # rubocop:disable Metrics/ParameterLists
         Column.new(field, default, cast_type, sql_type, null, collation, strict_mode?, extra)
       end
 
