@@ -37,7 +37,7 @@ module Departure
     def parsed_statement
       @parsed_statement ||= statement
         .gsub(ALTER_TABLE_REGEX, '')
-        .gsub('`','\\\`')
+        .gsub('`', '\\\`')
     end
   end
 end

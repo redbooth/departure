@@ -6,6 +6,5 @@ class DataMigrationWithNamedBinds < ActiveRecord::Migration
     unread_comments.update_all(read: true)
   end
 
-  def down
-  end
+  def down; end
 end

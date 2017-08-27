@@ -43,7 +43,7 @@ describe Departure::Logger do
     end
 
     context 'when sanitizers are passed' do
-      let(:sanitized_text) { 'a sanitized text'}
+      let(:sanitized_text) { 'a sanitized text' }
       let(:sanitizer) { double(:sanitizer, execute: sanitized_text) }
       let(:sanitizers) { [sanitizer] }
 
@@ -61,7 +61,7 @@ describe Departure::Logger do
 
   describe '#write_no_newline' do
     let(:text) { 'a text' }
-    let(:sanitized_text) { 'a sanitized text'}
+    let(:sanitized_text) { 'a sanitized text' }
     let(:sanitizer) { double(:sanitizer, execute: sanitized_text) }
     let(:sanitizers) { [sanitizer] }
 

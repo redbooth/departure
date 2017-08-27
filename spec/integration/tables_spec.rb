@@ -58,5 +58,4 @@ describe Departure, integration: true do
       expect(:new_comments).to have_index('index_new_comments_on_some_id_field')
     end
   end
-
 end

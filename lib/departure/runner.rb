@@ -1,11 +1,9 @@
 require 'open3'
 
 module Departure
-
   # It executes pt-online-schema-change commands in a new process and gets its
   # output and status
   class Runner
-
     # Constructor
     #
     # @param logger [#say, #write]

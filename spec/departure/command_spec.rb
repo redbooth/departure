@@ -59,9 +59,9 @@ describe Departure::Command do
     it 'logs the command\'s output' do
       runner.run
 
-      expect(logger).to have_received(:write_no_newline).with("hello wo")
-      expect(logger).to have_received(:write_no_newline).with("rld\\ntod")
-      expect(logger).to have_received(:write_no_newline).with("o roto")
+      expect(logger).to have_received(:write_no_newline).with('hello wo')
+      expect(logger).to have_received(:write_no_newline).with('rld\\ntod')
+      expect(logger).to have_received(:write_no_newline).with('o roto')
     end
 
     context 'on failure' do

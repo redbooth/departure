@@ -69,7 +69,7 @@ module Departure
     # @raise [SignalError] if the spawned process received a signal
     # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
     def validate_status!
-      raise SignalError.new(status) if status.signaled?
+      raise SignalError.new(status) if status.signaled? # rubocop:disable Style/RaiseArgs
       raise CommandNotFoundError if status.exitstatus == COMMAND_NOT_FOUND
       raise Error, error_message unless status.success?
     end

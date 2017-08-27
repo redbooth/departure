@@ -4,7 +4,6 @@ module Departure
   # the from ActiveRecord::Migration because the migration's instance can't be
   # seen from the connection adapter.
   class Logger
-
     def initialize(sanitizers)
       @sanitizers = sanitizers
     end
@@ -15,7 +14,7 @@ module Departure
     # @param message [String]
     # @param subitem [Boolean] whether to show message as a nested log item
     def say(message, subitem = false)
-      write "#{subitem ? "   ->" : "--"} #{message}"
+      write "#{subitem ? '   ->' : '--'} #{message}"
     end
 
     # Outputs the text through the stdout adding a new line at the end

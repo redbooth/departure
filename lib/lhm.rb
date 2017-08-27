@@ -4,7 +4,6 @@ require 'lhm/adapter'
 # while providing a different behaviour. We delegate all LHM's methods to
 # ActiveRecord so that you don't need to modify your old LHM migrations
 module Lhm
-
   # Yields an adapter instance so that Lhm migration Dsl methods get
   # delegated to ActiveRecord::Migration ones instead
   #
@@ -22,4 +21,3 @@ module Lhm
     @migration = migration
   end
 end
-

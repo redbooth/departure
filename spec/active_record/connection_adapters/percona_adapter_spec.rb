@@ -200,7 +200,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     let(:sql) { 'SELECT id, body FROM comments' }
     let(:name) { nil }
 
-    let(:array_of_rows) { [['1', 'body'], ['2', 'body']] }
+    let(:array_of_rows) { [%w[1 body], %w[2 body]] }
     let(:mysql2_result) do
       instance_double(Mysql2::Result, to_a: array_of_rows)
     end
@@ -220,9 +220,9 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     let(:sql) { 'SELECT id, body FROM comments' }
     let(:name) { nil }
 
-    let(:array_of_rows) { [['1', 'body'], ['2', 'body']] }
+    let(:array_of_rows) { [%w[1 body], %w[2 body]] }
     let(:mysql2_result) do
-      instance_double(Mysql2::Result, fields: %w(id body), to_a: array_of_rows)
+      instance_double(Mysql2::Result, fields: %w[id body], to_a: array_of_rows)
     end
 
     before do
@@ -233,7 +233,10 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
 
     it do
       is_expected.to match_array(
-        [{"id"=>"1", "body"=>"body"}, {"id"=>"2", "body"=>"body"}]
+        [
+          { 'id' => '1', 'body' => 'body' },
+          { 'id' => '2', 'body' => 'body' }
+        ]
       )
     end
   end

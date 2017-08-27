@@ -1,7 +1,6 @@
 ---
 Metrics/AbcSize:
   Enabled: false
-  Max: 20
 
 Metrics/BlockLength:
   Max: 20
@@ -16,7 +15,10 @@ Metrics/ClassLength:
   Max: 250
 
 Metrics/LineLength:
-  Max: 100
+  Max: 120
+  Exclude:
+    - 'departure.gemspec'
+    - 'test_database.rb'
 
 Metrics/MethodLength:
   Max: 30
@@ -26,3 +28,33 @@ Metrics/ModuleLength:
 
 Metrics/ParameterLists:
   Max: 5
+
+Performance/Casecmp:
+  Enabled: false
+
+Style/BracesAroundHashParameters:
+  Exclude:
+    - 'spec/fixtures/migrate/**.rb'
+    - 'spec/integration/**.rb'
+
+Style/CommandLiteral:
+  Exclude:
+    - 'test_database.rb'
+
+Style/Documentation:
+  Enabled: false
+
+Style/MultilineBlockChain:
+  Exclude:
+    - 'spec/integration_spec.rb'
+
+Style/MultilineMethodCallIndentation:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/UnneededPercentQ:
+  Exclude:
+    - 'departure.gemspec'
+

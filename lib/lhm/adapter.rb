@@ -2,12 +2,10 @@ require 'lhm/column_with_sql'
 require 'lhm/column_with_type'
 
 module Lhm
-
   # Translates Lhm DSL to ActiveRecord's one, so Lhm migrations will now go
   # through Percona as well, without any modification on the migration's
   # code
   class Adapter
-
     # Constructor
     #
     # @param migration [ActiveRecord::Migtration]
@@ -79,7 +77,7 @@ module Lhm
     # @param index_name [String]
     def add_unique_index(columns, index_name = nil)
       options = { unique: true }
-      options.merge!(name: index_name) if index_name
+      options.merge!(name: index_name) if index_name # rubocop:disable Performance/RedundantMerge
 
       migration.add_index(table_name, columns, options)
     end
