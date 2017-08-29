@@ -33,14 +33,15 @@ describe Departure::ConnectionDetails do
       end
 
       context 'when the host is not specified' do
-        let(:env_var) { {} }
-        let(:connection_data) { { user: 'root', database: 'dummy_test' } }
+        let(:env_var) { { PERCONA_DB_HOST: nil } }
+        let(:connection_data) { { user: 'root', hostname:nil, database: 'dummy_test' } }
 
         it { is_expected.to include('-h localhost') }
       end
 
       context 'when the host is specified' do
-        let(:env_var) { {} }
+        let(:env_var) { { PERCONA_DB_HOST: nil } }
+
         let(:connection_data) do
           { host: 'foo.com:3306', user: 'root', database: 'dummy_test' }
         end

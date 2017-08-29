@@ -1,12 +1,12 @@
 require 'yaml'
 
 class Configuration
-  CONFIG_PATH = 'config.yml'
+  CONFIG_PATH = 'config.yml.erb'
 
   attr_reader :config
 
   def initialize
-    @config = YAML.load_file(CONFIG_PATH)
+    @config = YAML.load(ERB.new(File.read(CONFIG_PATH)).result).freeze
   end
 
   def [](key)

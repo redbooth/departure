@@ -60,10 +60,10 @@ describe Departure, integration: true do
       before do
         ActiveRecord::Base.establish_connection(
           adapter: 'percona',
-          host: 'localhost',
-          username: 'root',
+          host: db_config['hostname'],
+          username: db_config['username'],
           password: db_config['password'],
-          database: 'departure_test'
+          database: db_config['database']
         )
       end
 
@@ -78,9 +78,9 @@ describe Departure, integration: true do
       before do
         ActiveRecord::Base.establish_connection(
           adapter: 'percona',
-          host: 'localhost',
+          host: db_config['hostname'],
           password: db_config['password'],
-          database: 'departure_test'
+          database: db_config['database']
         )
       end
 
