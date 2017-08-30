@@ -19,7 +19,7 @@ class TestDatabase
     drop_and_create_schema_migrations_table
   end
 
-  # Creates the #{database} database and the comments table in it.
+  # Creates the #{@database} database and the comments table in it.
   # Before, it drops both if they already exist
   def setup_test_database
     drop_and_create_test_database
@@ -29,7 +29,13 @@ class TestDatabase
   # Creates the ActiveRecord's schema_migrations table required for
   # migrations to work. Before, it drops the table if it already exists
   def drop_and_create_schema_migrations_table
-   sql "USE #{database}; DROP TABLE IF EXISTS schema_migrations; CREATE TABLE schema_migrations ( version varchar(255) COLLATE utf8_unicode_ci NOT NULL, UNIQUE KEY unique_schema_migrations (version)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
+   sql = [
+    "USE #{@database}",
+    "DROP TABLE IF EXISTS schema_migrations",
+    "CREATE TABLE schema_migrations ( version varchar(255) COLLATE utf8_unicode_ci NOT NULL, UNIQUE KEY unique_schema_migrations (version)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
+    ]
+
+    run_commands(sql)
   end
 
   private
@@ -37,18 +43,37 @@ class TestDatabase
   attr_reader :config, :database
 
   def drop_and_create_test_database
-   sql "DROP DATABASE IF EXISTS #{database}; CREATE DATABASE #{database} DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;"
+    sql = [
+      "DROP DATABASE IF EXISTS #{@database}",
+      "CREATE DATABASE #{@database} DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci"
+    ]
+
+    run_commands(sql)
   end
 
   def drop_and_create_comments_table
-    sql "USE #{database}; DROP TABLE IF EXISTS comments; CREATE TABLE comments ( id int(12) NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
+    sql = [
+      "USE #{@database}",
+      "DROP TABLE IF EXISTS comments",
+      "CREATE TABLE comments ( id int(12) NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
+    ]
+
+    run_commands(sql)
   end
 
-  def sql(cmd)
-    ActiveRecord::Base.transaction do
-      cmd.split(/;/).each { |str|
-        ActiveRecord::Base.connection.execute(str)
-      }
-    end
+  def run_commands(sql)
+    conn.execute("START TRANSACTION")
+    sql.each { |str|
+      conn.execute(str)
+    }
+    conn.execute("COMMIT")
+  end
+
+  def conn
+    @conn ||= ActiveRecord::Base.mysql2_connection(
+      :host => @config['hostname'],
+      :username => @config['username'],
+      :password => @config['password'],
+      :reconnect => true)
   end
 end
