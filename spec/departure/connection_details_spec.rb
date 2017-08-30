@@ -40,7 +40,7 @@ describe Departure::ConnectionDetails do
     end
 
     context 'when the host is specified' do
-      let(:env_var) { {} }
+      let(:env_var) { {PERCONA_DB_HOST: nil} }
       let(:connection_data) do
         { host: 'foo.com:3306', user: 'root', database: 'dummy_test' }
       end
