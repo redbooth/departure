@@ -47,7 +47,7 @@ module Departure
             data = stdout.read_nonblock(8)
             logger.write_no_newline(data)
           end
-        rescue EOFError
+        rescue EOFError # rubocop:disable Lint/HandleExceptions
           # noop
         ensure
           @status = waith_thr.value
@@ -69,7 +69,7 @@ module Departure
     # @raise [SignalError] if the spawned process received a signal
     # @raise [CommandNotFoundError] if pt-online-schema-change can't be found
     def validate_status!
-      raise SignalError.new(status) if status.signaled?
+      raise SignalError.new(status) if status.signaled? # rubocop:disable Style/RaiseArgs
       raise CommandNotFoundError if status.exitstatus == COMMAND_NOT_FOUND
       raise Error, error_message unless status.success?
     end

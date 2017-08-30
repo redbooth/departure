@@ -5,12 +5,11 @@ require 'departure/connection_details'
 require 'departure/user_options'
 
 module Departure
-
   # Generates the equivalent Percona's pt-online-schema-change command to the
   # given SQL statement
   #
-  # --no-check-alter is used to allow running CHANGE COLUMN statements. For
-  #   more details, check: www.percona.com/doc/percona-toolkit/2.2/pt-online-schema-change.html#cmdoption-pt-online-schema-change--[no]check-alter
+  # --no-check-alter is used to allow running CHANGE COLUMN statements. For more details, check:
+  # www.percona.com/doc/percona-toolkit/2.2/pt-online-schema-change.html#cmdoption-pt-online-schema-change--[no]check-alter # rubocop:disable Metrics/LineLength
   #
   class CliGenerator
     COMMAND_NAME = 'pt-online-schema-change'.freeze

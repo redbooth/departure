@@ -32,7 +32,7 @@ module Departure
   def self.load
     ActiveRecord::Migrator.instance_eval do
       class << self
-        alias_method(:original_migrate, :migrate)
+        alias original_migrate migrate
       end
 
       # Checks whether arguments are being passed through PERCONA_ARGS when running

@@ -1,4 +1,5 @@
 # coding: utf-8
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
@@ -10,8 +11,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Ilya Zayats', 'Pau Pérez', 'Fran Casas', 'Jorge Morante', 'Enrico Stano', 'Adrian Serafin']
   spec.email         = ['ilya.zayats@redbooth.com', 'pau.perez@redbooth.com', 'fran.casas@redbooth.com', 'jorge.morante@redbooth.com', 'adrian@softmad.pl']
 
-  spec.summary       = %q{pt-online-schema-change runner for ActiveRecord migrations}
-  spec.description   = %q{Execute your ActiveRecord migrations with Percona's pt-online-schema-change. Formerly known as Percona Migrator.}
+  spec.summary       = %q(pt-online-schema-change runner for ActiveRecord migrations)
+  spec.description   = %q(Execute your ActiveRecord migrations with Percona's pt-online-schema-change. Formerly known as Percona Migrator.)
   spec.homepage      = 'http://github.com/redbooth/departure'
   spec.license       = 'MIT'
 

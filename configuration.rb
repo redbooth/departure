@@ -1,7 +1,7 @@
 require 'yaml'
 
 class Configuration
-  CONFIG_PATH = 'config.yml'
+  CONFIG_PATH = 'config.yml'.freeze
 
   attr_reader :config
 

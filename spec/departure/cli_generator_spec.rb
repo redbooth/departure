@@ -76,7 +76,7 @@ describe Departure::CliGenerator do
     end
 
     context 'when global configuration options are provided' do
-      let(:global_percona_args) { '--chunk-time=1'}
+      let(:global_percona_args) { '--chunk-time=1' }
 
       it { is_expected.to include('--chunk-time=1') }
 

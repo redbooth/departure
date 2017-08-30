@@ -24,10 +24,10 @@ module Departure
     #
     # @param [Option]
     # @return [Boolean]
-    def ==(another_option)
-      name == another_option.name
+    def ==(other)
+      name == other.name
     end
-    alias :eql? :==
+    alias eql? ==
 
     # Returns the option's hash
     #
@@ -65,7 +65,7 @@ module Departure
     def value_as_string
       if value.nil?
         ''
-      elsif value.include?("=")
+      elsif value.include?('=')
         " #{value}"
       else
         "=#{value}"

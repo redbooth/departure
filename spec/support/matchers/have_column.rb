@@ -16,4 +16,3 @@ RSpec::Matchers.define :have_column do |expected|
     ActiveRecord::Base.connection.columns(table_name)
   end
 end
-

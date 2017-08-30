@@ -1,12 +1,10 @@
 module Lhm
-
   # Abstracts the details of a table column definition when specified with a type
   # as a symbol. This is the regular ActiveRecord's #add_column syntax:
   #
   #   add_column :tablenames, :field, :string
   #
   class ColumnWithType
-
     # Constructor
     #
     # @param name [String, Symbol]
