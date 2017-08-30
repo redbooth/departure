@@ -3,7 +3,6 @@
 # the tests.
 #
 class TestDatabase
-
   # Constructor
   #
   # @param config [Hash]

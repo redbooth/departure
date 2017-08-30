@@ -40,7 +40,6 @@ module ActiveRecord
 
   module ConnectionAdapters
     class DepartureAdapter < AbstractMysqlAdapter
-
       class Column < AbstractMysqlAdapter::Column
         def adapter
           DepartureAdapter
@@ -63,9 +62,9 @@ module ActiveRecord
         execute(to_sql(sql, binds), name)
         @connection.affected_rows
       end
-      alias :exec_update :exec_delete
+      alias exec_update exec_delete
 
-      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil)
+      def exec_insert(sql, name, binds, pk = nil, sequence_name = nil) # rubocop:disable Lint/UnusedMethodArgument, Metrics/LineLength
         execute(to_sql(sql, binds), name)
       end
 
@@ -91,7 +90,7 @@ module ActiveRecord
         true
       end
 
-      def new_column(field, default, cast_type, sql_type = nil, null = true, collation = '', extra = '')
+      def new_column(field, default, cast_type, sql_type = nil, null = true, collation = '', extra = '') # rubocop:disable Metrics/ParameterLists, Metrics/LineLength
         Column.new(field, default, cast_type, sql_type, null, collation, strict_mode?, extra)
       end
 
@@ -102,7 +101,7 @@ module ActiveRecord
       # @param options [Hash] optional
       def add_index(table_name, column_name, options = {})
         index_name, index_type, index_columns, index_options = add_index_options(table_name, column_name, options)
-        execute "ALTER TABLE #{quote_table_name(table_name)} ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}"
+        execute "ALTER TABLE #{quote_table_name(table_name)} ADD #{index_type} INDEX #{quote_column_name(index_name)} (#{index_columns})#{index_options}" # rubocop:disable Metrics/LineLength
       end
 
       # Remove the given index from the table.
@@ -116,8 +115,7 @@ module ActiveRecord
 
       # Returns the MySQL error number from the exception. The
       # AbstractMysqlAdapter requires it to be implemented
-      def error_number(_exception)
-      end
+      def error_number(_exception); end
 
       def full_version
         mysql_adapter.raw_connection.server_info[:version]

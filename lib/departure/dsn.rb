@@ -1,9 +1,7 @@
 module Departure
-
   # Represents the 'DSN' argument of Percona's pt-online-schema-change
   # See https://www.percona.com/doc/percona-toolkit/2.0/pt-online-schema-change.html#dsn-options
   class DSN
-
     # Constructor
     #
     # @param database [String, Symbol]
