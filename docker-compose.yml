@@ -1,0 +1,23 @@
+version: '2'
+services:
+  db:
+    image: mysql/mysql-server
+    ports: 
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: departure_test
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_ROOT_HOST: '%'
+  rails:
+    build: .
+    links:
+      - db
+    depends_on:
+      - db
+    tty: true
+    stdin_open: true
+    environment:
+      PERCONA_DB_USER: root
+      PERCONA_DB_HOST: db
+      PERCONA_DB_PASSWORD:
+      PERCONA_DB_NAME: departure_test
