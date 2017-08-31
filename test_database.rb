@@ -3,6 +3,10 @@
 # the tests.
 #
 class TestDatabase
+
+  require 'active_record'
+
+
   # Constructor
   #
   # @param config [Hash]
