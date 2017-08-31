@@ -1,10 +1,10 @@
+require 'active_record'
+
 # Setups the test database with the schema_migrations table that ActiveRecord
 # requires for the migrations, plus a table for the Comment model used throught
 # the tests.
 #
 class TestDatabase
-
-  require 'active_record'
 
 
   # Constructor
