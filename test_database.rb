@@ -74,9 +74,9 @@ class TestDatabase
 
   def conn
     @conn ||= ActiveRecord::Base.mysql2_connection(
-      :host => @config['hostname'],
-      :username => @config['username'],
-      :password => @config['password'],
-      :reconnect => true)
+      host: @config['hostname'],
+      username: @config['username'],
+      password: @config['password'],
+      reconnect: true)
   end
 end
