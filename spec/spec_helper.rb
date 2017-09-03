@@ -23,7 +23,7 @@ ActiveRecord::Base.logger = Logger.new(fd)
 
 ActiveRecord::Base.establish_connection(
   adapter: 'percona',
-  host: 'localhost',
+  host: db_config['hostname'],
   username: db_config['username'],
   password: db_config['password'],
   database: db_config['database']
