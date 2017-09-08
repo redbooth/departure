@@ -34,7 +34,7 @@ module Departure
     # @return [String]
     def password_argument
       if password.present?
-        %(--password "#{Shellwords.escape(password)}" )
+        %(--password #{Shellwords.escape(password)} )
       else
         ''
       end
