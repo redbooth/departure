@@ -117,10 +117,10 @@ Departure.configure do |config|
 end
 ```
 
-Unlike using `PERCONA_ARGS`, options provided with global configuration will be applied 
+Unlike using `PERCONA_ARGS`, options provided with global configuration will be applied
 every time sql command is executed via `pt-online-schema-change`.
- 
-Arguments provided in global configuration can be overwritten with `PERCONA_ARGS` env variable. 
+
+Arguments provided in global configuration can be overwritten with `PERCONA_ARGS` env variable.
 
 We recommend using this option with caution and only when you understand the consequences.
 
@@ -170,6 +170,12 @@ the system, with the apropriate arguments for the generated SQL.
 When an any error occurs, an `ActiveRecord::StatementInvalid` exception is
 raised and the migration is aborted, as all other ActiveRecord connection
 adapters.
+
+## Trouleshooting
+
+### Error creating new table: DBD::mysql::db do failed: Can't write; duplicate key in table (TABLE_NAME)
+There is a [https://bugs.launchpad.net/percona-toolkit/+bug/1498128](known bug) in percona-toolkit version 2.2.15
+that prevents schema changes when a table has constraints. You should upgrade to a version later than 2.2.17 to fix the issue.
 
 ## Development
 

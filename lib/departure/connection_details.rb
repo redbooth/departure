@@ -1,3 +1,4 @@
+require 'shellwords'
 module Departure
   # Holds the parameters of the DB connection and formats them to string
   class ConnectionDetails
@@ -33,7 +34,7 @@ module Departure
     # @return [String]
     def password_argument
       if password.present?
-        %(--password "#{password}" )
+        %(--password "#{Shellwords.escape(password)}" )
       else
         ''
       end
