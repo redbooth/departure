@@ -174,7 +174,7 @@ adapters.
 ## Trouleshooting
 
 ### Error creating new table: DBD::mysql::db do failed: Can't write; duplicate key in table (TABLE_NAME)
-There is a [https://bugs.launchpad.net/percona-toolkit/+bug/1498128](known bug) in percona-toolkit version 2.2.15
+There is a (https://bugs.launchpad.net/percona-toolkit/+bug/1498128)[known bug] in percona-toolkit version 2.2.15
 that prevents schema changes when a table has constraints. You should upgrade to a version later than 2.2.17 to fix the issue.
 
 ## Development
