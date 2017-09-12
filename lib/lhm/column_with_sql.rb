@@ -53,10 +53,16 @@ module Lhm
     # @return [column_factory]
     def column
       cast_type = ActiveRecord::Base.connection.lookup_cast_type(definition)
+      metadata = ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(
+        type: cast_type.type,
+        sql_type: definition,
+        limit: cast_type.limit
+      )
+      mysql_metadata = ActiveRecord::ConnectionAdapters::MySQL::TypeMetadata.new(metadata)
       @column ||= self.class.column_factory.new(
         name,
         default_value,
-        cast_type,
+        mysql_metadata,
         null_value
       )
     end
