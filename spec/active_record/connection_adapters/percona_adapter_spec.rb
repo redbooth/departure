@@ -5,12 +5,22 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
     let(:field) { double(:field) }
     let(:default) { double(:default) }
     let(:cast_type) { ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter::MysqlString.new }
+    let(:metadata) do
+      ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(
+        type: cast_type.type,
+        sql_type: type,
+        limit: cast_type.limit
+      )
+    end
+    let(:mysql_metadata) do
+      ActiveRecord::ConnectionAdapters::MySQL::TypeMetadata.new(metadata)
+    end
     let(:type) { 'VARCHAR' }
     let(:null) { double(:null) }
     let(:collation) { double(:collation) }
 
     let(:column) do
-      described_class.new(field, default, cast_type, type, null, collation)
+      described_class.new(field, default, mysql_metadata, type, null, collation)
     end
 
     describe '#adapter' do
