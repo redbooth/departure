@@ -24,7 +24,7 @@ describe Departure, integration: true do
         ActiveRecord::Migration.verbose = original_verbose
       end
 
-      it 'sends the output to the stdout' do
+      it "doesn't send the output to stdout" do
         expect do
           ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
         end.to_not output.to_stdout
@@ -39,7 +39,7 @@ describe Departure, integration: true do
         ActiveRecord::Migration.verbose = original_verbose
       end
 
-      it 'sends the output to the stdout' do
+      it 'sends the output to stdout' do
         expect do
           ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
         end.to output.to_stdout
