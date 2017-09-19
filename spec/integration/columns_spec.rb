@@ -37,7 +37,7 @@ describe Departure, integration: true do
       end
     end
 
-    context 'droping column' do
+    context 'dropping column' do
       let(:direction) { :down }
 
       before do
@@ -146,7 +146,11 @@ describe Departure, integration: true do
     let(:version) { 23 }
 
     before do
-      ActiveRecord::Base.connection.add_timestamps(:comments)
+      ActiveRecord::Base.connection.add_timestamps(
+        :comments,
+        null: true,
+        default: nil
+      )
     end
 
     it 'removes the created_at column' do
