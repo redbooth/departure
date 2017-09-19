@@ -4,13 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
-## [Unreleased]
+## [5.0.0] - 2017-09-19
 
 ### Added
+
+- Support for ActiveRecord 5.0
+- Docker setup to run the spec suite
+
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
+
+- Allow using bash special characters in passwords
 
 ## [4.0.1] - 2017-08-01
 
