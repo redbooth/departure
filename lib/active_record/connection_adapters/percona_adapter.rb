@@ -9,9 +9,8 @@ module ActiveRecord
     # Establishes a connection to the database that's used by all Active
     # Record objects.
     def percona_connection(config)
-      mysql2_connection = mysql2_connection(config)
-
       config[:username] = 'root' if config[:username].nil?
+      mysql2_connection = mysql2_connection(config)
 
       connection_details = Departure::ConnectionDetails.new(config)
       verbose = ActiveRecord::Migration.verbose
