@@ -1,4 +1,4 @@
-# Departure [![Build Status](https://travis-ci.org/redbooth/departure.svg?branch=master)](https://travis-ci.org/redbooth/departure) [![Code Climate](https://codeclimate.com/github/redbooth/departure/badges/gpa.svg)](https://codeclimate.com/github/redbooth/departure)
+# Departure [![Build Status](https://travis-ci.org/departurerb/departure.svg?branch=master)](https://travis-ci.org/departurerb/departure) [![Code Climate](https://codeclimate.com/github/departurerb/departure/badges/gpa.svg)](https://codeclimate.com/github/departurerb/departure)
 
 Departure is an **ActiveRecord connection adapter** that allows running
 **MySQL online and non-blocking DDL** through `ActiveRecord::Migration` without needing
