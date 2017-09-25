@@ -4,6 +4,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
+## [Unreleased]
+
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+
+## [6.0.0] - 2017-09-25
+
+### Added
+
+- Support for ActiveRecord 5.1
+
+### Changed
+### Deprecated
+### Removed
+### Fixed
+
 ## [5.0.0] - 2017-09-19
 
 ### Added
