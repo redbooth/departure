@@ -40,7 +40,6 @@ module Departure
       #
       # @raise [ArgumentsNotSupported] if PERCONA_ARGS has any value
       def migrate(migrations_paths, target_version = nil, &block)
-        raise ArgumentsNotSupported if ENV['PERCONA_ARGS'].present?
         original_migrate(migrations_paths, target_version, &block)
       end
     end
