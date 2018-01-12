@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q(pt-online-schema-change runner for ActiveRecord migrations)
   spec.description   = %q(Execute your ActiveRecord migrations with Percona's pt-online-schema-change. Formerly known as Percona Migrator.)
-  spec.homepage      = 'http://github.com/redbooth/departure'
+  spec.homepage      = 'https://github.com/departurerb/departure'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
