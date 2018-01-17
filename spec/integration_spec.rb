@@ -205,10 +205,10 @@ describe Departure, integration: true do
 
       it 'does not allow to migrate' do
         expect do
-          ClimateControl.modify PERCONA_ARGS: '--arg=foo' do
+          ClimateControl.modify PERCONA_ARGS: '--sleep=1' do
             ActiveRecord::Migrator.migrate(migrations_paths, 1)
           end
-        end.to raise_error do |exception|
+        end.not_to raise_error do |exception|
           ( exception.cause == Departure::ArgumentsNotSupported ) && ( excepton.to_s =~ /Unknown option: arg/ )
         end
       end
