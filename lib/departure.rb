@@ -1,6 +1,8 @@
 require 'active_record'
 require 'active_support/all'
 
+require 'active_record/connection_adapters/for_alter'
+
 require 'departure/version'
 require 'departure/log_sanitizers/password_sanitizer'
 require 'departure/runner'

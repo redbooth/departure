@@ -54,6 +54,11 @@ module ActiveRecord
 
       extend Forwardable
 
+      if ! method_defined?(:change_column_for_alter)
+        include ForAlterStatements
+      end
+
+
       ADAPTER_NAME = 'Percona'.freeze
 
       def_delegators :mysql_adapter, :last_inserted_id, :each_hash, :set_field_encoding
@@ -124,6 +129,12 @@ module ActiveRecord
 
       def schema_creation
         SchemaCreation.new(self)
+      end
+
+      def change_table(table_name, options = {})
+        recorder = ActiveRecord::Migration::CommandRecorder.new(self)
+        yield update_table_definition(table_name, recorder)
+        bulk_change_table(table_name, recorder.commands)
       end
 
       # Returns the MySQL error number from the exception. The
