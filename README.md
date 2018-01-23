@@ -102,7 +102,7 @@ or even mulitple arguments
 $ PERCONA_ARGS='--chunk-time=1 --critical-load=55' bundle exec rake db:migrate:up VERSION=xxx
 ```
 
-Use caution when using PERCONA_ARGS with db:migrate, as your args will be applied
+Use caution when using PERCONA_ARGS with `db:migrate`, as your args will be applied
 to every call that Departure makes to pt-osc.
 
 #### with global configuration
