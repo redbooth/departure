@@ -8,6 +8,9 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ### Added
 ### Changed
+
+- Permit PERCONA_ARGS to be applied to db:migrate tasks
+
 ### Deprecated
 ### Removed
 ### Fixed
