@@ -200,18 +200,5 @@ describe Departure, integration: true do
       end
     end
 
-    context 'and the db:migrate rake task is executed' do
-      let(:migrations_paths) { [MIGRATION_FIXTURES] }
-
-      it 'does not allow to migrate' do
-        expect do
-          ClimateControl.modify PERCONA_ARGS: '--sleep=1' do
-            ActiveRecord::Migrator.migrate(migrations_paths, 1)
-          end
-        end.not_to raise_error do |exception|
-          ( exception.cause == Departure::ArgumentsNotSupported ) && ( excepton.to_s =~ /Unknown option: arg/ )
-        end
-      end
-    end
   end
 end
