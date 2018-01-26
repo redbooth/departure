@@ -30,21 +30,6 @@ module Departure
   # Hooks Percona Migrator into Rails migrations by replacing the configured
   # database adapter
   def self.load
-    ActiveRecord::Migrator.instance_eval do
-      class << self
-        alias original_migrate migrate
-      end
-
-      # Checks whether arguments are being passed through PERCONA_ARGS when running
-      # the db:migrate rake task
-      #
-      # @raise [ArgumentsNotSupported] if PERCONA_ARGS has any value
-      def migrate(migrations_paths, target_version = nil, &block)
-        raise ArgumentsNotSupported if ENV['PERCONA_ARGS'].present?
-        original_migrate(migrations_paths, target_version, &block)
-      end
-    end
-
     ActiveRecord::Migration.class_eval do
       alias_method :original_migrate, :migrate
 
