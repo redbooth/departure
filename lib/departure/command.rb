@@ -44,7 +44,7 @@ module Departure
         begin
           loop do
             IO.select([stdout])
-            data = stdout.read_nonblock(8)
+            data = stdout.read_nonblock(8192)
             logger.write_no_newline(data)
           end
         rescue EOFError # rubocop:disable Lint/HandleExceptions
