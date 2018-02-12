@@ -1,1 +1,0 @@
-No foreign keys reference `departure_test`.`comments`; ignoring --alter-foreign-keys-method.
