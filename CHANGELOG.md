@@ -15,6 +15,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ### Removed
 ### Fixed
 
+- Output lines are no longer wrapped at 8 chars
+
 ## [6.0.0] - 2017-09-25
 
 ### Added
