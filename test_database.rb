@@ -59,7 +59,7 @@ class TestDatabase
     sql = [
       "USE #{@database}",
       "DROP TABLE IF EXISTS comments",
-      "CREATE TABLE comments ( id int(12) NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
+      "CREATE TABLE comments ( id bigint(20) NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
     ]
 
     run_commands(sql)
