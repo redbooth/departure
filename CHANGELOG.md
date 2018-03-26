@@ -8,6 +8,16 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ### Added
 ### Changed
+### Deprecated
+### Removed
+### Fixed
+
+- Fix support for removing foreign keys
+
+## [6.1.0] - 2018-02-27
+
+### Added
+### Changed
 
 - Permit PERCONA_ARGS to be applied to db:migrate tasks
 
