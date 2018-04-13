@@ -52,7 +52,7 @@ module Lhm
     #
     # @return [column_factory]
     def column
-      cast_type = ActiveRecord::Base.connection.lookup_cast_type(definition)
+      cast_type = ActiveRecord::Base.connection.send(:lookup_cast_type, definition)
       metadata = ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(
         type: cast_type.type,
         sql_type: definition,
