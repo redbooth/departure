@@ -4,9 +4,10 @@ describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) do
-    ActiveRecord::Migrator.migrations(MIGRATION_FIXTURES)
+    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES]).migrations
   end
-  let(:migration_path) { [MIGRATION_FIXTURES] }
+
+  let(:migration_paths) { [MIGRATION_FIXTURES] }
 
   let(:direction) { :up }
 
@@ -93,12 +94,12 @@ describe Departure, integration: true do
       end
 
       it 'executes the percona command' do
-        ActiveRecord::Migrator.run(direction, migration_path, version)
+        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
         expect(:comments).to have_index('new_index_comments_on_some_id_field')
       end
 
       it 'marks the migration as down' do
-        ActiveRecord::Migrator.run(direction, migration_path, version)
+        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
@@ -115,14 +116,14 @@ describe Departure, integration: true do
       end
 
       it 'executes the percona command' do
-        ActiveRecord::Migrator.run(direction, migration_path, version)
+        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
 
         expect(unique_indexes_from(:comments))
           .to match_array(['index_comments_on_some_id_field'])
       end
 
       it 'marks the migration as up' do
-        ActiveRecord::Migrator.run(direction, migration_path, version)
+        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
@@ -131,19 +132,19 @@ describe Departure, integration: true do
       let(:direction) { :down }
 
       before do
-        ActiveRecord::Migrator.run(:up, migration_path, 1)
-        ActiveRecord::Migrator.run(:up, migration_path, version)
+        ActiveRecord::MigrationContext.new(migration_paths).run(:up, 1)
+        ActiveRecord::MigrationContext.new(migration_paths).run(:up, version)
       end
 
       it 'executes the percona command' do
-        ActiveRecord::Migrator.run(direction, migration_path, version)
+        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
 
         expect(unique_indexes_from(:comments))
           .not_to match_array(['index_comments_on_some_id_field'])
       end
 
       it 'marks the migration as down' do
-        ActiveRecord::Migrator.run(direction, migration_path, version)
+        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
         expect(ActiveRecord::Migrator.current_version).to eq(1)
       end
     end
