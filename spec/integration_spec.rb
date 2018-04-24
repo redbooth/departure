@@ -5,9 +5,8 @@ describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) do
-    ActiveRecord::Migrator.migrations(MIGRATION_FIXTURES)
+    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES]).migrations
   end
-  let(:migration_path) { [MIGRATION_FIXTURES] }
 
   let(:direction) { :up }
 
