@@ -46,6 +46,12 @@ module ActiveRecord
         end
       end
 
+      class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
+        def visit_DropForeignKey(name) # rubocop:disable Naming/MethodName
+          "DROP FOREIGN KEY _#{name}"
+        end
+      end
+
       extend Forwardable
 
       ADAPTER_NAME = 'Percona'.freeze
@@ -114,6 +120,10 @@ module ActiveRecord
       def remove_index(table_name, options = {})
         index_name = index_name_for_remove(table_name, options)
         execute "ALTER TABLE #{quote_table_name(table_name)} DROP INDEX #{quote_column_name(index_name)}"
+      end
+
+      def schema_creation
+        SchemaCreation.new(self)
       end
 
       # Returns the MySQL error number from the exception. The
