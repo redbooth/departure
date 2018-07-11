@@ -57,7 +57,7 @@ describe ActiveRecord::ConnectionAdapters::DepartureAdapter do
   let(:mysql_client) { double(:mysql_client) }
 
   before do
-    allow(mysql_client).to receive(:server_info).and_return({version: '5.7.19'})
+    allow(mysql_client).to receive(:server_info).and_return(version: '5.7.19')
     allow(mysql_adapter).to receive(:raw_connection).and_return(mysql_client)
     allow(runner).to(
       receive(:execute).with('percona command').and_return(true)

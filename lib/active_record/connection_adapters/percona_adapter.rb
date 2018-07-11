@@ -39,7 +39,6 @@ module ActiveRecord
 
   module ConnectionAdapters
     class DepartureAdapter < AbstractMysqlAdapter
-
       class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
         def adapter
           DepartureAdapter
@@ -54,10 +53,9 @@ module ActiveRecord
 
       extend Forwardable
 
-      if ! method_defined?(:change_column_for_alter)
+      unless method_defined?(:change_column_for_alter)
         include ForAlterStatements
       end
-
 
       ADAPTER_NAME = 'Percona'.freeze
 
@@ -131,7 +129,7 @@ module ActiveRecord
         SchemaCreation.new(self)
       end
 
-      def change_table(table_name, options = {})
+      def change_table(table_name, _options = {})
         recorder = ActiveRecord::Migration::CommandRecorder.new(self)
         yield update_table_definition(table_name, recorder)
         bulk_change_table(table_name, recorder.commands)

@@ -1,23 +1,22 @@
-require "active_record/connection_adapters/mysql/schema_statements"
+require 'active_record/connection_adapters/mysql/schema_statements'
 
 module ForAlterStatements
   class << self
-    def included(m)
-      STDERR.puts "Including for_alter statements"
+    def included(_)
+      STDERR.puts 'Including for_alter statements'
     end
   end
 
   def bulk_change_table(table_name, operations) #:nodoc:
     sqls = operations.flat_map do |command, args|
-      table, arguments = args.shift, args
+      table = args.shift
+      arguments = args
+
       method = :"#{command}_for_alter"
 
-      if respond_to?(method, true)
-        send(method, table, *arguments)
-      else
-        raise "Unknown method called : #{method}(#{arguments.inspect})"
-      end
-    end.join(", ")
+      raise "Unknown method called : #{method}(#{arguments.inspect})" unless respond_to?(method, true)
+      send(method, table, *arguments)
+    end.join(', ')
 
     execute("ALTER TABLE #{quote_table_name(table_name)} #{sqls}")
   end
@@ -26,17 +25,9 @@ module ForAlterStatements
     column = column_for(table_name, column_name)
     type ||= column.sql_type
 
-    unless options.key?(:default)
-      options[:default] = column.default
-    end
-
-    unless options.key?(:null)
-      options[:null] = column.null
-    end
-
-    unless options.key?(:comment)
-      options[:comment] = column.comment
-    end
+    options[:default] = column.default unless options.key?(:default)
+    options[:null] = column.null unless options.key?(:null)
+    options[:comment] = column.comment unless options.key?(:comment)
 
     td = create_table_definition(table_name)
     cd = td.new_column_definition(column.name, type, options)
@@ -51,15 +42,18 @@ module ForAlterStatements
       auto_increment: column.auto_increment?
     }
 
-    current_type = exec_query("SHOW COLUMNS FROM #{quote_table_name(table_name)} LIKE #{quote(column_name)}", "SCHEMA").first["Type"]
+    columns_sql = "SHOW COLUMNS FROM #{quote_table_name(table_name)} LIKE #{quote(column_name)}"
+    current_type = exec_query(columns_sql, 'SCHEMA').first['Type']
     td = create_table_definition(table_name)
     cd = td.new_column_definition(new_column_name, current_type, options)
     schema_creation.accept(ActiveRecord::ConnectionAdapters::ChangeColumnDefinition.new(cd, column.name))
   end
 
   def add_index_for_alter(table_name, column_name, options = {})
-    index_name, index_type, index_columns, _, index_algorithm, index_using = add_index_options(table_name, column_name, options)
-    index_algorithm[0, 0] = ", " if index_algorithm.present?
+    index_name, index_type, index_columns, _,
+      index_algorithm, index_using = add_index_options(table_name, column_name, options)
+
+    index_algorithm[0, 0] = ', ' if index_algorithm.present?
     "ADD #{index_type} INDEX #{quote_column_name(index_name)} #{index_using} (#{index_columns})#{index_algorithm}"
   end
 
@@ -69,10 +63,13 @@ module ForAlterStatements
   end
 
   def add_timestamps_for_alter(table_name, options = {})
-    [add_column_for_alter(table_name, :created_at, :datetime, options), add_column_for_alter(table_name, :updated_at, :datetime, options)]
+    [
+      add_column_for_alter(table_name, :created_at, :datetime, options),
+      add_column_for_alter(table_name, :updated_at, :datetime, options)
+    ]
   end
 
-  def remove_timestamps_for_alter(table_name, options = {})
+  def remove_timestamps_for_alter(table_name, _options = {})
     [remove_column_for_alter(table_name, :updated_at), remove_column_for_alter(table_name, :created_at)]
   end
 
@@ -82,7 +79,7 @@ module ForAlterStatements
     schema_creation.accept(ActiveRecord::ConnectionAdapters::AddColumnDefinition.new(cd))
   end
 
-  def remove_column_for_alter(table_name, column_name, type = nil, options = {})
+  def remove_column_for_alter(_table_name, column_name, _type = nil, _options = {})
     "DROP COLUMN #{quote_column_name(column_name)}"
   end
 

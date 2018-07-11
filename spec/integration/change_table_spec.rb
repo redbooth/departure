@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
-  
+
   let(:migration_path) { [MIGRATION_FIXTURES] }
   let(:direction) { :up }
 
@@ -14,9 +14,9 @@ describe Departure, integration: true do
     end
 
     context 'creating column' do
-      before(:each) {
+      before(:each) do
         ActiveRecord::Migrator.run(direction, migration_path, version)
-      }
+      end
 
       it 'adds the column in the DB table' do
         expect(:comments).to have_column('boring_id_field')

@@ -9,7 +9,7 @@ RSpec::Matchers.define :have_foreign_key_on do |expected|
   end
 
   def foreign_key_column_names(table_name)
-    foreign_keys(table_name).map{|fk| fk.options[:column]}
+    foreign_keys(table_name).map { |fk| fk.options[:column] }
   end
 
   def foreign_keys(table_name)

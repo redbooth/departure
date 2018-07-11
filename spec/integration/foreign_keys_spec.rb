@@ -32,14 +32,14 @@ describe Departure, integration: true do
   context 'removing foreign keys' do
     let(:version) { 27 }
 
-     before do
-       ActiveRecord::Base.connection.create_table(:products)
+    before do
+      ActiveRecord::Base.connection.create_table(:products)
 
-       ActiveRecord::Base.connection.add_column(
-          :comments,
-          :product_id,
-          :bigint
-       )
+      ActiveRecord::Base.connection.add_column(
+        :comments,
+        :product_id,
+        :bigint
+      )
 
       ActiveRecord::Base.connection.add_foreign_key(
         :comments,
