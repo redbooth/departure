@@ -25,9 +25,11 @@ module ForAlterStatements
     column = column_for(table_name, column_name)
     type ||= column.sql_type
 
-    options[:default] = column.default unless options.key?(:default)
-    options[:null] = column.null unless options.key?(:null)
-    options[:comment] = column.comment unless options.key?(:comment)
+    options = {
+      default: column.default,
+      null: column.null,
+      comment: column.comment
+    }.merge(options)
 
     td = create_table_definition(table_name)
     cd = td.new_column_definition(column.name, type, options)
