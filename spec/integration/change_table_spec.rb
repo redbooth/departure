@@ -3,11 +3,15 @@ require 'spec_helper'
 describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
-  let(:migration_path) { [MIGRATION_FIXTURES] }
+  let(:migration_fixtures) do
+    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES]).migrations.select do |m|
+      m.version == version
+    end
+  end
   let(:direction) { :up }
 
   context 'change_table' do
-    let(:version) { 26 }
+    let(:version) { 28 }
 
     def column_metadata(table, name)
       ActiveRecord::Base.connection.columns(table).detect { |c| c.name == name.to_s }
@@ -15,7 +19,7 @@ describe Departure, integration: true do
 
     context 'creating column' do
       before(:each) do
-        ActiveRecord::Migrator.run(direction, migration_path, version)
+        ActiveRecord::Migrator.new(direction, migration_fixtures, version).migrate
       end
 
       it 'adds the column in the DB table' do
