@@ -48,7 +48,14 @@ module ActiveRecord
 
       class SchemaCreation < ActiveRecord::ConnectionAdapters::MySQL::SchemaCreation
         def visit_DropForeignKey(name) # rubocop:disable Naming/MethodName
-          "DROP FOREIGN KEY _#{name}"
+          fk_name =
+            if name =~ /^__(.+)/
+              Regexp.last_match(1)
+            else
+              "_#{name}"
+            end
+
+          "DROP FOREIGN KEY #{fk_name}"
         end
       end
 
