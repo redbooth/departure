@@ -15,7 +15,7 @@ module ForAlterStatements
       method = :"#{command}_for_alter"
 
       raise "Unknown method called : #{method}(#{arguments.inspect})" unless respond_to?(method, true)
-      send(method, table, *arguments)
+      public_send(method, table, *arguments)
     end.join(', ')
 
     execute("ALTER TABLE #{quote_table_name(table_name)} #{sqls}")
