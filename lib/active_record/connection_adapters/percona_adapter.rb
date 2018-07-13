@@ -39,7 +39,6 @@ module ActiveRecord
 
   module ConnectionAdapters
     class DepartureAdapter < AbstractMysqlAdapter
-
       class Column < ActiveRecord::ConnectionAdapters::MySQL::Column
         def adapter
           DepartureAdapter
@@ -60,6 +59,10 @@ module ActiveRecord
       end
 
       extend Forwardable
+
+      unless method_defined?(:change_column_for_alter)
+        include ForAlterStatements
+      end
 
       ADAPTER_NAME = 'Percona'.freeze
 
@@ -131,6 +134,12 @@ module ActiveRecord
 
       def schema_creation
         SchemaCreation.new(self)
+      end
+
+      def change_table(table_name, _options = {})
+        recorder = ActiveRecord::Migration::CommandRecorder.new(self)
+        yield update_table_definition(table_name, recorder)
+        bulk_change_table(table_name, recorder.commands)
       end
 
       # Returns the MySQL error number from the exception. The

@@ -6,8 +6,6 @@ require 'active_record/connection_adapters/mysql2_adapter'
 # the tests.
 #
 class TestDatabase
-
-
   # Constructor
   #
   # @param config [Hash]
@@ -33,10 +31,10 @@ class TestDatabase
   # Creates the ActiveRecord's schema_migrations table required for
   # migrations to work. Before, it drops the table if it already exists
   def drop_and_create_schema_migrations_table
-   sql = [
-    "USE #{@database}",
-    'DROP TABLE IF EXISTS schema_migrations',
-    'CREATE TABLE schema_migrations ( version varchar(255) COLLATE utf8_unicode_ci NOT NULL, UNIQUE KEY unique_schema_migrations (version)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci'
+    sql = [
+      "USE #{@database}",
+      'DROP TABLE IF EXISTS schema_migrations',
+      'CREATE TABLE schema_migrations ( version varchar(255) COLLATE utf8_unicode_ci NOT NULL, UNIQUE KEY unique_schema_migrations (version)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci'
     ]
 
     run_commands(sql)
@@ -67,9 +65,7 @@ class TestDatabase
 
   def run_commands(sql)
     conn.execute('START TRANSACTION')
-    sql.each { |str|
-      conn.execute(str)
-    }
+    sql.each { |str| conn.execute(str) }
     conn.execute('COMMIT')
   end
 
@@ -78,6 +74,7 @@ class TestDatabase
       host: @config['hostname'],
       username: @config['username'],
       password: @config['password'],
-      reconnect: true)
+      reconnect: true
+    )
   end
 end
