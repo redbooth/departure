@@ -7,7 +7,14 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ## [Unreleased]
 
 ### Added
+
+- Support for ActiveRecord 5.2
+- Support to batch multiple changes at once with #change_table
+
 ### Changed
+
+- Depend only in railties and activerecord instead of rails gem
+
 ### Deprecated
 ### Removed
 ### Fixed
