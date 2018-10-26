@@ -154,15 +154,15 @@ it using the `DepartureAdapter` instead of the one you defined in your
 
 Then, when any migration DSL methods such as `add_column` or `create_table` are
 executed, they all go to the
-[DepartureAdapter](https://github.com/redbooth/departure/blob/master/lib/active_record/connection_adapters/departure_adapter.rb).
+[DepartureAdapter](https://github.com/departurerb/departure/blob/master/lib/active_record/connection_adapters/departure_adapter.rb).
 There, the methods that require `ALTER TABLE` SQL statements, like `add_column`,
 are overriden to get executed with
-[Departure::Runner](https://github.com/redbooth/departure/blob/master/lib/departure/runner.rb),
+[Departure::Runner](https://github.com/departurerb/departure/blob/master/lib/departure/runner.rb),
 which deals with the `pt-online-schema-change` binary. All the others, like
 `create_table`, are delegated to the ActiveRecord's built in Mysql2Adapter and
 so they follow the regular path.
 
-[Departure::Runner](https://github.com/redbooth/departure/blob/master/lib/departure/runner.rb)
+[Departure::Runner](https://github.com/departurerb/departure/blob/master/lib/departure/runner.rb)
 spawns a new process that runs the `pt-online-schema-change` binary present in
 the system, with the apropriate arguments for the generated SQL.
 
@@ -191,7 +191,7 @@ git commits and tags, and push the `.gem` file to
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/redbooth/departure. They need to be opened against
+https://github.com/departurerb/departure. They need to be opened against
 `master` or `v3.2` only if the changes fix a bug in Rails 3.2 apps.
 
 Please note that this project is released with a Contributor Code of Conduct. By
