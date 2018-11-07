@@ -164,9 +164,9 @@ so they follow the regular path.
 
 [Departure::Runner](https://github.com/departurerb/departure/blob/master/lib/departure/runner.rb)
 spawns a new process that runs the `pt-online-schema-change` binary present in
-the system, with the apropriate arguments for the generated SQL.
+the system, with the appropriate arguments for the generated SQL.
 
-When an any error occurs, an `ActiveRecord::StatementInvalid` exception is
+When any errors occur, an `ActiveRecord::StatementInvalid` exception is
 raised and the migration is aborted, as all other ActiveRecord connection
 adapters.
 
