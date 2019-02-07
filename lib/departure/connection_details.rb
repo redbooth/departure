@@ -15,7 +15,7 @@ module Departure
     #
     # @return [String]
     def to_s
-      @to_s ||= "-h #{host} -P #{port} -u #{user} #{password_argument}"
+      @to_s ||= "#{host_argument} -P #{port} -u #{user} #{password_argument}"
     end
 
     # TODO: Doesn't the abstract adapter already handle this somehow?
@@ -38,6 +38,17 @@ module Departure
       else
         ''
       end
+    end
+
+    # Returns the host fragment of the details string, adds ssl options if needed
+    #
+    # @return [String]
+    def host_argument
+      host_string = host
+      if ssl_ca.present?
+        host_string += ";mysql_ssl=1;mysql_ssl_client_ca=#{ssl_ca}"
+      end
+      "-h \"#{host_string}\""
     end
 
     private
@@ -73,6 +84,13 @@ module Departure
     # @return [String]
     def port
       connection_data.fetch(:port, DEFAULT_PORT)
+    end
+
+    # Returns the database' SSL CA certificate.
+    #
+    # @return [String]
+    def ssl_ca
+      connection_data.fetch(:sslca, nil)
     end
   end
 end
