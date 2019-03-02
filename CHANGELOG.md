@@ -10,6 +10,7 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 - Support for ActiveRecord 5.2
 - Support to batch multiple changes at once with #change_table
+- Support for connection to MySQL server over SSL
 
 ### Changed
 

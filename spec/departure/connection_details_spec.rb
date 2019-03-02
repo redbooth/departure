@@ -36,7 +36,7 @@ describe Departure::ConnectionDetails do
       let(:env_var) { { PERCONA_DB_HOST: nil } }
       let(:connection_data) { { user: 'root', database: 'dummy_test' } }
 
-      it { is_expected.to include('-h localhost') }
+      it { is_expected.to include('-h "localhost"') }
     end
 
     context 'when the host is specified' do
@@ -46,12 +46,19 @@ describe Departure::ConnectionDetails do
       end
 
       it { is_expected.not_to include('-h localhost') }
-      it { is_expected.to include('-h foo.com:3306') }
+      it { is_expected.to include('-h "foo.com:3306"') }
+
+      context 'when ssl ca is specified' do
+        let(:connection_data) do
+          { host: 'foo.com:3306', user: 'root', database: 'dummy_test', sslca: '~/test.pem' }
+        end
+        it { is_expected.to include('-h "foo.com:3306;mysql_ssl=1;mysql_ssl_client_ca=~/test.pem"') }
+      end
     end
 
     context 'when specifying PERCONA_DB_HOST' do
       let(:env_var) { { PERCONA_DB_HOST: 'foo.com:3306' } }
-      it { is_expected.to include('h foo.com:3306') }
+      it { is_expected.to include('h "foo.com:3306"') }
     end
 
     context 'when specifying PERCONA_DB_USER' do
