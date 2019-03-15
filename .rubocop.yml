@@ -48,7 +48,7 @@ Style/MultilineBlockChain:
   Exclude:
     - 'spec/integration_spec.rb'
 
-Style/MultilineMethodCallIndentation:
+Layout/MultilineMethodCallIndentation:
   Enabled: false
 
 Style/SymbolArray:
