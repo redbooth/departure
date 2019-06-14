@@ -17,13 +17,12 @@ module Departure
 
       match = statement.match(ALTER_TABLE_REGEX)
       raise InvalidAlterStatement unless match
-      
       # Separates the ALTER TABLE from the table_name
       #
       # Removes the grave marks, if they are there, so we can get the table_name
       @table_name = String(match)
-                      .split(" ")[2]
-                      .gsub('`','')
+                      .split(' ')[2]
+                      .delete('`')
     end
 
     # Returns the '--alter' pt-online-schema-change argument as a string. See
