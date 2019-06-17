@@ -42,7 +42,7 @@ module Departure
       @parsed_statement ||= statement
         .gsub(ALTER_TABLE_REGEX, '')
         .gsub('`', '\\\`')
-        .delete(/\\n/)
+        .gsub(/\\n/, '')
     end
   end
 end
