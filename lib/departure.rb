@@ -13,6 +13,7 @@ require 'departure/logger_factory'
 require 'departure/configuration'
 require 'departure/errors'
 require 'departure/command'
+require 'departure/connection_base'
 
 require 'departure/railtie' if defined?(Rails)
 
@@ -61,7 +62,7 @@ module Departure
       def reconnect_with_percona
         connection_config = ActiveRecord::Base
           .connection_config.merge(adapter: 'percona')
-        ActiveRecord::Base.establish_connection(connection_config)
+        Departure::ConnectionBase.establish_connection(connection_config)
       end
     end
   end
