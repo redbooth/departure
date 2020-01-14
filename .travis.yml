@@ -1,6 +1,10 @@
 language: ruby
 rvm:
   - 2.2.8
+  
+services:
+  - mysql
+  
 before_install:
   - sudo apt-key adv --keyserver keys.gnupg.net --recv-keys 8507EFA5
   - echo "deb http://repo.percona.com/apt `lsb_release -cs` main" | sudo tee -a /etc/apt/sources.list
