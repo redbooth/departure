@@ -99,7 +99,7 @@ $ PERCONA_ARGS='--chunk-time=1' bundle exec rake db:migrate:up VERSION=xxx
 or even mulitple arguments
 
 ```ruby
-$ PERCONA_ARGS='--chunk-time=1 --critical-load=55' bundle exec rake db:migrate:up VERSION=xxx
+$ PERCONA_ARGS='--chunk-time=1 --critical-load Threads_running=55' bundle exec rake db:migrate:up VERSION=xxx
 ```
 
 Use caution when using PERCONA_ARGS with `db:migrate`, as your args will be applied
@@ -112,7 +112,7 @@ using `global_percona_args` option.
 
 ```ruby
 Departure.configure do |config|
-  config.global_percona_args = '--chunk-time=1 --critical-load=55'
+  config.global_percona_args = '--chunk-time=1 --critical-load Threads_running=55'
 end
 ```
 
