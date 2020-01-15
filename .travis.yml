@@ -1,12 +1,15 @@
 language: ruby
 rvm:
-  - 2.2.8
-  
+  - 2.4.6
+  - 2.5.5
+  - 2.6.3
+  - 2.7.0
+
 services:
   - mysql
-  
+
 before_install:
-  - sudo apt-key adv --keyserver keys.gnupg.net --recv-keys 8507EFA5
+  - travis_retry sudo apt-key adv --keyserver keys.gnupg.net --recv-keys 8507EFA5
   - echo "deb http://repo.percona.com/apt `lsb_release -cs` main" | sudo tee -a /etc/apt/sources.list
   - sudo apt-get update -qq
   - sudo apt-get install percona-toolkit
