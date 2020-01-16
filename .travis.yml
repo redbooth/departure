@@ -1,9 +1,18 @@
 language: ruby
+
 rvm:
-  - 2.4.6
   - 2.5.5
   - 2.6.3
   - 2.7.0
+
+env:
+  - RAILS_VERSION="~> 6.0.0"
+  - RAILS_VERSION="~> 5.2.0"
+
+jobs:
+  include:
+    - rvm: 2.4.6
+      env: RAILS_VERSION="~> 5.2.0"
 
 services:
   - mysql
