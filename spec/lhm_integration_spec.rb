@@ -18,6 +18,7 @@ describe Departure, integration: true do
         ActiveRecord::Migrator.new(
           direction,
           [migration_fixtures],
+          ActiveRecord::SchemaMigration,
           version
         ).migrate
 

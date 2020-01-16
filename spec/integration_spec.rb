@@ -5,7 +5,7 @@ describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) do
-    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES]).migrations
+    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration).migrations
   end
 
   let(:direction) { :up }
@@ -25,7 +25,7 @@ describe Departure, integration: true do
 
       it "doesn't send the output to stdout" do
         expect do
-          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+          ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
         end.to_not output.to_stdout
       end
     end
@@ -40,7 +40,7 @@ describe Departure, integration: true do
 
       it 'sends the output to stdout' do
         expect do
-          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+          ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
         end.to output.to_stdout
       end
     end
@@ -50,7 +50,7 @@ describe Departure, integration: true do
     let(:db_config) { Configuration.new }
 
     it 'reconnects to the database using PerconaAdapter' do
-      ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+      ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
       expect(ActiveRecord::Base.connection_pool.spec.config[:adapter])
         .to eq('percona')
     end
@@ -67,7 +67,7 @@ describe Departure, integration: true do
       end
 
       it 'uses the provided username' do
-        ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
         expect(ActiveRecord::Base.connection_pool.spec.config[:username])
           .to eq('root')
       end
@@ -84,7 +84,7 @@ describe Departure, integration: true do
       end
 
       it 'uses root' do
-        ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
         expect(ActiveRecord::Base.connection_pool.spec.config[:username])
           .to eq('root')
       end
@@ -95,14 +95,14 @@ describe Departure, integration: true do
       xit 'patches it to use regular Rails migration methods' do
         expect(Departure::Lhm::Fake::Adapter)
           .to receive(:new).and_return(true)
-        ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
       end
     end
 
     context 'when there is no LHM' do
       xit 'does not patch it' do
         expect(Departure::Lhm::Fake).not_to receive(:patching_lhm)
-        ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+        ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
       end
     end
   end
@@ -115,7 +115,7 @@ describe Departure, integration: true do
 
       it 'raises and halts the execution' do
         expect do
-          ActiveRecord::Migrator.run(direction, migration_fixtures, version)
+          ActiveRecord::Migrator.run(direction, migration_fixtures, ActiveRecord::SchemaMigration, version)
         end.to raise_error do |exception|
           exception.cause == ActiveRecord::StatementInvalid
         end
@@ -132,7 +132,7 @@ describe Departure, integration: true do
 
       it 'raises and halts the execution' do
         expect do
-          ActiveRecord::Migrator.run(direction, migration_fixtures, version)
+          ActiveRecord::Migrator.run(direction, migration_fixtures, ActiveRecord::SchemaMigration, version)
         end.to raise_error do |exception|
           exception.cause == Departure::SignalError
         end
@@ -146,7 +146,7 @@ describe Departure, integration: true do
     it 'raises and halts the execution' do
       expect do
         ClimateControl.modify PATH: '' do
-          ActiveRecord::Migrator.run(direction, migration_fixtures, version)
+          ActiveRecord::Migrator.run(direction, migration_fixtures, ActiveRecord::SchemaMigration, version)
         end
       end.to raise_error do |exception|
         exception.cause == Departure::CommandNotFoundError
@@ -168,7 +168,7 @@ describe Departure, integration: true do
           .and_return(command)
 
         ClimateControl.modify PERCONA_ARGS: '--chunk-time=1' do
-          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+          ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
         end
       end
     end
@@ -181,7 +181,7 @@ describe Departure, integration: true do
           .and_return(command)
 
         ClimateControl.modify PERCONA_ARGS: '--chunk-time=1 --max-lag=2' do
-          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+          ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
         end
       end
     end
@@ -194,7 +194,7 @@ describe Departure, integration: true do
           .and_return(command)
 
         ClimateControl.modify PERCONA_ARGS: '--alter-foreign-keys-method=drop_swap' do
-          ActiveRecord::Migrator.new(direction, migration_fixtures, 1).migrate
+          ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
         end
       end
     end

@@ -4,7 +4,7 @@ describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) do
-    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES]).migrations
+    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration).migrations
   end
   let(:migration_paths) { [MIGRATION_FIXTURES] }
 
@@ -20,6 +20,7 @@ describe Departure, integration: true do
         ActiveRecord::Migrator.new(
           direction,
           migration_fixtures,
+          ActiveRecord::SchemaMigration,
           version
         ).migrate
 
@@ -30,6 +31,7 @@ describe Departure, integration: true do
         ActiveRecord::Migrator.new(
           direction,
           migration_fixtures,
+          ActiveRecord::SchemaMigration,
           version
         ).migrate
 
@@ -41,13 +43,14 @@ describe Departure, integration: true do
       let(:direction) { :down }
 
       before do
-        ActiveRecord::Migrator.new(:up, migration_fixtures, version).migrate
+        ActiveRecord::Migrator.new(:up, migration_fixtures, ActiveRecord::SchemaMigration, version).migrate
       end
 
       it 'drops the column from the DB table' do
         ActiveRecord::Migrator.new(
           direction,
           migration_fixtures,
+          ActiveRecord::SchemaMigration,
           version - 1
         ).migrate
 
@@ -58,6 +61,7 @@ describe Departure, integration: true do
         ActiveRecord::Migrator.new(
           direction,
           migration_fixtures,
+          ActiveRecord::SchemaMigration,
           version - 1
         ).migrate
 
@@ -78,12 +82,12 @@ describe Departure, integration: true do
       end
 
       it 'changes the column name' do
-        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+        ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
         expect(:comments).to have_column('new_id_field')
       end
 
       it 'does not keep the old column' do
-        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+        ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
         expect(:comments).not_to have_column('some_id_field')
       end
     end
@@ -96,19 +100,19 @@ describe Departure, integration: true do
     end
 
     before do
-      ActiveRecord::Migrator.new(:up, migration_fixtures, 1).migrate
+      ActiveRecord::Migrator.new(:up, migration_fixtures, ActiveRecord::SchemaMigration, 1).migrate
     end
 
     context 'when null is true' do
       let(:version) { 14 }
 
       it 'sets the column to allow nulls' do
-        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+        ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
         expect(column.null).to be_truthy
       end
 
       it 'marks the migration as up' do
-        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+        ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
@@ -117,12 +121,12 @@ describe Departure, integration: true do
       let(:version) { 15 }
 
       it 'sets the column not to allow nulls' do
-        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+        ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
         expect(column.null).to be_falsey
       end
 
       it 'marks the migration as up' do
-        ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+        ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
         expect(ActiveRecord::Migrator.current_version).to eq(version)
       end
     end
@@ -132,12 +136,12 @@ describe Departure, integration: true do
     let(:version) { 22 }
 
     it 'adds a created_at column' do
-      ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+      ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
       expect(:comments).to have_column('created_at')
     end
 
     it 'adds a updated_at column' do
-      ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+      ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
       expect(:comments).to have_column('updated_at')
     end
   end
@@ -154,12 +158,12 @@ describe Departure, integration: true do
     end
 
     it 'removes the created_at column' do
-      ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+      ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
       expect(:comments).not_to have_column('created_at')
     end
 
     it 'removes the updated_at column' do
-      ActiveRecord::MigrationContext.new(migration_paths).run(direction, version)
+      ActiveRecord::MigrationContext.new(migration_paths, ActiveRecord::SchemaMigration).run(direction, version)
       expect(:comments).not_to have_column('updated_at')
     end
   end
