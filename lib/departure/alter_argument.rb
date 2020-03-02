@@ -43,6 +43,7 @@ module Departure
         .gsub(ALTER_TABLE_REGEX, '')
         .gsub('`', '\\\`')
         .gsub(/\\n/, '')
+        .gsub('"', '\\\"')
     end
   end
 end
