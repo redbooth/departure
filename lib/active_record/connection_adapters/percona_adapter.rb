@@ -147,6 +147,16 @@ module ActiveRecord
       def error_number(_exception); end
 
       def full_version
+        if ActiveRecord::VERSION::MAJOR < 6
+          get_full_version
+        else
+          schema_cache.database_version.full_version_string
+        end
+      end
+
+      # This is a method defined in Rails 6.0, and we have no control over the
+      # naming of this method.
+      def get_full_version # rubocop:disable Naming/AccessorMethodName
         mysql_adapter.raw_connection.server_info[:version]
       end
 

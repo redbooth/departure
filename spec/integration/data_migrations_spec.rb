@@ -25,7 +25,7 @@ describe Departure, integration: true do
     let(:version) { 9 }
 
     it 'updates all the required data' do
-      ActiveRecord::MigrationContext.new(migration_fixtures).run(
+      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
         direction,
         version
       )
@@ -34,7 +34,7 @@ describe Departure, integration: true do
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::MigrationContext.new(migration_fixtures).run(
+      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
         direction,
         version
       )
@@ -47,7 +47,7 @@ describe Departure, integration: true do
     let(:version) { 10 }
 
     it 'updates all the required data' do
-      ActiveRecord::MigrationContext.new(migration_fixtures).run(
+      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
         direction,
         version
       )
@@ -56,7 +56,7 @@ describe Departure, integration: true do
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::MigrationContext.new(migration_fixtures).run(
+      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
         direction,
         version
       )
@@ -69,7 +69,7 @@ describe Departure, integration: true do
     let(:version) { 11 }
 
     it 'updates all the required data' do
-      ActiveRecord::MigrationContext.new(migration_fixtures).run(
+      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
         direction,
         version
       )
@@ -78,7 +78,7 @@ describe Departure, integration: true do
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::MigrationContext.new(migration_fixtures).run(
+      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
         direction,
         version
       )
@@ -91,7 +91,7 @@ describe Departure, integration: true do
     let(:version) { 12 }
 
     it 'updates all the required data' do
-      ActiveRecord::MigrationContext.new(migration_fixtures).run(
+      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
         direction,
         version
       )
@@ -100,7 +100,7 @@ describe Departure, integration: true do
     end
 
     it 'marks the migration as up' do
-      ActiveRecord::MigrationContext.new(migration_fixtures).run(
+      ActiveRecord::MigrationContext.new(migration_fixtures, ActiveRecord::SchemaMigration).run(
         direction,
         version
       )

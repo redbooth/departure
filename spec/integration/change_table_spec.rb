@@ -4,7 +4,7 @@ describe Departure, integration: true do
   class Comment < ActiveRecord::Base; end
 
   let(:migration_fixtures) do
-    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES]).migrations.select do |m|
+    ActiveRecord::MigrationContext.new([MIGRATION_FIXTURES], ActiveRecord::SchemaMigration).migrations.select do |m|
       m.version == version
     end
   end
@@ -19,7 +19,7 @@ describe Departure, integration: true do
 
     context 'creating column' do
       before(:each) do
-        ActiveRecord::Migrator.new(direction, migration_fixtures, version).migrate
+        ActiveRecord::Migrator.new(direction, migration_fixtures, ActiveRecord::SchemaMigration, version).migrate
       end
 
       it 'adds the column in the DB table' do
