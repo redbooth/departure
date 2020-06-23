@@ -6,6 +6,8 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ## [Unreleased]
 
+## [6.2.0] - 2020-06-23
+
 ### Added
 
 - Support for ActiveRecord 5.2
