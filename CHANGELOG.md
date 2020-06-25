@@ -10,7 +10,9 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 
 ### Added
 
+- Support for ActiveRecord 6.0
 - Support for ActiveRecord 5.2
+- Relax mysql2 requirement to allow mysql2 0.5.3
 - Support to batch multiple changes at once with #change_table
 - Support for connection to MySQL server over SSL
 
@@ -23,6 +25,10 @@ Please follow the format in [Keep a Changelog](http://keepachangelog.com/)
 ### Fixed
 
 - Fix support for removing foreign keys
+- Fix PERCONA_ARGS syntax for critical-load option
+- Make sure quotes in ALTER TABLE get correctly escaped
+- Fixes for regex handling
+- Fix LHM compatibility
 
 ## [6.1.0] - 2018-02-27
 
