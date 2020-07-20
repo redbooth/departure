@@ -17,6 +17,7 @@ module Departure
       # The default for this attribute is set based on
       # Departure.configuration.enabled_by_default (default true).
       class_attribute :uses_departure
+      self.uses_departure = true
 
       alias_method :active_record_migrate, :migrate
       remove_method :migrate
