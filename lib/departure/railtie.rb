@@ -24,5 +24,11 @@ module Departure
         config.tmp_path = app.paths['tmp'].first
       end
     end
+
+    config.after_initialize do
+      Departure.configure do |dc|
+        ActiveRecord::Migration.uses_departure = dc.enabled_by_default
+      end
+    end
   end
 end
