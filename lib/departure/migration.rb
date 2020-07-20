@@ -1,6 +1,10 @@
 module Departure
   # Hooks Percona Migrator into Rails migrations by replacing the configured
   # database adapter
+  #
+  # It also patches ActiveRecord's #migrate method so that it patches LHM
+  # first. This will make migrations written with LHM to go through the
+  # regular Rails Migration DSL.
   module Migration
     extend ActiveSupport::Concern
 

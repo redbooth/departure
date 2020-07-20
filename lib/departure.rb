@@ -21,6 +21,12 @@ require 'departure/railtie' if defined?(Rails)
 # We need the OS not to buffer the IO to see pt-osc's output while migrating
 $stdout.sync = true
 
+ActiveSupport.on_load(:active_record) do
+  ActiveRecord::Migration.class_eval do
+    include Departure::Migration
+  end
+end
+
 module Departure
   class << self
     attr_accessor :configuration
@@ -32,8 +38,6 @@ module Departure
   end
 
   def self.load
-    ActiveRecord::Migration.class_eval do
-      include Departure::Migration
-    end
+    # No-op left for compatibility
   end
 end
