@@ -31,7 +31,6 @@ module Departure
       end
     end
 
-
     # Replaces the current connection adapter with the PerconaAdapter and
     # patches LHM, then it continues with the regular migration process.
     #
@@ -79,6 +78,7 @@ module Departure
     end
 
     private
+
     # Capture the type of the adapter configured by the app if not already set.
     def connection_config
       ActiveRecord::Base.connection_config.tap do |config|
