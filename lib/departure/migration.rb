@@ -29,6 +29,13 @@ module Departure
       def uses_departure!
         self.uses_departure = true
       end
+
+      # Declare `disable_departure!` in the class body of your migration to
+      # disable Departure for that migration only (when
+      # Departure.configuration.enabled_by_default is true, the default).
+      def disable_departure!
+        self.uses_departure = false
+      end
     end
 
     # Replaces the current connection adapter with the PerconaAdapter and
