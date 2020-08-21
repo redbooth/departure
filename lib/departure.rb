@@ -14,11 +14,18 @@ require 'departure/configuration'
 require 'departure/errors'
 require 'departure/command'
 require 'departure/connection_base'
+require 'departure/migration'
 
 require 'departure/railtie' if defined?(Rails)
 
 # We need the OS not to buffer the IO to see pt-osc's output while migrating
 $stdout.sync = true
+
+ActiveSupport.on_load(:active_record) do
+  ActiveRecord::Migration.class_eval do
+    include Departure::Migration
+  end
+end
 
 module Departure
   class << self
@@ -30,40 +37,7 @@ module Departure
     yield(configuration)
   end
 
-  # Hooks Percona Migrator into Rails migrations by replacing the configured
-  # database adapter
   def self.load
-    ActiveRecord::Migration.class_eval do
-      alias_method :original_migrate, :migrate
-
-      # Replaces the current connection adapter with the PerconaAdapter and
-      # patches LHM, then it continues with the regular migration process.
-      #
-      # @param direction [Symbol] :up or :down
-      def migrate(direction)
-        reconnect_with_percona
-        include_foreigner if defined?(Foreigner)
-
-        ::Lhm.migration = self
-        original_migrate(direction)
-      end
-
-      # Includes the Foreigner's Mysql2Adapter implemention in
-      # DepartureAdapter to support foreign keys
-      def include_foreigner
-        Foreigner::Adapter.safe_include(
-          :DepartureAdapter,
-          Foreigner::ConnectionAdapters::Mysql2Adapter
-        )
-      end
-
-      # Make all connections in the connection pool to use PerconaAdapter
-      # instead of the current adapter.
-      def reconnect_with_percona
-        connection_config = ActiveRecord::Base
-          .connection_config.merge(adapter: 'percona')
-        Departure::ConnectionBase.establish_connection(connection_config)
-      end
-    end
+    # No-op left for compatibility
   end
 end

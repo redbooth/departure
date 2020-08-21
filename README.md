@@ -145,6 +145,23 @@ end
 It's strongly recommended to name it after this gems name, such as
 `config/initializers/departure.rb`
 
+### Only enabled on a per-migration basis
+
+If you wish to only have Departure enabled per-migration, set `config.enabled_by_default = false` in the configure block of your departure initializer.
+
+Then, add a `uses_departure!` statement in migrations where Departure should be used:
+
+```ruby
+class UseDepartureMigration < ActiveRecord::Migration[5.2]
+  uses_departure!
+
+  def up
+    # ...
+  end
+  # ...
+end
+```
+
 ## How it works
 
 When booting your Rails app, Departure extends the
