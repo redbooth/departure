@@ -145,7 +145,23 @@ end
 It's strongly recommended to name it after this gems name, such as
 `config/initializers/departure.rb`
 
-### Only enabled on a per-migration basis
+### Disable on per-migration basis
+
+Departure gem is enabled by default. 
+In order to disable it on a particular migration the method `disable_departure!` should be used.
+
+```ruby
+class UseDepartureMigration < ActiveRecord::Migration[5.2]
+  disable_departure!
+
+  def up
+    # ...
+  end
+  # ...
+end
+```
+
+### Enable on per-migration basis
 
 If you wish to only have Departure enabled per-migration, set `config.enabled_by_default = false` in the configure block of your departure initializer.
 
