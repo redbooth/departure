@@ -65,6 +65,10 @@ module ActiveRecord
       end
 
       ADAPTER_NAME = 'Percona'.freeze
+      READ_QUERY = ActiveRecord::ConnectionAdapters::AbstractAdapter.build_read_query_regexp(
+        :desc, :describe, :set, :show, :use
+      )
+      private_constant :READ_QUERY
 
       def_delegators :mysql_adapter, :last_inserted_id, :each_hash, :set_field_encoding
 
@@ -72,6 +76,10 @@ module ActiveRecord
         @mysql_adapter = connection_options[:mysql_adapter]
         super
         @prepared_statements = false
+      end
+
+      def write_query?(sql) # :nodoc:
+        !READ_QUERY.match?(sql)
       end
 
       def exec_delete(sql, name, binds)
